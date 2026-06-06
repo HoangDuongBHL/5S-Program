@@ -4,756 +4,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Chương trình 5S — Thực hành 5S</title>
+<title>Chương trình 5S</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --white: #ffffff;
-  --off: #f7f8fc;
-  --border: #e4e8f0;
-  --border2: #d0d7e8;
-  --text: #1a1f36;
-  --sub: #5c6585;
-  --muted: #9aa3be;
-  --green: #16a34a;
-  --green-bg: #f0fdf4;
-  --green-border: #bbf7d0;
-  --red: #dc2626;
-  --red-bg: #fef2f2;
-  --red-border: #fecaca;
-  --amber: #d97706;
-  --amber-bg: #fffbeb;
-  --amber-border: #fde68a;
-  --blue: #2563eb;
-  --blue-bg: #eff6ff;
-  --blue-border: #bfdbfe;
-  --primary: #1e40af;
-  --primary-light: #3b82f6;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-  --shadow: 0 4px 16px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
-  --shadow-lg: 0 10px 40px rgba(0,0,0,.1), 0 4px 16px rgba(0,0,0,.06);
-  --radius: 12px;
-  --radius-sm: 8px;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  background: var(--off);
-  color: var(--text);
-  min-height: 100vh;
-  font-size: 14px;
-}
-
-/* ─── HEADER ─── */
-.site-header {
-  background: var(--primary);
-  background-image: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
-  padding: 0 24px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 12px rgba(30,64,175,.4);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-badge {
-  background: rgba(255,255,255,.15);
-  border: 1.5px solid rgba(255,255,255,.3);
-  border-radius: 10px;
-  width: 40px; height: 40px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px;
-  backdrop-filter: blur(6px);
-}
-
-.brand-name {
-  color: #fff;
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: -.3px;
-}
-
-.brand-sub {
-  color: rgba(255,255,255,.65);
-  font-size: 11px;
-  font-weight: 400;
-  letter-spacing: .3px;
-}
-
-.header-date {
-  color: rgba(255,255,255,.8);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  background: rgba(255,255,255,.1);
-  padding: 6px 14px;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,.2);
-}
-
-/* ─── TAB BAR ─── */
-.tab-bar {
-  background: var(--white);
-  border-bottom: 2px solid var(--border);
-  padding: 0 24px;
-  display: flex;
-  gap: 0;
-}
-
-.tab-btn {
-  background: none;
-  border: none;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-  padding: 14px 20px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-  transition: all .2s;
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  white-space: nowrap;
-}
-
-.tab-btn:hover { color: var(--primary); }
-.tab-btn.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-}
-
-/* ─── MAIN ─── */
-main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 28px 20px 60px;
-}
-
-/* ─── VIEW TOGGLE ─── */
-.view { display: none; }
-.view.active { display: block; }
-
-/* ─── SECTION HEADING ─── */
-.section-heading {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.section-title {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -.4px;
-  color: var(--text);
-}
-
-.section-desc {
-  font-size: 13px;
-  color: var(--sub);
-  margin-top: 3px;
-  font-weight: 400;
-}
-
-/* ─── CYCLE SELECTOR ─── */
-.cycle-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-
-.cycle-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--sub);
-}
-
-.cycle-select {
-  background: var(--white);
-  border: 1.5px solid var(--border2);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-  cursor: pointer;
-  outline: none;
-  transition: border-color .2s;
-}
-.cycle-select:focus { border-color: var(--primary-light); }
-
-.btn-new-cycle {
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 8px 16px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .2s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.btn-new-cycle:hover { background: #1e3a8a; transform: translateY(-1px); }
-
-/* ─── STATS ROW ─── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin-bottom: 28px;
-}
-
-@media(max-width:700px){ .stats-grid { grid-template-columns: repeat(2,1fr); } }
-
-.stat-card {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow .2s;
-}
-.stat-card:hover { box-shadow: var(--shadow); }
-
-.stat-icon {
-  font-size: 22px;
-  margin-bottom: 10px;
-}
-
-.stat-val {
-  font-size: 32px;
-  font-weight: 800;
-  letter-spacing: -1px;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--sub);
-}
-
-/* ─── TWO-PANEL LAYOUT ─── */
-.two-panel {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 24px;
-}
-@media(max-width:760px){ .two-panel { grid-template-columns: 1fr; } }
-
-/* ─── CARD ─── */
-.card {
-  background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-.card-header {
-  padding: 16px 20px 12px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card-title {
-  font-size: 14px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.card-body { padding: 16px 20px; }
-
-/* ─── DEPARTMENT LIST ─── */
-.dept-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.dept-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 20px;
-  border-bottom: 1px solid var(--border);
-  transition: background .15s;
-  cursor: pointer;
-}
-.dept-row:last-child { border-bottom: none; }
-.dept-row:hover { background: var(--off); }
-
-.dept-avatar {
-  width: 34px; height: 34px;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.dept-name {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.dept-meta {
-  font-size: 11px;
-  color: var(--sub);
-  font-weight: 400;
-  margin-top: 2px;
-}
-
-.photo-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  font-weight: 600;
-  background: var(--blue-bg);
-  color: var(--blue);
-  padding: 3px 10px;
-  border-radius: 20px;
-  min-width: 28px;
-  text-align: center;
-}
-
-.status-chip {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-
-.chip-done { background: var(--green-bg); color: var(--green); }
-.chip-partial { background: var(--amber-bg); color: var(--amber); }
-.chip-missing { background: var(--red-bg); color: var(--red); }
-
-/* ─── PROGRESS BAR ─── */
-.progress-wrap {
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-}
-.progress-label-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  font-size: 12px;
-  font-weight: 600;
-}
-.progress-track {
-  background: var(--off);
-  border-radius: 99px;
-  height: 8px;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  border-radius: 99px;
-  transition: width .6s cubic-bezier(.34,1.56,.64,1);
-}
-
-/* ─── SUBMISSION FORM ─── */
-.submit-section {
-  background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
-  border: 2px dashed var(--blue-border);
-  border-radius: var(--radius);
-  padding: 28px;
-  margin-bottom: 28px;
-}
-
-.submit-title {
-  font-size: 17px;
-  font-weight: 800;
-  color: var(--primary);
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.submit-desc {
-  font-size: 13px;
-  color: var(--sub);
-  margin-bottom: 22px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-@media(max-width:560px){ .form-grid { grid-template-columns: 1fr; } }
-
-.form-group label {
-  display: block;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .5px;
-  text-transform: uppercase;
-  color: var(--sub);
-  margin-bottom: 7px;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  background: var(--white);
-  border: 1.5px solid var(--border2);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13px;
-  color: var(--text);
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
-}
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  border-color: var(--primary-light);
-  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
-}
-.form-group textarea { resize: vertical; min-height: 70px; }
-
-/* ─── DROP ZONE ─── */
-.drop-zone {
-  border: 2px dashed var(--border2);
-  border-radius: var(--radius);
-  padding: 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: all .2s;
-  background: var(--white);
-  margin-bottom: 14px;
-}
-.drop-zone:hover,
-.drop-zone.drag-over {
-  border-color: var(--primary-light);
-  background: var(--blue-bg);
-}
-.drop-icon { font-size: 36px; margin-bottom: 10px; }
-.drop-title { font-size: 15px; font-weight: 700; color: var(--text); }
-.drop-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
-#fileInput { display: none; }
-
-/* ─── PREVIEW GRID ─── */
-.preview-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.preview-thumb {
-  position: relative;
-  width: 80px; height: 80px;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  border: 1.5px solid var(--border);
-  animation: fadeIn .3s ease;
-}
-@keyframes fadeIn { from { opacity:0; transform:scale(.9); } to { opacity:1; transform:scale(1); } }
-
-.preview-thumb img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-
-.preview-thumb .del-btn {
-  position: absolute;
-  top: 3px; right: 3px;
-  background: rgba(0,0,0,.6);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 18px; height: 18px;
-  font-size: 10px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  line-height: 1;
-}
-
-.preview-thumb .del-btn:hover { background: var(--red); }
-
-/* ─── SUBMIT BUTTON ─── */
-.btn-submit {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 13px 28px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  width: 100%;
-  transition: all .2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: 0 4px 14px rgba(37,99,235,.35);
-}
-.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,.45); }
-.btn-submit:active { transform: translateY(0); }
-
-/* ─── PHOTO GALLERY (per dept) ─── */
-.photo-gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-  gap: 8px;
-  padding: 16px 20px;
-}
-
-.gallery-item {
-  aspect-ratio: 1;
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  cursor: pointer;
-  border: 1.5px solid var(--border);
-  transition: transform .2s, box-shadow .2s;
-  background: var(--off);
-  display: flex; align-items: center; justify-content: center;
-}
-.gallery-item:hover { transform: scale(1.04); box-shadow: var(--shadow); }
-.gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-
-.gallery-empty {
-  padding: 32px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-/* ─── MISSING DEPARTMENTS ─── */
-.missing-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
-  gap: 10px;
-}
-
-.missing-card {
-  background: var(--red-bg);
-  border: 1.5px solid var(--red-border);
-  border-radius: var(--radius-sm);
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.missing-card .dept-icon { font-size: 20px; }
-.missing-card .dept-info .name { font-size: 13px; font-weight: 700; color: var(--red); }
-.missing-card .dept-info .sub { font-size: 11px; color: #f87171; margin-top: 2px; }
-
-/* ─── ACCORDION ─── */
-.accordion-item {
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 10px;
-  overflow: hidden;
-  background: var(--white);
-  box-shadow: var(--shadow-sm);
-}
-
-.accordion-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  cursor: pointer;
-  user-select: none;
-  transition: background .15s;
-}
-.accordion-header:hover { background: var(--off); }
-
-.accordion-toggle {
-  margin-left: auto;
-  color: var(--muted);
-  font-size: 18px;
-  transition: transform .3s;
-  line-height: 1;
-}
-.accordion-item.open .accordion-toggle { transform: rotate(180deg); }
-
-.accordion-body {
-  display: none;
-  border-top: 1px solid var(--border);
-}
-.accordion-item.open .accordion-body { display: block; }
-
-/* ─── TOAST ─── */
-.toast {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%) translateY(90px);
-  background: var(--text);
-  color: #fff;
-  padding: 13px 24px;
-  border-radius: 30px;
-  font-size: 14px;
-  font-weight: 600;
-  transition: transform .4s cubic-bezier(.34,1.56,.64,1);
-  z-index: 200;
-  white-space: nowrap;
-  box-shadow: var(--shadow-lg);
-  display: flex; align-items: center; gap: 8px;
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-
-/* ─── LIGHTBOX ─── */
-.lightbox {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.88);
-  z-index: 300;
-  align-items: center; justify-content: center;
-}
-.lightbox.open { display: flex; }
-.lightbox img { max-width: 92vw; max-height: 88vh; object-fit: contain; border-radius: 10px; }
-.lb-close {
-  position: absolute; top: 20px; right: 24px;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.25);
-  color: #fff;
-  font-size: 20px;
-  border-radius: 50%;
-  width: 40px; height: 40px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-.lb-info {
-  position: absolute; bottom: 24px; left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255,255,255,.12);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,.2);
-  color: #fff;
-  padding: 8px 18px;
-  border-radius: 20px;
-  font-size: 13px;
-  text-align: center;
-}
-
-/* ─── ADMIN MANAGE DEPT ─── */
-.manage-dept-bar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-
-.btn-outline {
-  background: var(--white);
-  border: 1.5px solid var(--border2);
-  color: var(--text);
-  border-radius: var(--radius-sm);
-  padding: 8px 16px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .2s;
-  display: flex; align-items: center; gap: 6px;
-}
-.btn-outline:hover { border-color: var(--primary-light); color: var(--primary); }
-.btn-danger {
-  background: var(--white);
-  border: 1.5px solid var(--red-border);
-  color: var(--red);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .2s;
-}
-.btn-danger:hover { background: var(--red-bg); }
-
-/* ─── MODAL ─── */
-.modal-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.5);
-  z-index: 150;
-  align-items: center; justify-content: center;
-  padding: 20px;
-}
-.modal-overlay.open { display: flex; }
-
-.modal {
-  background: var(--white);
-  border-radius: var(--radius);
-  max-width: 480px; width: 100%;
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-}
-.modal-head {
-  padding: 20px 24px 16px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.modal-head-title { font-size: 16px; font-weight: 800; }
-.modal-x { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--muted); }
-.modal-body { padding: 20px 24px; }
-.modal-foot {
-  padding: 14px 24px;
-  border-top: 1px solid var(--border);
-  display: flex; justify-content: flex-end; gap: 10px;
-}
-
-/* badge */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--off);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 3px 10px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--sub);
-}
-
-/* ─── RESPONSIVE ─── */
-@media(max-width:480px){
-  main { padding: 16px 12px 60px; }
-  .submit-section { padding: 18px; }
-  .tab-btn { padding: 12px 12px; font-size: 13px; }
-}
+  --white:#fff; --off:#f7f8fc; --border:#e4e8f0; --border2:#d0d7e8;
+  --text:#1a1f36; --sub:#5c6585; --muted:#9aa3be;
+  --green:#16a34a; --green-bg:#f0fdf4; --green-border:#bbf7d0;
+  --red:#dc2626; --red-bg:#fef2f2; --red-border:#fecaca;
+  --amber:#d97706; --amber-bg:#fffbeb; --amber-border:#fde68a;
+  --blue:#2563eb; --blue-bg:#eff6ff; --blue-border:#bfdbfe;
+  --primary:#1e40af; --pl:#3b82f6;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --shadow:0 4px 16px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.05);
+  --shadow-lg:0 10px 40px rgba(0,0,0,.1),0 4px 16px rgba(0,0,0,.06);
+  --radius:12px; --radius-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;font-size:14px;}
+
+/* HEADER */
+.site-header{background:linear-gradient(135deg,#1e3a8a,#1e40af 50%,#2563eb);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(30,64,175,.4);position:sticky;top:0;z-index:50;}
+.header-brand{display:flex;align-items:center;gap:12px;}
+.brand-badge{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.brand-name{color:#fff;font-size:18px;font-weight:800;letter-spacing:-.3px;}
+.brand-sub{color:rgba(255,255,255,.65);font-size:11px;}
+.header-date{color:rgba(255,255,255,.8);font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(255,255,255,.1);padding:6px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.2);}
+
+/* TAB BAR */
+.tab-bar{background:var(--white);border-bottom:2px solid var(--border);padding:0 20px;display:flex;gap:0;overflow-x:auto;}
+.tab-btn{background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;padding:14px 18px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.tab-btn:hover{color:var(--primary);}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
+
+/* MAIN */
+main{max-width:1100px;margin:0 auto;padding:24px 16px 80px;}
+.view{display:none;} .view.active{display:block;}
+
+/* CARD */
+.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:18px;}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;}
+.card-body{padding:16px 20px;}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+@media(max-width:700px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+.stat-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-sm);}
+.stat-icon{font-size:22px;margin-bottom:8px;}
+.stat-val{font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:3px;}
+.stat-label{font-size:12px;font-weight:500;color:var(--sub);}
+
+/* CYCLE ROW */
+.cycle-row{display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+.cycle-label{font-size:13px;font-weight:600;color:var(--sub);}
+.cycle-select{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:8px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none;}
+.btn-primary{background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-primary:hover{background:#1e3a8a;transform:translateY(-1px);}
+.btn-outline{background:var(--white);border:1.5px solid var(--border2);color:var(--text);border-radius:var(--radius-sm);padding:8px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.btn-outline:hover{border-color:var(--pl);color:var(--primary);}
+.btn-danger{background:var(--white);border:1.5px solid var(--red-border);color:var(--red);border-radius:var(--radius-sm);padding:6px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
+.btn-danger:hover{background:var(--red-bg);}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+@media(max-width:560px){.form-grid{grid-template-columns:1fr;}}
+.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--sub);margin-bottom:6px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s,box-shadow .2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--pl);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.form-group textarea{resize:vertical;min-height:60px;}
+
+/* SUBMIT SECTION */
+.submit-section{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:2px dashed var(--blue-border);border-radius:var(--radius);padding:24px;margin-bottom:24px;}
+.submit-title{font-size:16px;font-weight:800;color:var(--primary);margin-bottom:3px;display:flex;align-items:center;gap:8px;}
+.submit-desc{font-size:13px;color:var(--sub);margin-bottom:18px;}
+
+/* DROP ZONE */
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:24px;text-align:center;background:var(--white);margin-bottom:12px;transition:all .2s;}
+.drop-zone.drag-over{border-color:var(--pl);background:var(--blue-bg);}
+.drop-icon{font-size:32px;margin-bottom:8px;}
+.drop-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.drop-sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.drop-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.drop-btn{border:none;border-radius:8px;padding:10px 20px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;}
+.drop-btn-cam{background:var(--primary);color:#fff;}
+.drop-btn-gal{background:var(--white);color:var(--primary);border:2px solid var(--primary)!important;}
+
+/* PREVIEW */
+.preview-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.preview-thumb{position:relative;width:76px;height:76px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--border);animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.preview-thumb img{width:100%;height:100%;object-fit:cover;}
+.del-btn{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.del-btn:hover{background:var(--red);}
+
+/* SUBMIT BTN */
+.btn-submit{background:linear-gradient(135deg,var(--primary),var(--pl));color:#fff;border:none;border-radius:var(--radius-sm);padding:13px 28px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;width:100%;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(37,99,235,.3);}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(37,99,235,.4);}
+
+/* PROGRESS */
+.progress-wrap{padding:14px 20px;border-bottom:1px solid var(--border);}
+.progress-label-row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;font-weight:600;}
+.progress-track{background:var(--off);border-radius:99px;height:8px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+
+/* MISSING */
+.missing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;}
+.missing-card{background:var(--red-bg);border:1.5px solid var(--red-border);border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.missing-card .mc-icon{font-size:20px;}
+.missing-card .mc-name{font-size:13px;font-weight:700;color:var(--red);}
+.missing-card .mc-sub{font-size:11px;color:#f87171;margin-top:2px;}
+
+/* ACCORDION */
+.accordion-item{border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm);}
+.accordion-header{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;user-select:none;transition:background .15s;}
+.accordion-header:hover{background:var(--off);}
+.acc-toggle{margin-left:auto;color:var(--muted);font-size:18px;transition:transform .3s;line-height:1;}
+.accordion-item.open .acc-toggle{transform:rotate(180deg);}
+.accordion-body{display:none;border-top:1px solid var(--border);}
+.accordion-item.open .accordion-body{display:block;}
+.dept-avatar{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.dept-name-txt{font-size:13px;font-weight:600;}
+.dept-meta-txt{font-size:11px;color:var(--sub);margin-top:2px;}
+.status-chip{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.chip-done{background:var(--green-bg);color:var(--green);}
+.chip-missing{background:var(--red-bg);color:var(--red);}
+
+/* GALLERY */
+.photo-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;padding:14px 18px;}
+.gallery-item{aspect-ratio:1;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;border:1.5px solid var(--border);transition:transform .2s,box-shadow .2s;}
+.gallery-item:hover{transform:scale(1.04);box-shadow:var(--shadow);}
+.gallery-item img{width:100%;height:100%;object-fit:cover;}
+.gallery-empty{padding:28px;text-align:center;color:var(--muted);font-size:13px;}
+
+/* ── HISTORY TAB ── */
+.history-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.history-filters input,.history-filters select{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:8px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;flex:1;min-width:130px;}
+.date-filter-row{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+.date-filter-btn{background:var(--white);border:1.5px solid var(--border2);color:var(--sub);border-radius:20px;padding:6px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.date-filter-btn:hover{border-color:var(--pl);color:var(--primary);}
+.date-filter-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+
+.timeline{display:flex;flex-direction:column;gap:0;}
+.timeline-day{margin-bottom:20px;}
+.timeline-day-label{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:.5px;text-transform:uppercase;padding:6px 0;border-bottom:1px solid var(--border);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.timeline-day-count{background:var(--blue-bg);color:var(--blue);font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 8px;border-radius:10px;}
+
+.sub-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;display:flex;gap:14px;align-items:flex-start;box-shadow:var(--shadow-sm);}
+.sub-card-thumbs{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;max-width:180px;}
+.sub-card-thumb{width:52px;height:52px;border-radius:6px;overflow:hidden;cursor:pointer;border:1px solid var(--border);}
+.sub-card-thumb img{width:100%;height:100%;object-fit:cover;}
+.sub-card-info{flex:1;min-width:0;}
+.sub-card-header{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
+.sub-card-dept{font-size:13px;font-weight:700;}
+.sub-card-person{font-size:12px;color:var(--sub);}
+.sub-card-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-left:auto;}
+.sub-card-area{font-size:12px;color:var(--sub);margin-bottom:4px;}
+.sub-card-note{font-size:12px;color:var(--text);background:var(--off);border-radius:6px;padding:6px 10px;margin-top:4px;}
+.sub-card-count{background:var(--blue-bg);color:var(--blue);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;font-family:'JetBrains Mono',monospace;}
+.sub-card-del{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px;border-radius:4px;margin-left:4px;}
+.sub-card-del:hover{color:var(--red);}
+
+/* ── DASHBOARD TAB ── */
+.dash-period-row{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.period-btn{background:var(--white);border:1.5px solid var(--border2);color:var(--sub);border-radius:20px;padding:7px 16px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.period-btn:hover{border-color:var(--pl);color:var(--primary);}
+.period-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+@media(max-width:700px){.dash-grid{grid-template-columns:1fr;}}
+
+/* BAR CHART */
+.bar-chart{display:flex;flex-direction:column;gap:10px;padding:4px 0;}
+.bar-row{display:flex;align-items:center;gap:10px;}
+.bar-label{font-size:12px;font-weight:600;min-width:130px;text-align:right;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-track{flex:1;background:var(--off);border-radius:99px;height:10px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.34,1.56,.64,1);}
+.bar-val{font-family:'JetBrains Mono',monospace;font-size:12px;min-width:28px;font-weight:600;}
+
+/* TREND CHART */
+.trend-chart{display:flex;align-items:flex-end;gap:4px;height:80px;padding:0 4px;}
+.trend-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.trend-bar{width:100%;background:linear-gradient(180deg,var(--pl),var(--primary));border-radius:4px 4px 0 0;transition:height .5s ease;min-height:2px;}
+.trend-label{font-size:9px;color:var(--muted);text-align:center;white-space:nowrap;}
+.trend-val{font-size:10px;font-weight:700;color:var(--primary);}
+
+/* HEATMAP */
+.heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.heatmap-cell{aspect-ratio:1;border-radius:3px;cursor:pointer;transition:transform .15s;position:relative;}
+.heatmap-cell:hover{transform:scale(1.2);z-index:1;}
+.heatmap-label-row{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px;}
+.heatmap-day-label{font-size:9px;color:var(--muted);text-align:center;font-weight:600;}
+
+/* RANK TABLE */
+.rank-table{width:100%;border-collapse:collapse;}
+.rank-table th{background:var(--off);padding:8px 12px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--sub);}
+.rank-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+.rank-table tr:last-child td{border-bottom:none;}
+.rank-table tr:hover td{background:var(--off);}
+.rank-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;width:28px;text-align:center;}
+.rank-1{color:#f59e0b;}
+.rank-2{color:#9ca3af;}
+.rank-3{color:#b45309;}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;background:var(--off);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--sub);}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:var(--radius);max-width:480px;width:100%;box-shadow:var(--shadow-lg);overflow:hidden;}
+.modal-head{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-head-title{font-size:15px;font-weight:800;}
+.modal-x{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);}
+.modal-body{padding:18px 22px;}
+.modal-foot{padding:12px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:300;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:92vw;max-height:86vh;object-fit:contain;border-radius:8px;}
+.lb-close{position:absolute;top:18px;right:20px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:20px;border-radius:50%;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.lb-info{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);backdrop-filter:blur(8px);color:#fff;padding:7px 16px;border-radius:16px;font-size:12px;text-align:center;white-space:nowrap;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--text);color:#fff;padding:12px 22px;border-radius:30px;font-size:14px;font-weight:600;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:200;white-space:nowrap;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:40px;color:var(--muted);}
+.empty-icon{font-size:40px;margin-bottom:10px;}
+.empty-text{font-size:13px;}
+
+@media(max-width:480px){main{padding:14px 10px 80px;}.submit-section{padding:16px;}.sub-card{flex-direction:column;}.sub-card-thumbs{max-width:100%;}.sub-card-time{margin-left:0;}}
 </style>
 </head>
 <body>
@@ -772,131 +255,190 @@ main {
 
 <!-- TAB BAR -->
 <div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('practice')" id="tab-practice">
-    📸 Thực hành 5S
-  </button>
+  <button class="tab-btn active" onclick="switchTab('dashboard')" id="tab-dashboard">📊 Dashboard</button>
+  <button class="tab-btn" onclick="switchTab('practice')" id="tab-practice">📸 Thực hành 5S</button>
+  <button class="tab-btn" onclick="switchTab('history')" id="tab-history">📅 Lịch sử ảnh</button>
 </div>
 
-<!-- MAIN -->
 <main>
-  <div class="view active" id="view-practice">
 
-    <!-- Cycle Selector -->
-    <div class="cycle-row">
-      <span class="cycle-label">Đợt kiểm tra:</span>
-      <select class="cycle-select" id="cycleSelect" onchange="onCycleChange()"></select>
-      <button class="btn-new-cycle" onclick="openNewCycleModal()">＋ Tạo đợt mới</button>
-      <button class="btn-outline" onclick="openManageDeptModal()">⚙ Quản lý phòng ban</button>
-      <button class="btn-outline" onclick="exportSummary()" style="margin-left:auto;">⬇ Xuất báo cáo</button>
-    </div>
+<!-- ══════════════════════════════════════
+     TAB 1: THỰC HÀNH 5S
+══════════════════════════════════════ -->
+<div class="view" id="view-practice">
 
-    <!-- Stats -->
-    <div class="stats-grid" id="statsGrid">
-      <div class="stat-card">
-        <div class="stat-icon">🏢</div>
-        <div class="stat-val" id="s-total" style="color:var(--primary)">0</div>
-        <div class="stat-label">Tổng phòng ban</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">✅</div>
-        <div class="stat-val" id="s-done" style="color:var(--green)">0</div>
-        <div class="stat-label">Đã nộp ảnh</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">⏳</div>
-        <div class="stat-val" id="s-missing" style="color:var(--red)">0</div>
-        <div class="stat-label">Chưa nộp</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🖼</div>
-        <div class="stat-val" id="s-photos" style="color:var(--amber)">0</div>
-        <div class="stat-label">Tổng ảnh đã nộp</div>
-      </div>
-    </div>
-
-    <!-- Progress bar + missing -->
-    <div class="card" style="margin-bottom:24px;">
-      <div class="card-header">
-        <span class="card-title">📊 Tiến độ nộp ảnh đợt này</span>
-        <span class="badge" id="progressBadge">0 / 0 phòng ban</span>
-      </div>
-      <div class="progress-wrap">
-        <div class="progress-label-row">
-          <span id="progressLabel" style="color:var(--primary); font-size:13px;"></span>
-          <span id="progressPct" style="color:var(--primary);"></span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="progressFill" style="width:0%; background:linear-gradient(90deg,#2563eb,#16a34a);"></div>
-        </div>
-      </div>
-      <div class="card-body" style="padding-top:12px;">
-        <div style="font-size:12px; font-weight:700; color:var(--red); margin-bottom:10px; letter-spacing:.3px; text-transform:uppercase;">⚠ Chưa nộp ảnh</div>
-        <div class="missing-grid" id="missingGrid"></div>
-      </div>
-    </div>
-
-    <!-- Submission Form -->
-    <div class="submit-section">
-      <div class="submit-title">📤 Nộp ảnh 5S</div>
-      <div class="submit-desc">Phòng ban chụp ảnh khu vực quản lý và nộp tại đây — không cần gửi Zalo nữa!</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Phòng / Ban *</label>
-          <select id="submitDept">
-            <option value="">— Chọn phòng ban —</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Khu vực / Vị trí</label>
-          <input type="text" id="submitArea" placeholder="VD: Khu sản xuất A, Kho B...">
-        </div>
-        <div class="form-group">
-          <label>Người nộp *</label>
-          <input type="text" id="submitPerson" placeholder="Họ và tên...">
-        </div>
-        <div class="form-group">
-          <label>Ghi chú</label>
-          <input type="text" id="submitNote" placeholder="Nội dung thực hiện 5S...">
-        </div>
-      </div>
-
-      <div class="drop-zone" id="dropZone"
-        ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-        <div class="drop-icon">📷</div>
-        <div class="drop-title">Chọn cách thêm ảnh</div>
-        <div class="drop-sub" style="margin-bottom:14px;">Kéo thả ảnh vào đây · hoặc dùng nút bên dưới</div>
-        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-          <button type="button" onclick="document.getElementById('fileCamera').click()"
-            style="background:var(--primary); color:#fff; border:none; border-radius:8px; padding:10px 20px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:7px;">
-            📸 Chụp ảnh
-          </button>
-          <button type="button" onclick="document.getElementById('fileGallery').click()"
-            style="background:var(--white); color:var(--primary); border:2px solid var(--primary); border-radius:8px; padding:10px 20px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:7px;">
-            🖼 Chọn từ thư viện
-          </button>
-        </div>
-      </div>
-      <input type="file" id="fileCamera"  accept="image/*" capture="environment" multiple onchange="handleFiles(event)" style="display:none;">
-      <input type="file" id="fileGallery" accept="image/*" multiple onchange="handleFiles(event)" style="display:none;">
-      <input type="file" id="fileInput"   accept="image/*" multiple onchange="handleFiles(event)" style="display:none;">
-
-      <div class="preview-grid" id="previewGrid"></div>
-
-      <button class="btn-submit" onclick="submitPhotos()">
-        <span>📤</span> NỘP ẢNH 5S
-      </button>
-    </div>
-
-    <!-- Per-department accordion -->
-    <div class="section-heading">
-      <div>
-        <div class="section-title">Chi tiết theo phòng ban</div>
-        <div class="section-desc">Nhấn vào từng phòng ban để xem ảnh đã nộp</div>
-      </div>
-    </div>
-    <div id="deptAccordion"></div>
-
+  <div class="cycle-row">
+    <span class="cycle-label">Đợt kiểm tra:</span>
+    <select class="cycle-select" id="cycleSelect" onchange="onCycleChange()"></select>
+    <button class="btn-primary" onclick="openNewCycleModal()">＋ Tạo đợt mới</button>
+    <button class="btn-outline" onclick="openManageDeptModal()">⚙ Phòng ban</button>
+    <button class="btn-outline" onclick="exportSummary()" style="margin-left:auto;">⬇ Xuất báo cáo</button>
   </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-icon">🏢</div><div class="stat-val" id="s-total" style="color:var(--primary)">0</div><div class="stat-label">Tổng phòng ban</div></div>
+    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="s-done" style="color:var(--green)">0</div><div class="stat-label">Đã nộp ảnh</div></div>
+    <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-val" id="s-missing" style="color:var(--red)">0</div><div class="stat-label">Chưa nộp</div></div>
+    <div class="stat-card"><div class="stat-icon">🖼</div><div class="stat-val" id="s-photos" style="color:var(--amber)">0</div><div class="stat-label">Tổng ảnh đã nộp</div></div>
+  </div>
+
+  <!-- Progress + Missing -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title">📊 Tiến độ nộp ảnh đợt này</span>
+      <span class="badge" id="progressBadge">0 / 0</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label-row">
+        <span id="progressLabel" style="color:var(--primary);font-size:13px;"></span>
+        <span id="progressPct" style="color:var(--primary);font-weight:800;"></span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;background:linear-gradient(90deg,#2563eb,#16a34a);"></div></div>
+    </div>
+    <div class="card-body" style="padding-top:10px;">
+      <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:10px;text-transform:uppercase;letter-spacing:.3px;">⚠ Chưa nộp ảnh</div>
+      <div class="missing-grid" id="missingGrid"></div>
+    </div>
+  </div>
+
+  <!-- Submission Form -->
+  <div class="submit-section">
+    <div class="submit-title">📤 Nộp ảnh 5S</div>
+    <div class="submit-desc">Phòng ban chụp ảnh khu vực quản lý và nộp tại đây — không cần gửi Zalo nữa!</div>
+    <div class="form-grid">
+      <div class="form-group"><label>Phòng / Ban *</label><select id="submitDept"><option value="">— Chọn phòng ban —</option></select></div>
+      <div class="form-group"><label>Khu vực / Vị trí</label><input type="text" id="submitArea" placeholder="VD: Khu sản xuất A, Kho B..."></div>
+      <div class="form-group"><label>Người nộp *</label><input type="text" id="submitPerson" placeholder="Họ và tên..."></div>
+      <div class="form-group"><label>Ghi chú</label><input type="text" id="submitNote" placeholder="Nội dung thực hiện 5S..."></div>
+    </div>
+    <div class="drop-zone" id="dropZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <div class="drop-icon">📷</div>
+      <div class="drop-title">Chọn cách thêm ảnh</div>
+      <div class="drop-sub">Kéo thả ảnh vào đây · hoặc dùng nút bên dưới</div>
+      <div class="drop-btns">
+        <button type="button" class="drop-btn drop-btn-cam" onclick="document.getElementById('fileCamera').click()">📸 Chụp ảnh</button>
+        <button type="button" class="drop-btn drop-btn-gal" onclick="document.getElementById('fileGallery').click()">🖼 Chọn từ thư viện</button>
+      </div>
+    </div>
+    <input type="file" id="fileCamera"  accept="image/*" capture="environment" multiple onchange="handleFiles(event)" style="display:none;">
+    <input type="file" id="fileGallery" accept="image/*" multiple onchange="handleFiles(event)" style="display:none;">
+    <div class="preview-grid" id="previewGrid"></div>
+    <button class="btn-submit" onclick="submitPhotos()">📤 NỘP ẢNH 5S</button>
+  </div>
+
+  <!-- Dept Accordion -->
+  <div style="font-size:18px;font-weight:800;letter-spacing:-.3px;margin-bottom:14px;">Chi tiết theo phòng ban</div>
+  <div id="deptAccordion"></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TAB 2: LỊCH SỬ ẢNH
+══════════════════════════════════════ -->
+<div class="view" id="view-history">
+  <div style="font-size:18px;font-weight:800;letter-spacing:-.3px;margin-bottom:16px;">📅 Lịch sử nộp ảnh</div>
+
+  <!-- Date quick filters -->
+  <div class="date-filter-row">
+    <button class="date-filter-btn active" onclick="setHistoryFilter('today',this)">Hôm nay</button>
+    <button class="date-filter-btn" onclick="setHistoryFilter('yesterday',this)">Hôm qua</button>
+    <button class="date-filter-btn" onclick="setHistoryFilter('week',this)">7 ngày qua</button>
+    <button class="date-filter-btn" onclick="setHistoryFilter('month',this)">Tháng này</button>
+    <button class="date-filter-btn" onclick="setHistoryFilter('all',this)">Tất cả</button>
+  </div>
+
+  <!-- Search & Filter -->
+  <div class="history-filters">
+    <input type="date" id="hFilterDate" onchange="renderHistory()">
+    <select id="hFilterDept" onchange="renderHistory()"><option value="">Tất cả phòng ban</option></select>
+    <input type="text" id="hFilterSearch" placeholder="🔍 Tìm theo tên, khu vực, ghi chú..." oninput="renderHistory()" style="flex:2;">
+  </div>
+
+  <div id="historyStats" style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;"></div>
+  <div id="historyTimeline"></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TAB 3: DASHBOARD
+══════════════════════════════════════ -->
+<div class="view active" id="view-dashboard">
+  <div style="font-size:18px;font-weight:800;letter-spacing:-.3px;margin-bottom:16px;">📊 Dashboard báo cáo</div>
+
+  <div class="dash-period-row">
+    <button class="period-btn active" onclick="setDashPeriod('today',this)">Hôm nay</button>
+    <button class="period-btn" onclick="setDashPeriod('week',this)">7 ngày</button>
+    <button class="period-btn" onclick="setDashPeriod('month',this)">Tháng này</button>
+    <button class="period-btn" onclick="setDashPeriod('quarter',this)">Quý này</button>
+    <button class="period-btn" onclick="setDashPeriod('all',this)">Tất cả</button>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="stats-grid" id="dashStats">
+    <div class="stat-card"><div class="stat-icon">🖼</div><div class="stat-val" id="ds-photos" style="color:var(--primary)">0</div><div class="stat-label" id="ds-photos-label">Ảnh trong kỳ</div></div>
+    <div class="stat-card"><div class="stat-icon">📤</div><div class="stat-val" id="ds-subs" style="color:var(--blue)">0</div><div class="stat-label">Lần nộp</div></div>
+    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="ds-depts" style="color:var(--green)">0</div><div class="stat-label">Phòng ban tham gia</div></div>
+    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="ds-days" style="color:var(--amber)">0</div><div class="stat-label">Ngày có hoạt động</div></div>
+  </div>
+
+  <div class="dash-grid">
+    <!-- Ảnh theo phòng ban -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">🏢 Ảnh theo phòng ban</span><span class="badge" id="dashPeriodLabel">Hôm nay</span></div>
+      <div class="card-body"><div class="bar-chart" id="deptBarChart"></div></div>
+    </div>
+
+    <!-- Xếp hạng phòng ban -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">🏅 Xếp hạng tích cực nhất</span></div>
+      <div class="card-body" style="padding:0;">
+        <table class="rank-table" id="rankTable"><thead><tr><th>#</th><th>Phòng ban</th><th>Ảnh</th><th>Lần nộp</th></tr></thead><tbody id="rankBody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <!-- Xu hướng 14 ngày -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">📈 Xu hướng 14 ngày gần nhất</span></div>
+      <div class="card-body">
+        <div class="trend-chart" id="trendChart"></div>
+      </div>
+    </div>
+
+    <!-- Heatmap hoạt động -->
+    <div class="card">
+      <div class="card-header"><span class="card-title">🗓 Bản đồ hoạt động (4 tuần)</span></div>
+      <div class="card-body">
+        <div class="heatmap-label-row">
+          <div class="heatmap-day-label">CN</div><div class="heatmap-day-label">T2</div><div class="heatmap-day-label">T3</div>
+          <div class="heatmap-day-label">T4</div><div class="heatmap-day-label">T5</div><div class="heatmap-day-label">T6</div>
+          <div class="heatmap-day-label">T7</div>
+        </div>
+        <div class="heatmap-grid" id="heatmapGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phòng ban chưa nộp trong kỳ -->
+  <div class="card">
+    <div class="card-header"><span class="card-title">⚠ Phòng ban chưa nộp trong kỳ</span></div>
+    <div class="card-body">
+      <div class="missing-grid" id="dashMissingGrid"></div>
+    </div>
+  </div>
+
+  <!-- Tổng hợp theo đợt -->
+  <div class="card">
+    <div class="card-header"><span class="card-title">📋 Tổng hợp theo đợt kiểm tra</span></div>
+    <div class="card-body" style="padding:0;">
+      <table class="rank-table" id="cycleTable">
+        <thead><tr><th>Đợt</th><th>Ngày tạo</th><th>Phòng ban</th><th>Lần nộp</th><th>Tổng ảnh</th><th>Tỉ lệ</th></tr></thead>
+        <tbody id="cycleBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <!-- LIGHTBOX -->
@@ -907,544 +449,488 @@ main {
 </div>
 
 <!-- TOAST -->
-<div class="toast" id="toast">✅ Nộp ảnh thành công!</div>
+<div class="toast" id="toast"></div>
 
 <!-- MODAL: NEW CYCLE -->
-<div class="modal-overlay" id="modalCycle" onclick="closeModalCycle(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-head">
-      <div class="modal-head-title">➕ Tạo đợt kiểm tra mới</div>
-      <button class="modal-x" onclick="closeModalCycle()">✕</button>
-    </div>
+<div class="modal-overlay" id="modalCycle" onclick="if(event.target===this)closeModalCycle()">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-head-title">➕ Tạo đợt kiểm tra mới</div><button class="modal-x" onclick="closeModalCycle()">✕</button></div>
     <div class="modal-body">
-      <div class="form-group" style="margin-bottom:14px;">
-        <label>Tên đợt kiểm tra</label>
-        <input type="text" id="newCycleName" placeholder="VD: Tháng 6/2026, Tuần 1 tháng 6...">
-      </div>
-      <div class="form-group">
-        <label>Mô tả (không bắt buộc)</label>
-        <textarea id="newCycleDesc" placeholder="Mô tả ngắn về đợt kiểm tra này..."></textarea>
-      </div>
+      <div class="form-group" style="margin-bottom:12px;"><label>Tên đợt kiểm tra</label><input type="text" id="newCycleName" placeholder="VD: Tháng 6/2026, Tuần 1 tháng 6..."></div>
+      <div class="form-group"><label>Mô tả (không bắt buộc)</label><textarea id="newCycleDesc" placeholder="Mô tả ngắn..."></textarea></div>
     </div>
     <div class="modal-foot">
       <button class="btn-outline" onclick="closeModalCycle()">Huỷ</button>
-      <button class="btn-submit" style="width:auto; padding:10px 24px; font-size:14px;" onclick="createCycle()">Tạo đợt</button>
+      <button class="btn-primary" onclick="createCycle()">Tạo đợt</button>
     </div>
   </div>
 </div>
 
 <!-- MODAL: MANAGE DEPT -->
-<div class="modal-overlay" id="modalDept" onclick="closeModalDept(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-head">
-      <div class="modal-head-title">⚙ Quản lý phòng ban</div>
-      <button class="modal-x" onclick="closeModalDept()">✕</button>
-    </div>
+<div class="modal-overlay" id="modalDept" onclick="if(event.target===this)closeModalDept()">
+  <div class="modal">
+    <div class="modal-head"><div class="modal-head-title">⚙ Quản lý phòng ban</div><button class="modal-x" onclick="closeModalDept()">✕</button></div>
     <div class="modal-body">
-      <div style="display:flex; gap:8px; margin-bottom:14px;">
-        <input type="text" id="newDeptName" placeholder="Tên phòng / ban mới..." style="flex:1; background:var(--off); border:1.5px solid var(--border2); border-radius:var(--radius-sm); padding:9px 13px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; outline:none;">
-        <button class="btn-new-cycle" onclick="addDept()" style="white-space:nowrap;">＋ Thêm</button>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input type="text" id="newDeptName" placeholder="Tên phòng / ban mới..." style="flex:1;background:var(--off);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;">
+        <button class="btn-primary" onclick="addDept()">＋ Thêm</button>
       </div>
-      <div id="deptManageList" style="display:flex; flex-direction:column; gap:6px; max-height:300px; overflow-y:auto;"></div>
+      <div id="deptManageList" style="display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;"></div>
     </div>
-    <div class="modal-foot">
-      <button class="btn-submit" style="width:auto; padding:10px 24px; font-size:14px;" onclick="closeModalDept()">Xong</button>
-    </div>
+    <div class="modal-foot"><button class="btn-primary" onclick="closeModalDept()">Xong</button></div>
   </div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────
-// DATA MODEL
-// ─────────────────────────────────────────────
-const STORAGE_KEY = '5s_data_v2';
-
+// ═══════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════
+const SK = '5s_data_v3';
+const DEPT_ICONS = ['🏢','💼','👥','📈','🔧','🏭','🔬','📦','💻','🦺','🏆','📋','🎯','🌿','🚚','🍽️','🅿️','🚿','📐','🧪'];
+const BAR_COLORS = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#84cc16','#f97316','#6366f1'];
 const DEFAULT_DEPTS = [
-  {id:'d1', name:'Phòng Kế toán',         icon:'💼'},
-  {id:'d2', name:'Phòng Nhân sự - HC',    icon:'👥'},
-  {id:'d3', name:'Phòng Kinh doanh',      icon:'📈'},
-  {id:'d4', name:'Phòng Kỹ thuật',        icon:'🔧'},
-  {id:'d5', name:'Phòng Sản xuất',        icon:'🏭'},
-  {id:'d6', name:'Phòng Chất lượng (QC)', icon:'🔬'},
-  {id:'d7', name:'Phòng Kho / Logistics', icon:'📦'},
-  {id:'d8', name:'Phòng IT',              icon:'💻'},
-  {id:'d9', name:'Phòng An toàn (HSE)',   icon:'🦺'},
-  {id:'d10',name:'Ban Giám đốc',          icon:'🏆'},
+  {id:'d1',name:'Phòng Kế toán',icon:'💼'},{id:'d2',name:'Phòng Nhân sự - HC',icon:'👥'},
+  {id:'d3',name:'Phòng Kinh doanh',icon:'📈'},{id:'d4',name:'Phòng Kỹ thuật',icon:'🔧'},
+  {id:'d5',name:'Phòng Sản xuất',icon:'🏭'},{id:'d6',name:'Phòng Chất lượng (QC)',icon:'🔬'},
+  {id:'d7',name:'Phòng Kho / Logistics',icon:'📦'},{id:'d8',name:'Phòng IT',icon:'💻'},
+  {id:'d9',name:'Phòng An toàn (HSE)',icon:'🦺'},{id:'d10',name:'Ban Giám đốc',icon:'🏆'},
 ];
 
-function loadData() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || createInitial(); }
-  catch { return createInitial(); }
+function loadData(){try{return JSON.parse(localStorage.getItem(SK))||createInitial();}catch{return createInitial();}}
+function createInitial(){
+  const name='Tháng '+new Date().toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
+  return {depts:DEFAULT_DEPTS,cycles:[{id:'c1',name,desc:'',createdAt:new Date().toISOString(),submissions:[]}],activeCycle:'c1'};
+}
+function saveData(){localStorage.setItem(SK,JSON.stringify(appData));}
+
+let appData=loadData();
+let pendingPhotos=[];
+let activeCycleId=appData.activeCycle;
+let historyFilter='today';
+let dashPeriod='today';
+
+function getActiveCycle(){return appData.cycles.find(c=>c.id===activeCycleId);}
+function getDept(id){return appData.depts.find(d=>d.id===id);}
+function fmt(iso){if(!iso)return'';return new Date(iso).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function fmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});}
+function toYMD(d){return d.toISOString().slice(0,10);}
+function today(){return toYMD(new Date());}
+
+// Get ALL submissions across ALL cycles
+function allSubmissions(){return appData.cycles.flatMap(c=>c.submissions);}
+
+function filterByPeriod(subs, period){
+  const now=new Date(); const y=now.getFullYear(); const m=now.getMonth();
+  return subs.filter(s=>{
+    const d=new Date(s.createdAt);
+    if(period==='today') return toYMD(d)===today();
+    if(period==='yesterday'){const y2=new Date(now);y2.setDate(y2.getDate()-1);return toYMD(d)===toYMD(y2);}
+    if(period==='week') return (now-d)<7*86400000;
+    if(period==='month') return d.getFullYear()===y&&d.getMonth()===m;
+    if(period==='quarter'){const qm=Math.floor(m/3)*3;return d.getFullYear()===y&&d.getMonth()>=qm&&d.getMonth()<qm+3;}
+    return true;
+  });
 }
 
-function createInitial() {
-  const name = 'Tháng ' + new Date().toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
-  return {
-    depts: DEFAULT_DEPTS,
-    cycles: [{ id: 'c1', name, desc: '', createdAt: new Date().toISOString(), submissions: [] }],
-    activeCycle: 'c1',
-  };
-}
-
-function saveData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); }
-
-let appData = loadData();
-let pendingPhotos = []; // {file, dataUrl}
-let activeCycleId = appData.activeCycle;
-
-// ─────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────
-function getActiveCycle() { return appData.cycles.find(c => c.id === activeCycleId); }
-function getDept(id) { return appData.depts.find(d => d.id === id); }
-
-function getDeptStats(cycle) {
-  // Returns: { deptId -> { count, submissions, lastTime } }
-  const map = {};
-  appData.depts.forEach(d => { map[d.id] = { count: 0, submissions: [], lastTime: null }; });
-  if (!cycle) return map;
-  cycle.submissions.forEach(sub => {
-    if (!map[sub.deptId]) map[sub.deptId] = { count: 0, submissions: [], lastTime: null };
-    map[sub.deptId].count += sub.photos.length;
+function getDeptStats(cycle){
+  const map={};
+  appData.depts.forEach(d=>{map[d.id]={count:0,submissions:[],lastTime:null};});
+  if(!cycle)return map;
+  cycle.submissions.forEach(sub=>{
+    if(!map[sub.deptId])map[sub.deptId]={count:0,submissions:[],lastTime:null};
+    map[sub.deptId].count+=sub.photos.length;
     map[sub.deptId].submissions.push(sub);
-    if (!map[sub.deptId].lastTime || sub.createdAt > map[sub.deptId].lastTime)
-      map[sub.deptId].lastTime = sub.createdAt;
+    if(!map[sub.deptId].lastTime||sub.createdAt>map[sub.deptId].lastTime)map[sub.deptId].lastTime=sub.createdAt;
   });
   return map;
 }
 
-function fmt(isoStr) {
-  if (!isoStr) return '';
-  return new Date(isoStr).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+// ═══════════════════════════════════════
+// TAB NAVIGATION
+// ═══════════════════════════════════════
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('view-'+name).classList.add('active');
+  if(name==='history'){populateHistoryFilters();renderHistory();}
+  if(name==='dashboard'){renderDashboard();}
 }
 
-// ─────────────────────────────────────────────
-// RENDER
-// ─────────────────────────────────────────────
-function render() {
+// ═══════════════════════════════════════
+// PRACTICE TAB RENDER
+// ═══════════════════════════════════════
+function render(){
   renderCycleSelect();
   renderSubmitDeptOptions();
   renderStats();
   renderDeptAccordion();
 }
 
-function renderCycleSelect() {
-  const sel = document.getElementById('cycleSelect');
-  sel.innerHTML = appData.cycles.map(c =>
-    `<option value="${c.id}" ${c.id===activeCycleId?'selected':''}>${c.name}</option>`
-  ).join('');
+function renderCycleSelect(){
+  const sel=document.getElementById('cycleSelect');
+  sel.innerHTML=appData.cycles.map(c=>`<option value="${c.id}"${c.id===activeCycleId?' selected':''}>${c.name}</option>`).join('');
 }
 
-function renderSubmitDeptOptions() {
-  const sel = document.getElementById('submitDept');
-  sel.innerHTML = '<option value="">— Chọn phòng ban —</option>' +
-    appData.depts.map(d => `<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
+function renderSubmitDeptOptions(){
+  const sel=document.getElementById('submitDept');
+  sel.innerHTML='<option value="">— Chọn phòng ban —</option>'+appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
 }
 
-function renderStats() {
-  const cycle = getActiveCycle();
-  const stats = getDeptStats(cycle);
-  const total = appData.depts.length;
-  const done = appData.depts.filter(d => stats[d.id]?.count > 0).length;
-  const missing = total - done;
-  const photos = cycle ? cycle.submissions.reduce((s,sub)=>s+sub.photos.length,0) : 0;
-
-  animateNum('s-total', total);
-  animateNum('s-done', done);
-  animateNum('s-missing', missing);
-  animateNum('s-photos', photos);
-
-  // Progress bar
-  const pct = total > 0 ? Math.round(done/total*100) : 0;
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('progressPct').textContent = pct + '%';
-  document.getElementById('progressLabel').textContent = `${done} / ${total} phòng ban đã nộp`;
-  document.getElementById('progressBadge').textContent = `${done} / ${total} phòng ban`;
-
-  // Missing
-  const missingGrid = document.getElementById('missingGrid');
-  const missingDepts = appData.depts.filter(d => !stats[d.id]?.count);
-  if (missingDepts.length === 0) {
-    missingGrid.innerHTML = '<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả phòng ban đã nộp ảnh!</div>';
-  } else {
-    missingGrid.innerHTML = missingDepts.map(d => `
-      <div class="missing-card">
-        <div class="dept-icon">${d.icon}</div>
-        <div class="dept-info">
-          <div class="name">${d.name}</div>
-          <div class="sub">Chưa nộp ảnh</div>
-        </div>
-      </div>`).join('');
-  }
+function renderStats(){
+  const cycle=getActiveCycle();
+  const stats=getDeptStats(cycle);
+  const total=appData.depts.length;
+  const done=appData.depts.filter(d=>stats[d.id]?.count>0).length;
+  const missing=total-done;
+  const photos=cycle?cycle.submissions.reduce((s,sub)=>s+sub.photos.length,0):0;
+  animateNum('s-total',total);animateNum('s-done',done);animateNum('s-missing',missing);animateNum('s-photos',photos);
+  const pct=total>0?Math.round(done/total*100):0;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'%';
+  document.getElementById('progressLabel').textContent=`${done} / ${total} phòng ban đã nộp`;
+  document.getElementById('progressBadge').textContent=`${done} / ${total} phòng ban`;
+  const missingDepts=appData.depts.filter(d=>!stats[d.id]?.count);
+  document.getElementById('missingGrid').innerHTML=missingDepts.length===0
+    ?'<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả phòng ban đã nộp ảnh!</div>'
+    :missingDepts.map(d=>`<div class="missing-card"><div class="mc-icon">${d.icon}</div><div><div class="mc-name">${d.name}</div><div class="mc-sub">Chưa nộp ảnh</div></div></div>`).join('');
 }
 
-function renderDeptAccordion() {
-  const cycle = getActiveCycle();
-  const stats = getDeptStats(cycle);
-  const container = document.getElementById('deptAccordion');
-
-  // Sort: submitted first, then missing
-  const sorted = [...appData.depts].sort((a,b) => {
-    const ca = stats[a.id]?.count || 0;
-    const cb = stats[b.id]?.count || 0;
-    return cb - ca;
-  });
-
-  container.innerHTML = sorted.map(d => {
-    const ds = stats[d.id];
-    const count = ds?.count || 0;
-    const subs = ds?.submissions || [];
-    const chipClass = count === 0 ? 'chip-missing' : 'chip-done';
-    const chipText = count === 0 ? 'Chưa nộp' : `${count} ảnh`;
-
-    const allPhotos = subs.flatMap(sub =>
-      sub.photos.map(p => ({...p, person: sub.person, area: sub.area, time: sub.createdAt, note: sub.note}))
-    );
-
-    const galleryHtml = allPhotos.length > 0
-      ? `<div class="photo-gallery">${allPhotos.map((ph,i) => `
-          <div class="gallery-item" onclick="openLightbox('${ph.url}','${d.name}','${ph.area||''}','${ph.person}','${fmt(ph.time)}')">
-            <img src="${ph.url}" alt="">
-          </div>`).join('')}</div>`
-      : `<div class="gallery-empty">📭 Phòng ban chưa nộp ảnh nào trong đợt này.</div>`;
-
-    const subDetails = subs.length > 0 ? `
-      <div style="padding:0 20px 12px;">
-        ${subs.map(sub => `
-          <div style="display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px dashed var(--border); font-size:12px; color:var(--sub);">
-            <span>👤 <strong style="color:var(--text)">${sub.person}</strong></span>
-            <span>📍 ${sub.area||'—'}</span>
-            <span>🖼 ${sub.photos.length} ảnh</span>
-            <span style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:11px;">${fmt(sub.createdAt)}</span>
-          </div>`).join('')}
-      </div>` : '';
-
-    return `
-      <div class="accordion-item" id="acc-${d.id}">
-        <div class="accordion-header" onclick="toggleAccordion('${d.id}')">
-          <div class="dept-avatar" style="background:${count>0?'var(--green-bg)':'var(--red-bg)'};">${d.icon}</div>
-          <div style="flex:1;">
-            <div class="dept-name">${d.name}</div>
-            <div class="dept-meta">${subs.length} lần nộp · ${count} ảnh ${ds?.lastTime?'· Lần cuối: '+fmt(ds.lastTime):''}</div>
-          </div>
-          <span class="status-chip ${chipClass}">${chipText}</span>
-          <span class="accordion-toggle">⌄</span>
-        </div>
-        <div class="accordion-body">
-          ${subDetails}
-          ${galleryHtml}
-        </div>
-      </div>`;
+function renderDeptAccordion(){
+  const cycle=getActiveCycle();
+  const stats=getDeptStats(cycle);
+  const sorted=[...appData.depts].sort((a,b)=>(stats[b.id]?.count||0)-(stats[a.id]?.count||0));
+  document.getElementById('deptAccordion').innerHTML=sorted.map(d=>{
+    const ds=stats[d.id];const count=ds?.count||0;const subs=ds?.submissions||[];
+    const chipClass=count===0?'chip-missing':'chip-done';
+    const chipText=count===0?'Chưa nộp':`${count} ảnh`;
+    const allPhotos=subs.flatMap(sub=>sub.photos.map(p=>({...p,person:sub.person,area:sub.area,time:sub.createdAt})));
+    const galleryHtml=allPhotos.length>0
+      ?`<div class="photo-gallery">${allPhotos.map(ph=>`<div class="gallery-item" onclick="openLightbox('${ph.url}','${d.name}','${ph.area||''}','${ph.person}','${fmt(ph.time)}')"><img src="${ph.url}" loading="lazy"></div>`).join('')}</div>`
+      :`<div class="gallery-empty">📭 Chưa có ảnh nào.</div>`;
+    const subDetails=subs.length>0?`<div style="padding:8px 18px 4px;">${subs.map(sub=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed var(--border);font-size:12px;color:var(--sub);flex-wrap:wrap;"><span>👤 <strong style="color:var(--text)">${sub.person}</strong></span>${sub.area?`<span>📍 ${sub.area}</span>`:''}<span>🖼 ${sub.photos.length} ảnh</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;">${fmt(sub.createdAt)}</span></div>`).join('')}</div>`:''
+    return `<div class="accordion-item" id="acc-${d.id}"><div class="accordion-header" onclick="toggleAcc('${d.id}')"><div class="dept-avatar" style="background:${count>0?'var(--green-bg)':'var(--red-bg)'};">${d.icon}</div><div style="flex:1;"><div class="dept-name-txt">${d.name}</div><div class="dept-meta-txt">${subs.length} lần nộp · ${count} ảnh${ds?.lastTime?' · Lần cuối: '+fmt(ds.lastTime):''}</div></div><span class="status-chip ${chipClass}">${chipText}</span><span class="acc-toggle">⌄</span></div><div class="accordion-body">${subDetails}${galleryHtml}</div></div>`;
   }).join('');
 }
 
-function animateNum(id, target) {
-  const el = document.getElementById(id);
-  const current = parseInt(el.textContent) || 0;
-  if (current === target) return;
-  const step = target > current ? 1 : -1;
-  let v = current;
-  const timer = setInterval(() => {
-    v += step;
-    el.textContent = v;
-    if (v === target) clearInterval(timer);
-  }, Math.max(16, 200 / Math.abs(target - current)));
+function toggleAcc(id){document.getElementById('acc-'+id).classList.toggle('open');}
+function animateNum(id,target){const el=document.getElementById(id);const cur=parseInt(el.textContent)||0;if(cur===target)return;const step=target>cur?1:-1;let v=cur;const t=setInterval(()=>{v+=step;el.textContent=v;if(v===target)clearInterval(t);},Math.max(16,200/Math.abs(target-cur)));}
+
+// ═══════════════════════════════════════
+// HISTORY TAB
+// ═══════════════════════════════════════
+function setHistoryFilter(f,btn){
+  historyFilter=f;
+  document.querySelectorAll('.date-filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('hFilterDate').value='';
+  renderHistory();
 }
 
-// ─────────────────────────────────────────────
-// ACCORDION
-// ─────────────────────────────────────────────
-function toggleAccordion(deptId) {
-  const el = document.getElementById('acc-' + deptId);
-  el.classList.toggle('open');
+function populateHistoryFilters(){
+  const sel=document.getElementById('hFilterDept');
+  sel.innerHTML='<option value="">Tất cả phòng ban</option>'+appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
 }
 
-// ─────────────────────────────────────────────
-// CYCLE
-// ─────────────────────────────────────────────
-function onCycleChange() {
-  activeCycleId = document.getElementById('cycleSelect').value;
-  appData.activeCycle = activeCycleId;
-  saveData();
-  renderStats();
-  renderDeptAccordion();
-}
+function renderHistory(){
+  let subs=allSubmissions();
+  const dateVal=document.getElementById('hFilterDate').value;
+  const deptVal=document.getElementById('hFilterDept').value;
+  const searchVal=document.getElementById('hFilterSearch').value.toLowerCase().trim();
 
-function openNewCycleModal() {
-  document.getElementById('newCycleName').value = '';
-  document.getElementById('newCycleDesc').value = '';
-  document.getElementById('modalCycle').classList.add('open');
-  setTimeout(() => document.getElementById('newCycleName').focus(), 100);
-}
-
-function closeModalCycle(e) {
-  if (!e || e.target === document.getElementById('modalCycle'))
-    document.getElementById('modalCycle').classList.remove('open');
-}
-
-function createCycle() {
-  const name = document.getElementById('newCycleName').value.trim();
-  if (!name) { alert('⚠ Vui lòng nhập tên đợt kiểm tra'); return; }
-  const id = 'c' + Date.now();
-  appData.cycles.unshift({ id, name, desc: document.getElementById('newCycleDesc').value, createdAt: new Date().toISOString(), submissions: [] });
-  activeCycleId = id;
-  appData.activeCycle = id;
-  saveData();
-  render();
-  document.getElementById('modalCycle').classList.remove('open');
-  showToast('✅ Đã tạo đợt kiểm tra: ' + name);
-}
-
-// ─────────────────────────────────────────────
-// DEPT MANAGEMENT
-// ─────────────────────────────────────────────
-const DEPT_ICONS = ['🏢','💼','👥','📈','🔧','🏭','🔬','📦','💻','🦺','🏆','📋','🎯','🌿','🚚','🍽️','🅿️','🚿','📐','🧪'];
-
-function openManageDeptModal() {
-  renderDeptManageList();
-  document.getElementById('modalDept').classList.add('open');
-}
-
-function closeModalDept(e) {
-  if (!e || e.target === document.getElementById('modalDept')) {
-    document.getElementById('modalDept').classList.remove('open');
-    render();
+  // Date filter
+  if(dateVal){
+    subs=subs.filter(s=>toYMD(new Date(s.createdAt))===dateVal);
+  } else {
+    subs=filterByPeriod(subs,historyFilter);
   }
-}
-
-function renderDeptManageList() {
-  const container = document.getElementById('deptManageList');
-  container.innerHTML = appData.depts.map((d,i) => `
-    <div style="display:flex; align-items:center; gap:10px; background:var(--off); border:1.5px solid var(--border); border-radius:8px; padding:9px 14px;">
-      <span style="font-size:18px;">${d.icon}</span>
-      <span style="flex:1; font-size:13px; font-weight:600;">${d.name}</span>
-      <button class="btn-danger" onclick="deleteDept('${d.id}')">✕</button>
-    </div>`).join('');
-}
-
-function addDept() {
-  const name = document.getElementById('newDeptName').value.trim();
-  if (!name) return;
-  const icon = DEPT_ICONS[appData.depts.length % DEPT_ICONS.length];
-  appData.depts.push({ id: 'd' + Date.now(), name, icon });
-  saveData();
-  document.getElementById('newDeptName').value = '';
-  renderDeptManageList();
-}
-
-function deleteDept(id) {
-  if (!confirm('Xoá phòng ban này? (Dữ liệu ảnh đã nộp vẫn còn)')) return;
-  appData.depts = appData.depts.filter(d => d.id !== id);
-  saveData();
-  renderDeptManageList();
-}
-
-// ─────────────────────────────────────────────
-// FILE UPLOAD
-// ─────────────────────────────────────────────
-function handleFiles(event) {
-  addFiles(Array.from(event.target.files));
-  event.target.value = '';
-}
-
-function handleDragOver(e) {
-  e.preventDefault();
-  document.getElementById('dropZone').classList.add('drag-over');
-}
-
-function handleDragLeave() {
-  document.getElementById('dropZone').classList.remove('drag-over');
-}
-
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('dropZone').classList.remove('drag-over');
-  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-  addFiles(files);
-}
-
-function addFiles(files) {
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      pendingPhotos.push({ file, dataUrl: ev.target.result });
-      renderPreview();
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function renderPreview() {
-  const grid = document.getElementById('previewGrid');
-  grid.innerHTML = pendingPhotos.map((p, i) => `
-    <div class="preview-thumb">
-      <img src="${p.dataUrl}" alt="">
-      <button class="del-btn" onclick="removePreview(${i})">✕</button>
-    </div>`).join('');
-}
-
-function removePreview(idx) {
-  pendingPhotos.splice(idx, 1);
-  renderPreview();
-}
-
-// ─────────────────────────────────────────────
-// SUBMIT
-// ─────────────────────────────────────────────
-function submitPhotos() {
-  const deptId = document.getElementById('submitDept').value;
-  const person = document.getElementById('submitPerson').value.trim();
-  const area   = document.getElementById('submitArea').value.trim();
-  const note   = document.getElementById('submitNote').value.trim();
-
-  if (!deptId) { shakeEl('submitDept'); return showToast('⚠ Vui lòng chọn phòng ban!'); }
-  if (!person) { shakeEl('submitPerson'); return showToast('⚠ Vui lòng nhập tên người nộp!'); }
-  if (pendingPhotos.length === 0) { shakeEl('dropZone'); return showToast('⚠ Vui lòng chọn ít nhất 1 ảnh!'); }
-
-  const cycle = getActiveCycle();
-  if (!cycle) return showToast('⚠ Chưa có đợt kiểm tra!');
-
-  // Compress & store
-  const photos = pendingPhotos.map(p => ({
-    url: p.dataUrl,
-    name: p.file.name,
-  }));
-
-  cycle.submissions.push({
-    id: 's' + Date.now(),
-    deptId,
-    person,
-    area,
-    note,
-    photos,
-    createdAt: new Date().toISOString(),
+  if(deptVal) subs=subs.filter(s=>s.deptId===deptVal);
+  if(searchVal) subs=subs.filter(s=>{
+    const d=getDept(s.deptId);
+    return (d?.name||'').toLowerCase().includes(searchVal)||(s.person||'').toLowerCase().includes(searchVal)||(s.area||'').toLowerCase().includes(searchVal)||(s.note||'').toLowerCase().includes(searchVal);
   });
 
+  // Sort newest first
+  subs.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+
+  // Stats bar
+  const totalPhotos=subs.reduce((s,sub)=>s+sub.photos.length,0);
+  const uniqueDepts=new Set(subs.map(s=>s.deptId)).size;
+  document.getElementById('historyStats').innerHTML=`
+    <div class="badge">📤 ${subs.length} lần nộp</div>
+    <div class="badge">🖼 ${totalPhotos} ảnh</div>
+    <div class="badge">🏢 ${uniqueDepts} phòng ban</div>`;
+
+  // Group by date
+  const groups={};
+  subs.forEach(s=>{
+    const d=toYMD(new Date(s.createdAt));
+    if(!groups[d])groups[d]=[];
+    groups[d].push(s);
+  });
+
+  const container=document.getElementById('historyTimeline');
+  if(subs.length===0){
+    container.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">Không có dữ liệu nào trong khoảng thời gian này</div></div>`;
+    return;
+  }
+
+  container.innerHTML=Object.entries(groups).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,dayS])=>{
+    const dayPhotos=dayS.reduce((s,sub)=>s+sub.photos.length,0);
+    const label=date===today()?'Hôm nay':'';
+    return `<div class="timeline-day">
+      <div class="timeline-day-label">
+        <span>${fmtDate(date+'T00:00:00')} ${label?'<span style="color:var(--green);margin-left:6px;">● '+label+'</span>':''}</span>
+        <span class="timeline-day-count">${dayS.length} lần · ${dayPhotos} ảnh</span>
+      </div>
+      ${dayS.map(sub=>{
+        const dept=getDept(sub.deptId);
+        const thumbs=sub.photos.slice(0,4).map(p=>`<div class="sub-card-thumb" onclick="openLightbox('${p.url}','${dept?.name||''}','${sub.area||''}','${sub.person}','${fmt(sub.createdAt)}')"><img src="${p.url}" loading="lazy"></div>`).join('');
+        const moreCount=sub.photos.length>4?`<div style="display:flex;align-items:center;justify-content:center;width:52px;height:52px;background:var(--off);border-radius:6px;font-size:11px;font-weight:700;color:var(--sub);">+${sub.photos.length-4}</div>`:'';
+        return `<div class="sub-card">
+          <div class="sub-card-thumbs">${thumbs}${moreCount}</div>
+          <div class="sub-card-info">
+            <div class="sub-card-header">
+              <span style="font-size:18px;">${dept?.icon||'🏢'}</span>
+              <span class="sub-card-dept">${dept?.name||'—'}</span>
+              <span class="sub-card-count">${sub.photos.length} ảnh</span>
+              <span class="sub-card-time">${fmt(sub.createdAt)}</span>
+              <button class="sub-card-del" onclick="deleteSub('${sub.id}')" title="Xoá">🗑</button>
+            </div>
+            <div class="sub-card-person">👤 ${sub.person}${sub.area?' · 📍 '+sub.area:''}</div>
+            ${sub.note?`<div class="sub-card-note">💬 ${sub.note}</div>`:''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function deleteSub(subId){
+  if(!confirm('Xoá lần nộp này?'))return;
+  appData.cycles.forEach(c=>{c.submissions=c.submissions.filter(s=>s.id!==subId);});
   saveData();
-
-  // Reset form
-  document.getElementById('submitDept').value = '';
-  document.getElementById('submitPerson').value = '';
-  document.getElementById('submitArea').value = '';
-  document.getElementById('submitNote').value = '';
-  pendingPhotos = [];
-  renderPreview();
-
-  // Update UI
+  renderHistory();
   renderStats();
   renderDeptAccordion();
-
-  const dept = getDept(deptId);
-  showToast(`✅ ${dept?.name} đã nộp ${photos.length} ảnh thành công!`);
-
-  // Auto-open accordion of submitted dept
-  setTimeout(() => {
-    const acc = document.getElementById('acc-' + deptId);
-    if (acc && !acc.classList.contains('open')) {
-      acc.classList.add('open');
-      acc.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, 400);
+  showToast('🗑 Đã xoá');
 }
 
-function shakeEl(id) {
-  const el = document.getElementById(id);
-  el.style.transition = 'transform .08s';
-  const s = [0,6,-6,4,-4,2,-2,0];
-  let i = 0;
-  const t = setInterval(() => {
-    el.style.transform = `translateX(${s[i++]}px)`;
-    if (i >= s.length) { clearInterval(t); el.style.transform = ''; }
-  }, 60);
+// ═══════════════════════════════════════
+// DASHBOARD TAB
+// ═══════════════════════════════════════
+function setDashPeriod(p,btn){
+  dashPeriod=p;
+  document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDashboard();
 }
 
-// ─────────────────────────────────────────────
-// LIGHTBOX
-// ─────────────────────────────────────────────
-function openLightbox(url, dept, area, person, time) {
-  document.getElementById('lbImg').src = url;
-  document.getElementById('lbInfo').innerHTML =
-    `<strong>${dept}</strong>${area ? ' · ' + area : ''} · ${person} · ${time}`;
-  document.getElementById('lightbox').classList.add('open');
+const PERIOD_LABELS={'today':'Hôm nay','week':'7 ngày','month':'Tháng này','quarter':'Quý này','all':'Tất cả'};
+
+function renderDashboard(){
+  const allSubs=allSubmissions();
+  const subs=filterByPeriod(allSubs,dashPeriod);
+
+  // Summary stats
+  const totalPhotos=subs.reduce((s,sub)=>s+sub.photos.length,0);
+  const uniqueDepts=new Set(subs.map(s=>s.deptId)).size;
+  const uniqueDays=new Set(subs.map(s=>toYMD(new Date(s.createdAt)))).size;
+  document.getElementById('ds-photos').textContent=totalPhotos;
+  document.getElementById('ds-subs').textContent=subs.length;
+  document.getElementById('ds-depts').textContent=uniqueDepts;
+  document.getElementById('ds-days').textContent=uniqueDays;
+  document.getElementById('dashPeriodLabel').textContent=PERIOD_LABELS[dashPeriod]||'';
+
+  // Bar chart: ảnh theo phòng ban
+  const deptPhotoMap={};
+  appData.depts.forEach(d=>{deptPhotoMap[d.id]=0;});
+  subs.forEach(s=>{deptPhotoMap[s.deptId]=(deptPhotoMap[s.deptId]||0)+s.photos.length;});
+  const maxBar=Math.max(...Object.values(deptPhotoMap),1);
+  const sortedDepts=[...appData.depts].sort((a,b)=>(deptPhotoMap[b.id]||0)-(deptPhotoMap[a.id]||0));
+  document.getElementById('deptBarChart').innerHTML=sortedDepts.map((d,i)=>{
+    const cnt=deptPhotoMap[d.id]||0;
+    const pct=(cnt/maxBar*100).toFixed(1);
+    const color=BAR_COLORS[i%BAR_COLORS.length];
+    return `<div class="bar-row"><div class="bar-label">${d.icon} ${d.name.length>12?d.name.slice(0,12)+'…':d.name}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color};"></div></div><div class="bar-val" style="color:${color}">${cnt}</div></div>`;
+  }).join('');
+
+  // Rank table
+  const deptSubMap={};
+  appData.depts.forEach(d=>{deptSubMap[d.id]=0;});
+  subs.forEach(s=>{deptSubMap[s.deptId]=(deptSubMap[s.deptId]||0)+1;});
+  const rankDepts=[...appData.depts].sort((a,b)=>(deptPhotoMap[b.id]||0)-(deptPhotoMap[a.id]||0)).slice(0,10);
+  const rankMedals=['🥇','🥈','🥉'];
+  document.getElementById('rankBody').innerHTML=rankDepts.map((d,i)=>{
+    const photos=deptPhotoMap[d.id]||0;
+    const nsubs=deptSubMap[d.id]||0;
+    const numClass=i<3?`rank-${i+1}`:'';
+    return `<tr><td><span class="rank-num ${numClass}">${rankMedals[i]||i+1}</span></td><td><span style="font-size:16px;margin-right:6px;">${d.icon}</span>${d.name}</td><td><strong>${photos}</strong></td><td>${nsubs}</td></tr>`;
+  }).join('');
+
+  // Trend chart: 14 days
+  const trend=[];
+  for(let i=13;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ymd=toYMD(d);
+    const cnt=allSubs.filter(s=>toYMD(new Date(s.createdAt))===ymd).reduce((s,sub)=>s+sub.photos.length,0);
+    trend.push({label:d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'}),cnt});
+  }
+  const maxTrend=Math.max(...trend.map(t=>t.cnt),1);
+  document.getElementById('trendChart').innerHTML=trend.map(t=>{
+    const h=Math.max(Math.round(t.cnt/maxTrend*70),t.cnt>0?4:2);
+    return `<div class="trend-bar-wrap"><div class="trend-val">${t.cnt>0?t.cnt:''}</div><div class="trend-bar" style="height:${h}px;${t.cnt===0?'background:#e4e8f0;':''}"></div><div class="trend-label">${t.label}</div></div>`;
+  }).join('');
+
+  // Heatmap: 28 days
+  const heatSubs=allSubs;
+  const heatData={};
+  for(let i=27;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ymd=toYMD(d);heatData[ymd]=(heatData[ymd]||0)+allSubs.filter(s=>toYMD(new Date(s.createdAt))===ymd).reduce((s,sub)=>s+sub.photos.length,0);}
+  const maxHeat=Math.max(...Object.values(heatData),1);
+  // Start from Sunday of 4 weeks ago
+  const heatStart=new Date();heatStart.setDate(heatStart.getDate()-27);
+  const startDow=heatStart.getDay(); // shift to start on Sunday
+  const cells=[];
+  for(let i=0;i<startDow;i++)cells.push(null); // padding
+  for(let i=0;i<28;i++){const d=new Date(heatStart);d.setDate(d.getDate()+i);cells.push(toYMD(d));}
+  const heatColors=['#f0fdf4','#bbf7d0','#4ade80','#16a34a','#14532d'];
+  document.getElementById('heatmapGrid').innerHTML=cells.map(ymd=>{
+    if(!ymd)return`<div style="aspect-ratio:1;"></div>`;
+    const cnt=heatData[ymd]||0;
+    const ci=cnt===0?0:cnt<3?1:cnt<6?2:cnt<10?3:4;
+    const isToday=ymd===today();
+    return `<div class="heatmap-cell" style="background:${heatColors[ci]};${isToday?'outline:2px solid var(--primary);':''}" title="${ymd}: ${cnt} ảnh" onclick="jumpToDate('${ymd}')"></div>`;
+  }).join('');
+
+  // Missing depts in period
+  const activeDeptIds=new Set(subs.map(s=>s.deptId));
+  const missingDepts=appData.depts.filter(d=>!activeDeptIds.has(d.id));
+  document.getElementById('dashMissingGrid').innerHTML=missingDepts.length===0
+    ?`<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả phòng ban đều có hoạt động!</div>`
+    :missingDepts.map(d=>`<div class="missing-card"><div class="mc-icon">${d.icon}</div><div><div class="mc-name">${d.name}</div><div class="mc-sub">Không có ảnh trong kỳ</div></div></div>`).join('');
+
+  // Cycle summary table
+  document.getElementById('cycleBody').innerHTML=appData.cycles.map(c=>{
+    const total=appData.depts.length;
+    const doneCount=new Set(c.submissions.map(s=>s.deptId)).size;
+    const photos=c.submissions.reduce((s,sub)=>s+sub.photos.length,0);
+    const pct=total>0?Math.round(doneCount/total*100):0;
+    const bar=`<div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;background:var(--off);border-radius:99px;height:6px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:${pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)'};width:${pct}%;"></div></div><span style="font-size:11px;font-weight:700;">${pct}%</span></div>`;
+    return `<tr><td><strong>${c.name}</strong></td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${fmt(c.createdAt)}</td><td>${doneCount}/${total}</td><td>${c.submissions.length}</td><td><strong>${photos}</strong></td><td style="min-width:100px;">${bar}</td></tr>`;
+  }).join('');
 }
-function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
 
-// ─────────────────────────────────────────────
-// EXPORT SUMMARY
-// ─────────────────────────────────────────────
-function exportSummary() {
-  const cycle = getActiveCycle();
-  if (!cycle) return;
-  const stats = getDeptStats(cycle);
-  const total = appData.depts.length;
-  const done = appData.depts.filter(d => stats[d.id]?.count > 0).length;
-  const photos = cycle.submissions.reduce((s,sub)=>s+sub.photos.length,0);
+function jumpToDate(ymd){
+  switchTab('history');
+  document.getElementById('hFilterDate').value=ymd;
+  document.querySelectorAll('.date-filter-btn').forEach(b=>b.classList.remove('active'));
+  historyFilter='all';
+  renderHistory();
+}
 
-  let txt = `BÁO CÁO THỰC HÀNH 5S\n`;
-  txt += `Đợt: ${cycle.name}\n`;
-  txt += `Xuất lúc: ${new Date().toLocaleString('vi-VN')}\n`;
-  txt += `${'─'.repeat(50)}\n`;
-  txt += `Tổng phòng ban: ${total}\n`;
-  txt += `Đã nộp ảnh:     ${done} (${Math.round(done/total*100)}%)\n`;
-  txt += `Chưa nộp:       ${total - done}\n`;
-  txt += `Tổng ảnh:       ${photos}\n`;
-  txt += `${'─'.repeat(50)}\n\n`;
-  txt += `CHI TIẾT TỪNG PHÒNG BAN:\n\n`;
-  appData.depts.forEach(d => {
-    const ds = stats[d.id];
-    const cnt = ds?.count || 0;
-    const subs = ds?.submissions || [];
-    txt += `${d.icon} ${d.name}\n`;
-    txt += `   Trạng thái: ${cnt > 0 ? '✅ Đã nộp' : '❌ Chưa nộp'} · ${cnt} ảnh · ${subs.length} lần nộp\n`;
-    subs.forEach(s => {
-      txt += `   - ${s.person}${s.area?' ('+s.area+')':''}: ${s.photos.length} ảnh · ${fmt(s.createdAt)}\n`;
-    });
-    txt += '\n';
+// ═══════════════════════════════════════
+// CYCLE MANAGEMENT
+// ═══════════════════════════════════════
+function onCycleChange(){activeCycleId=document.getElementById('cycleSelect').value;appData.activeCycle=activeCycleId;saveData();renderStats();renderDeptAccordion();}
+function openNewCycleModal(){document.getElementById('newCycleName').value='';document.getElementById('newCycleDesc').value='';document.getElementById('modalCycle').classList.add('open');setTimeout(()=>document.getElementById('newCycleName').focus(),100);}
+function closeModalCycle(){document.getElementById('modalCycle').classList.remove('open');}
+function createCycle(){
+  const name=document.getElementById('newCycleName').value.trim();
+  if(!name){alert('⚠ Vui lòng nhập tên đợt');return;}
+  const id='c'+Date.now();
+  appData.cycles.unshift({id,name,desc:document.getElementById('newCycleDesc').value,createdAt:new Date().toISOString(),submissions:[]});
+  activeCycleId=id;appData.activeCycle=id;saveData();render();closeModalCycle();
+  showToast('✅ Đã tạo đợt: '+name);
+}
+
+// ═══════════════════════════════════════
+// DEPT MANAGEMENT
+// ═══════════════════════════════════════
+function openManageDeptModal(){renderDeptManageList();document.getElementById('modalDept').classList.add('open');}
+function closeModalDept(){document.getElementById('modalDept').classList.remove('open');render();}
+function renderDeptManageList(){
+  document.getElementById('deptManageList').innerHTML=appData.depts.map(d=>`<div style="display:flex;align-items:center;gap:10px;background:var(--off);border:1.5px solid var(--border);border-radius:8px;padding:9px 13px;"><span style="font-size:18px;">${d.icon}</span><span style="flex:1;font-size:13px;font-weight:600;">${d.name}</span><button class="btn-danger" onclick="deleteDept('${d.id}')">✕</button></div>`).join('');
+}
+function addDept(){
+  const name=document.getElementById('newDeptName').value.trim();if(!name)return;
+  appData.depts.push({id:'d'+Date.now(),name,icon:DEPT_ICONS[appData.depts.length%DEPT_ICONS.length]});
+  saveData();document.getElementById('newDeptName').value='';renderDeptManageList();
+}
+function deleteDept(id){
+  if(!confirm('Xoá phòng ban này?'))return;
+  appData.depts=appData.depts.filter(d=>d.id!==id);saveData();renderDeptManageList();
+}
+
+// ═══════════════════════════════════════
+// FILE UPLOAD
+// ═══════════════════════════════════════
+function handleFiles(e){addFiles(Array.from(e.target.files));e.target.value='';}
+function handleDragOver(e){e.preventDefault();document.getElementById('dropZone').classList.add('drag-over');}
+function handleDragLeave(){document.getElementById('dropZone').classList.remove('drag-over');}
+function handleDrop(e){e.preventDefault();document.getElementById('dropZone').classList.remove('drag-over');addFiles(Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')));}
+function addFiles(files){
+  files.forEach(file=>{
+    const r=new FileReader();
+    r.onload=ev=>{pendingPhotos.push({file,dataUrl:ev.target.result});renderPreview();};
+    r.readAsDataURL(file);
   });
+}
+function renderPreview(){
+  document.getElementById('previewGrid').innerHTML=pendingPhotos.map((p,i)=>`<div class="preview-thumb"><img src="${p.dataUrl}"><button class="del-btn" onclick="removePreview(${i})">✕</button></div>`).join('');
+}
+function removePreview(idx){pendingPhotos.splice(idx,1);renderPreview();}
 
-  const blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `BaoCao_5S_${cycle.name.replace(/\s+/g,'_')}.txt`;
-  a.click();
+// ═══════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════
+function submitPhotos(){
+  const deptId=document.getElementById('submitDept').value;
+  const person=document.getElementById('submitPerson').value.trim();
+  const area=document.getElementById('submitArea').value.trim();
+  const note=document.getElementById('submitNote').value.trim();
+  if(!deptId){shakeEl('submitDept');showToast('⚠ Vui lòng chọn phòng ban!');return;}
+  if(!person){shakeEl('submitPerson');showToast('⚠ Vui lòng nhập tên người nộp!');return;}
+  if(pendingPhotos.length===0){shakeEl('dropZone');showToast('⚠ Vui lòng chọn ít nhất 1 ảnh!');return;}
+  const cycle=getActiveCycle();if(!cycle){showToast('⚠ Chưa có đợt kiểm tra!');return;}
+  const photos=pendingPhotos.map(p=>({url:p.dataUrl,name:p.file.name}));
+  cycle.submissions.push({id:'s'+Date.now(),deptId,person,area,note,photos,createdAt:new Date().toISOString()});
+  saveData();
+  document.getElementById('submitDept').value='';document.getElementById('submitPerson').value='';document.getElementById('submitArea').value='';document.getElementById('submitNote').value='';
+  pendingPhotos=[];renderPreview();renderStats();renderDeptAccordion();
+  const dept=getDept(deptId);
+  showToast(`✅ ${dept?.name} đã nộp ${photos.length} ảnh!`);
+  setTimeout(()=>{const acc=document.getElementById('acc-'+deptId);if(acc&&!acc.classList.contains('open')){acc.classList.add('open');acc.scrollIntoView({behavior:'smooth',block:'nearest'});}},400);
+}
+
+function shakeEl(id){const el=document.getElementById(id);const s=[0,6,-6,4,-4,2,-2,0];let i=0;const t=setInterval(()=>{el.style.transform=`translateX(${s[i++]}px)`;if(i>=s.length){clearInterval(t);el.style.transform='';}},60);}
+
+// ═══════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════
+function exportSummary(){
+  const cycle=getActiveCycle();if(!cycle)return;
+  const stats=getDeptStats(cycle);const total=appData.depts.length;
+  const done=appData.depts.filter(d=>stats[d.id]?.count>0).length;
+  const photos=cycle.submissions.reduce((s,sub)=>s+sub.photos.length,0);
+  let txt=`BÁO CÁO THỰC HÀNH 5S\nĐợt: ${cycle.name}\nXuất lúc: ${new Date().toLocaleString('vi-VN')}\n${'─'.repeat(50)}\nTổng phòng ban: ${total}\nĐã nộp: ${done} (${Math.round(done/total*100)}%)\nChưa nộp: ${total-done}\nTổng ảnh: ${photos}\n${'─'.repeat(50)}\n\n`;
+  appData.depts.forEach(d=>{const ds=stats[d.id];const cnt=ds?.count||0;const subs=ds?.submissions||[];txt+=`${d.icon} ${d.name}\n   ${cnt>0?'✅ Đã nộp':'❌ Chưa nộp'} · ${cnt} ảnh · ${subs.length} lần nộp\n`;subs.forEach(s=>{txt+=`   - ${s.person}${s.area?' ('+s.area+')':''}: ${s.photos.length} ảnh · ${fmt(s.createdAt)}\n`;});txt+='\n';});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));a.download=`BaoCao_5S_${cycle.name.replace(/\s+/g,'_')}.txt`;a.click();
   showToast('📄 Đã xuất báo cáo!');
 }
 
-// ─────────────────────────────────────────────
-// TOAST
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════
+// LIGHTBOX / TOAST
+// ═══════════════════════════════════════
+function openLightbox(url,dept,area,person,time){document.getElementById('lbImg').src=url;document.getElementById('lbInfo').innerHTML=`<strong>${dept}</strong>${area?' · '+area:''} · ${person} · ${time}`;document.getElementById('lightbox').classList.add('open');}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
 let toastTimer;
-function showToast(msg) {
-  clearTimeout(toastTimer);
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
-}
+function showToast(msg){clearTimeout(toastTimer);const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');toastTimer=setTimeout(()=>t.classList.remove('show'),3000);}
 
-// ─────────────────────────────────────────────
-// TAB (future-proofing)
-// ─────────────────────────────────────────────
-function switchTab(name) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  document.getElementById('view-' + name).classList.add('active');
-}
-
-// ─────────────────────────────────────────────
+// ═══════════════════════════════════════
 // INIT
-// ─────────────────────────────────────────────
-function init() {
-  // Date header
-  const d = new Date();
-  document.getElementById('headerDate').textContent =
-    d.toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
-
-  render();
-}
-
-init();
+// ═══════════════════════════════════════
+document.getElementById('headerDate').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+renderDashboard();
 </script>
 </body>
 </html>

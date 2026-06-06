@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -859,13 +860,25 @@ main {
         </div>
       </div>
 
-      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()"
+      <div class="drop-zone" id="dropZone"
         ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
         <div class="drop-icon">📷</div>
-        <div class="drop-title">Nhấn để chọn ảnh hoặc kéo thả vào đây</div>
-        <div class="drop-sub">Chụp trực tiếp bằng camera hoặc chọn từ thư viện · Nhiều ảnh cùng lúc</div>
+        <div class="drop-title">Chọn cách thêm ảnh</div>
+        <div class="drop-sub" style="margin-bottom:14px;">Kéo thả ảnh vào đây · hoặc dùng nút bên dưới</div>
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+          <button type="button" onclick="document.getElementById('fileCamera').click()"
+            style="background:var(--primary); color:#fff; border:none; border-radius:8px; padding:10px 20px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:7px;">
+            📸 Chụp ảnh
+          </button>
+          <button type="button" onclick="document.getElementById('fileGallery').click()"
+            style="background:var(--white); color:var(--primary); border:2px solid var(--primary); border-radius:8px; padding:10px 20px; font-family:'Plus Jakarta Sans',sans-serif; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:7px;">
+            🖼 Chọn từ thư viện
+          </button>
+        </div>
       </div>
-      <input type="file" id="fileInput" accept="image/*" multiple capture="environment" onchange="handleFiles(event)">
+      <input type="file" id="fileCamera"  accept="image/*" capture="environment" multiple onchange="handleFiles(event)" style="display:none;">
+      <input type="file" id="fileGallery" accept="image/*" multiple onchange="handleFiles(event)" style="display:none;">
+      <input type="file" id="fileInput"   accept="image/*" multiple onchange="handleFiles(event)" style="display:none;">
 
       <div class="preview-grid" id="previewGrid"></div>
 

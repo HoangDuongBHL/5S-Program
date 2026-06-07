@@ -731,11 +731,22 @@ async function onLoginSuccess(){
   renderGemba();
   loadFromSharePoint(true);
 
-  // Auto sync every 60s + on tab focus
-  setInterval(()=>{if(currentAccount&&msalReady)loadFromSharePoint(true);},60000);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&currentAccount&&msalReady)loadFromSharePoint(true);});
-  // Initial sync
-  setTimeout(()=>loadFromSharePoint(true),500);
+  // Initial sync right after login
+  await loadFromSharePoint(false);
+
+  // Auto sync every 60s
+  if(!window._syncInterval){
+    window._syncInterval=setInterval(()=>{
+      if(currentAccount&&msalReady)loadFromSharePoint(true);
+    },60000);
+  }
+  // Sync when tab becomes visible again
+  if(!window._visibilityListener){
+    window._visibilityListener=true;
+    document.addEventListener('visibilitychange',()=>{
+      if(!document.hidden&&currentAccount&&msalReady)loadFromSharePoint(true);
+    });
+  }
 }
 
 function showLoginScreen(){

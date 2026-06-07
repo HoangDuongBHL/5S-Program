@@ -6,25 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Chương trình 5S</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js" crossorigin="anonymous"
+  onerror="loadMsalFallback()"></script>
 <script>
-// Load MSAL dynamically with fallback
-(function(){
-  var urls = [
-    'https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js',
-    'https://unpkg.com/@azure/msal-browser@2.38.0/lib/msal-browser.min.js',
-    'https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.0/lib/msal-browser.min.js'
-  ];
-  var idx = 0;
-  function loadNext(){
-    if(idx >= urls.length){ console.error('All MSAL CDN failed'); return; }
-    var s = document.createElement('script');
-    s.src = urls[idx++];
-    s.crossOrigin = 'anonymous';
-    s.onerror = loadNext;
-    document.head.appendChild(s);
-  }
-  loadNext();
-})();
+function loadMsalFallback(){
+  var s=document.createElement('script');
+  s.src='https://unpkg.com/@azure/msal-browser@2.38.0/lib/msal-browser.min.js';
+  s.crossOrigin='anonymous';
+  document.head.appendChild(s);
+}
 </script>
 <style>
 :root{
@@ -42,97 +32,74 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;font-size:14px;}
-
-/* HEADER */
 .site-header{background:linear-gradient(135deg,#1e3a8a,#1e40af 50%,#2563eb);padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(30,64,175,.4);position:sticky;top:0;z-index:50;}
 .header-brand{display:flex;align-items:center;gap:12px;}
 .brand-badge{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;}
 .brand-name{color:#fff;font-size:17px;font-weight:800;letter-spacing:-.3px;}
 .brand-sub{color:rgba(255,255,255,.65);font-size:11px;}
-.header-right{display:flex;align-items:center;gap:10px;}
-#loginInfo{display:none;color:rgba(255,255,255,.9);font-size:12px;background:rgba(255,255,255,.12);padding:5px 12px;border-radius:16px;}
-#loginBtn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:7px 14px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
-#loginBtn:hover{background:rgba(255,255,255,.25);}
+.header-right{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;}
+#loginInfo{display:none;color:rgba(255,255,255,.9);font-size:12px;background:rgba(255,255,255,.12);padding:5px 12px;border-radius:16px;white-space:nowrap;}
+#syncBtn{display:none;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:7px 12px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+#loginBtn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:7px 14px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
 #loginBtn:disabled{opacity:.6;cursor:not-allowed;}
 .header-date{color:rgba(255,255,255,.8);font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(255,255,255,.1);padding:5px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.2);white-space:nowrap;}
-
-/* TAB BAR */
 .tab-bar{background:var(--white);border-bottom:2px solid var(--border);padding:0 16px;display:flex;overflow-x:auto;}
 .tab-btn{background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;padding:14px 16px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
 .tab-btn:hover{color:var(--primary);}
 .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
-
-/* MAIN */
 main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
 .view{display:none;}.view.active{display:block;}
-
-/* CARD */
 .card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:16px;}
 .card-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .card-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}
 .card-body{padding:14px 18px;}
-
-/* STATS */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
 @media(max-width:680px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
 .stat-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:15px 17px;box-shadow:var(--shadow-sm);}
 .stat-icon{font-size:20px;margin-bottom:7px;}
 .stat-val{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:3px;}
 .stat-label{font-size:12px;color:var(--sub);}
-
-/* CYCLE ROW */
 .cycle-row{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
 .cycle-label{font-size:13px;font-weight:600;color:var(--sub);}
 .cycle-select{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:8px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none;}
 .btn-primary{background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
-.btn-primary:hover{background:#1e3a8a;transform:translateY(-1px);}
+.btn-primary:hover{background:#1e3a8a;}
 .btn-outline{background:var(--white);border:1.5px solid var(--border2);color:var(--text);border-radius:var(--radius-sm);padding:8px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
 .btn-outline:hover{border-color:var(--pl);color:var(--primary);}
-.btn-danger{background:var(--white);border:1.5px solid var(--red-border);color:var(--red);border-radius:var(--radius-sm);padding:6px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
-
-/* PROGRESS */
+.btn-danger{background:var(--white);border:1px solid var(--red-border);color:var(--red);border-radius:4px;padding:2px 8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
 .progress-wrap{padding:13px 18px;border-bottom:1px solid var(--border);}
 .progress-label-row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;font-weight:600;}
 .progress-track{background:var(--off);border-radius:99px;height:8px;overflow:hidden;}
 .progress-fill{height:100%;border-radius:99px;transition:width .6s ease;}
-
-/* MISSING */
 .missing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
 .missing-card{background:var(--red-bg);border:1.5px solid var(--red-border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:center;gap:9px;}
 .mc-name{font-size:12px;font-weight:700;color:var(--red);}
 .mc-sub{font-size:11px;color:#f87171;margin-top:1px;}
-
-/* FORM */
+.done-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
+.done-card{background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:flex-start;gap:9px;}
+.dc-name{font-size:12px;font-weight:700;color:var(--green);}
+.dc-sub{font-size:11px;color:#16a34a;margin-top:1px;}
 .submit-section{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:2px dashed var(--blue-border);border-radius:var(--radius);padding:22px;margin-bottom:22px;}
 .submit-title{font-size:15px;font-weight:800;color:var(--primary);margin-bottom:3px;}
 .submit-desc{font-size:13px;color:var(--sub);margin-bottom:16px;}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
 @media(max-width:540px){.form-grid{grid-template-columns:1fr;}}
 .form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--sub);margin-bottom:6px;}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
+.form-group input,.form-group select{width:100%;background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
 .form-group input:focus,.form-group select:focus{border-color:var(--pl);}
-
-/* DROP ZONE */
 .drop-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:22px;text-align:center;background:var(--white);margin-bottom:12px;transition:all .2s;}
 .drop-zone.drag-over{border-color:var(--pl);background:var(--blue-bg);}
 .drop-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px;}
 .drop-btn{border:none;border-radius:8px;padding:10px 18px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;}
 .drop-btn-cam{background:var(--primary);color:#fff;}
 .drop-btn-gal{background:var(--white);color:var(--primary);border:2px solid var(--primary)!important;}
-
-/* PREVIEW */
 .preview-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-.preview-thumb{position:relative;width:74px;height:74px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--border);}
+.preview-thumb{position:relative;width:74px;height:74px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--border);animation:fadeIn .25s ease;}
 @keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-.preview-thumb{animation:fadeIn .25s ease;}
 .preview-thumb img{width:100%;height:100%;object-fit:cover;}
 .del-btn{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:17px;height:17px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-
-/* SUBMIT BTN */
 .btn-submit{background:linear-gradient(135deg,var(--primary),var(--pl));color:#fff;border:none;border-radius:var(--radius-sm);padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(37,99,235,.3);transition:all .2s;}
 .btn-submit:hover{transform:translateY(-2px);}
-
-/* ACCORDION */
 .accordion-item{border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm);}
 .accordion-header{display:flex;align-items:center;gap:11px;padding:12px 16px;cursor:pointer;user-select:none;transition:background .15s;}
 .accordion-header:hover{background:var(--off);}
@@ -144,15 +111,11 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
 .status-chip{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;}
 .chip-done{background:var(--green-bg);color:var(--green);}
 .chip-missing{background:var(--red-bg);color:var(--red);}
-
-/* GALLERY */
 .photo-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:7px;padding:13px 16px;}
 .gallery-item{aspect-ratio:1;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;border:1.5px solid var(--border);transition:transform .2s;}
 .gallery-item:hover{transform:scale(1.04);}
 .gallery-item img{width:100%;height:100%;object-fit:cover;}
 .gallery-empty{padding:26px;text-align:center;color:var(--muted);font-size:13px;}
-
-/* HISTORY */
 .date-filter-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
 .date-filter-btn{background:var(--white);border:1.5px solid var(--border2);color:var(--sub);border-radius:20px;padding:6px 13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
 .date-filter-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;}
@@ -173,8 +136,6 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
 .sub-card-del{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:2px;}
 .sub-card-del:hover{color:var(--red);}
 .sub-card-note{font-size:12px;background:var(--off);border-radius:6px;padding:5px 9px;margin-top:4px;}
-
-/* DASHBOARD */
 .dash-period-row{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
 .period-btn{background:var(--white);border:1.5px solid var(--border2);color:var(--sub);border-radius:20px;padding:7px 15px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
 .period-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;}
@@ -197,11 +158,9 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
 .heatmap-label-row{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px;}
 .heatmap-day-label{font-size:9px;color:var(--muted);text-align:center;font-weight:600;}
 .rank-table{width:100%;border-collapse:collapse;}
-.rank-table th{background:var(--off);padding:8px 11px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--sub);}
+.rank-table th{background:var(--off);padding:8px 11px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--sub);}
 .rank-table td{padding:9px 11px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
 .rank-table tr:last-child td{border-bottom:none;}
-
-/* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.open{display:flex;}
 .modal{background:var(--white);border-radius:var(--radius);max-width:460px;width:100%;box-shadow:var(--shadow-lg);overflow:hidden;}
@@ -210,63 +169,39 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
 .modal-x{background:none;border:none;font-size:19px;cursor:pointer;color:var(--muted);}
 .modal-body{padding:17px 21px;}
 .modal-foot{padding:12px 21px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
-
-/* LIGHTBOX */
 .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:300;align-items:center;justify-content:center;}
 .lightbox.open{display:flex;}
 .lightbox img{max-width:92vw;max-height:86vh;object-fit:contain;border-radius:8px;}
 .lb-close{position:absolute;top:16px;right:18px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:19px;border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 .lb-info{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);backdrop-filter:blur(8px);color:#fff;padding:6px 14px;border-radius:14px;font-size:12px;text-align:center;white-space:nowrap;}
-
-/* TOAST */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--text);color:#fff;padding:11px 20px;border-radius:28px;font-size:13px;font-weight:600;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:200;white-space:nowrap;box-shadow:var(--shadow-lg);}
 .toast.show{transform:translateX(-50%) translateY(0);}
-
-/* EMPTY */
-.empty-state{text-align:center;padding:36px;color:var(--muted);}
-.empty-icon{font-size:38px;margin-bottom:9px;}
-
-/* BADGE */
 .badge{display:inline-flex;align-items:center;background:var(--off);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--sub);}
-
-@media(max-width:460px){
-  main{padding:12px 10px 70px;}
-  .submit-section{padding:15px;}
-  .sub-card{flex-direction:column;}
-  .sub-card-thumbs{max-width:100%;}
-  .sub-card-time{margin-left:0;}
-  .brand-sub{display:none;}
-  .header-date{display:none;}
-}
+.empty-state{text-align:center;padding:36px;color:var(--muted);}
+@media(max-width:460px){main{padding:12px 10px 70px;}.submit-section{padding:15px;}.sub-card{flex-direction:column;}.brand-sub,.header-date{display:none;}}
 </style>
 </head>
 <body>
-
 <header class="site-header">
   <div class="header-brand">
     <div class="brand-badge">🏆</div>
-    <div>
-      <div class="brand-name">CHƯƠNG TRÌNH 5S</div>
-      <div class="brand-sub">Hệ thống quản lý thực hành 5S</div>
-    </div>
+    <div><div class="brand-name">CHƯƠNG TRÌNH 5S</div><div class="brand-sub">Hệ thống quản lý thực hành 5S</div></div>
   </div>
   <div class="header-right">
     <div id="loginInfo"></div>
-    <button id="syncBtn" onclick="loadFromSharePoint()" style="display:none;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:7px 12px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🔄 Đồng bộ</button>
-    <button id="loginBtn">🔐 Đăng nhập Microsoft</button>
+    <button id="syncBtn" onclick="loadFromSharePoint()">🔄 Đồng bộ</button>
+    <button id="loginBtn" onclick="login()">🔐 Đăng nhập Microsoft</button>
     <div class="header-date" id="headerDate"></div>
   </div>
 </header>
-
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('dashboard')" id="tab-dashboard">📊 Dashboard</button>
   <button class="tab-btn" onclick="switchTab('practice')" id="tab-practice">📸 Thực hành 5S</button>
   <button class="tab-btn" onclick="switchTab('history')" id="tab-history">📅 Lịch sử ảnh</button>
 </div>
-
 <main>
 
-<!-- ═══ DASHBOARD ═══ -->
+<!-- DASHBOARD -->
 <div class="view active" id="view-dashboard">
   <div class="dash-period-row">
     <button class="period-btn active" onclick="setDashPeriod('today',this)">Hôm nay</button>
@@ -281,40 +216,11 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
     <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="ds-depts" style="color:var(--green)">0</div><div class="stat-label">Phòng ban tham gia</div></div>
     <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="ds-days" style="color:var(--amber)">0</div><div class="stat-label">Ngày có hoạt động</div></div>
   </div>
-  <div class="dash-grid">
-    <div class="card">
-      <div class="card-header"><span class="card-title">🏢 Ảnh theo phòng ban</span><span class="badge" id="dashPeriodLabel">Hôm nay</span></div>
-      <div class="card-body"><div class="bar-chart" id="deptBarChart"></div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">🏅 Xếp hạng tích cực nhất</span></div>
-      <div class="card-body" style="padding:0;">
-        <table class="rank-table"><thead><tr><th>#</th><th>Phòng ban</th><th>Ảnh</th><th>Lần nộp</th></tr></thead><tbody id="rankBody"></tbody></table>
-      </div>
-    </div>
-  </div>
-  <div class="dash-grid">
-    <div class="card">
-      <div class="card-header"><span class="card-title">📈 Xu hướng 14 ngày</span></div>
-      <div class="card-body"><div class="trend-chart" id="trendChart"></div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">🗓 Bản đồ hoạt động 4 tuần</span></div>
-      <div class="card-body">
-        <div class="heatmap-label-row">
-          <div class="heatmap-day-label">CN</div><div class="heatmap-day-label">T2</div><div class="heatmap-day-label">T3</div>
-          <div class="heatmap-day-label">T4</div><div class="heatmap-day-label">T5</div><div class="heatmap-day-label">T6</div><div class="heatmap-day-label">T7</div>
-        </div>
-        <div class="heatmap-grid" id="heatmapGrid"></div>
-      </div>
-    </div>
-  </div>
+
   <!-- Hôm qua -->
   <div class="card">
     <div class="card-header"><span class="card-title">📅 Hôm qua — Phòng ban đã nộp</span><span class="badge" id="yesterdayBadge">0 phòng ban</span></div>
-    <div class="card-body" style="padding:0;">
-      <div id="yesterdayDoneGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;padding:14px 18px;"></div>
-    </div>
+    <div class="card-body" style="padding:12px 18px;"><div class="done-grid" id="yesterdayDoneGrid"></div></div>
   </div>
   <div class="dash-grid">
     <div class="card">
@@ -326,15 +232,37 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
       <div class="card-body"><div class="missing-grid" id="dashMissingGrid"></div></div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">📋 Tổng hợp theo đợt kiểm tra</span></div>
-    <div class="card-body" style="padding:0;">
-      <table class="rank-table"><thead><tr><th>Đợt</th><th>Ngày tạo</th><th>Phòng ban</th><th>Lần nộp</th><th>Tổng ảnh</th><th>Tỉ lệ</th></tr></thead><tbody id="cycleBody"></tbody></table>
+
+  <div class="dash-grid">
+    <div class="card">
+      <div class="card-header"><span class="card-title">🏢 Ảnh theo phòng ban</span><span class="badge" id="dashPeriodLabel">Hôm nay</span></div>
+      <div class="card-body"><div class="bar-chart" id="deptBarChart"></div></div>
     </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">🏅 Xếp hạng tích cực nhất</span></div>
+      <div class="card-body" style="padding:0;"><table class="rank-table"><thead><tr><th>#</th><th>Phòng ban</th><th>Ảnh</th><th>Lần nộp</th></tr></thead><tbody id="rankBody"></tbody></table></div>
+    </div>
+  </div>
+  <div class="dash-grid">
+    <div class="card">
+      <div class="card-header"><span class="card-title">📈 Xu hướng 14 ngày</span></div>
+      <div class="card-body"><div class="trend-chart" id="trendChart"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">🗓 Bản đồ hoạt động 4 tuần</span></div>
+      <div class="card-body">
+        <div class="heatmap-label-row"><div class="heatmap-day-label">CN</div><div class="heatmap-day-label">T2</div><div class="heatmap-day-label">T3</div><div class="heatmap-day-label">T4</div><div class="heatmap-day-label">T5</div><div class="heatmap-day-label">T6</div><div class="heatmap-day-label">T7</div></div>
+        <div class="heatmap-grid" id="heatmapGrid"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">📋 Tổng hợp theo đợt</span></div>
+    <div class="card-body" style="padding:0;"><table class="rank-table"><thead><tr><th>Đợt</th><th>Ngày tạo</th><th>PB</th><th>Lần nộp</th><th>Ảnh</th><th>Tỉ lệ</th></tr></thead><tbody id="cycleBody"></tbody></table></div>
   </div>
 </div>
 
-<!-- ═══ THỰC HÀNH 5S ═══ -->
+<!-- THỰC HÀNH 5S -->
 <div class="view" id="view-practice">
   <div class="cycle-row">
     <span class="cycle-label">Đợt kiểm tra:</span>
@@ -350,13 +278,13 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
     <div class="stat-card"><div class="stat-icon">🖼</div><div class="stat-val" id="s-photos" style="color:var(--amber)">0</div><div class="stat-label">Tổng ảnh đã nộp</div></div>
   </div>
   <div class="card">
-    <div class="card-header"><span class="card-title">📊 Tiến độ nộp ảnh đợt này</span><span class="badge" id="progressBadge">0 / 0</span></div>
+    <div class="card-header"><span class="card-title">📊 Tiến độ nộp ảnh</span><span class="badge" id="progressBadge">0/0</span></div>
     <div class="progress-wrap">
       <div class="progress-label-row"><span id="progressLabel" style="color:var(--primary);font-size:13px;"></span><span id="progressPct" style="color:var(--primary);font-weight:800;"></span></div>
       <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;background:linear-gradient(90deg,#2563eb,#16a34a);"></div></div>
     </div>
     <div class="card-body" style="padding-top:10px;">
-      <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:9px;text-transform:uppercase;letter-spacing:.3px;">⚠ Chưa nộp ảnh</div>
+      <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:9px;text-transform:uppercase;">⚠ Chưa nộp ảnh</div>
       <div class="missing-grid" id="missingGrid"></div>
     </div>
   </div>
@@ -365,7 +293,7 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
     <div class="submit-desc">Phòng ban chụp ảnh khu vực quản lý và nộp tại đây — không cần gửi Zalo nữa!</div>
     <div class="form-grid">
       <div class="form-group"><label>Phòng / Ban *</label><select id="submitDept"><option value="">— Chọn phòng ban —</option></select></div>
-      <div class="form-group"><label>Khu vực / Vị trí</label><input type="text" id="submitArea" placeholder="VD: Khu sản xuất A, Kho B..."></div>
+      <div class="form-group"><label>Khu vực / Vị trí</label><input type="text" id="submitArea" placeholder="VD: Khu sản xuất A..."></div>
       <div class="form-group"><label>Người nộp *</label><input type="text" id="submitPerson" placeholder="Họ và tên..."></div>
       <div class="form-group"><label>Ghi chú</label><input type="text" id="submitNote" placeholder="Nội dung thực hiện 5S..."></div>
     </div>
@@ -387,7 +315,7 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
   <div id="deptAccordion"></div>
 </div>
 
-<!-- ═══ LỊCH SỬ ẢNH ═══ -->
+<!-- LỊCH SỬ ẢNH -->
 <div class="view" id="view-history">
   <div style="font-size:17px;font-weight:800;margin-bottom:14px;">📅 Lịch sử nộp ảnh</div>
   <div class="date-filter-row">
@@ -400,37 +328,27 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
   <div class="history-filters">
     <input type="date" id="hFilterDate" onchange="renderHistory()">
     <select id="hFilterDept" onchange="renderHistory()"><option value="">Tất cả phòng ban</option></select>
-    <input type="text" id="hFilterSearch" placeholder="🔍 Tìm theo tên, khu vực, ghi chú..." oninput="renderHistory()" style="flex:2;">
+    <input type="text" id="hFilterSearch" placeholder="🔍 Tìm theo tên, khu vực..." oninput="renderHistory()" style="flex:2;">
   </div>
   <div id="historyStats" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;"></div>
   <div id="historyTimeline"></div>
 </div>
-
 </main>
 
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <img id="lbImg" src="" alt="">
-  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <img id="lbImg" src="" alt=""><button class="lb-close" onclick="closeLightbox()">✕</button>
   <div class="lb-info" id="lbInfo"></div>
 </div>
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
-
-<!-- MODAL: NEW CYCLE -->
 <div class="modal-overlay" id="modalCycle" onclick="if(event.target===this)closeModalCycle()">
   <div class="modal">
     <div class="modal-head"><div class="modal-head-title">➕ Tạo đợt kiểm tra mới</div><button class="modal-x" onclick="closeModalCycle()">✕</button></div>
     <div class="modal-body">
-      <div class="form-group" style="margin-bottom:12px;"><label>Tên đợt kiểm tra</label><input type="text" id="newCycleName" placeholder="VD: Tháng 6/2026..."></div>
-      <div class="form-group"><label>Mô tả (không bắt buộc)</label><input type="text" id="newCycleDesc" placeholder="Mô tả ngắn..."></div>
+      <div class="form-group" style="margin-bottom:12px;"><label>Tên đợt</label><input type="text" id="newCycleName" placeholder="VD: Tháng 6/2026..."></div>
     </div>
     <div class="modal-foot"><button class="btn-outline" onclick="closeModalCycle()">Huỷ</button><button class="btn-primary" onclick="createCycle()">Tạo đợt</button></div>
   </div>
 </div>
-
-<!-- MODAL: MANAGE DEPT -->
 <div class="modal-overlay" id="modalDept" onclick="if(event.target===this)closeModalDept()">
   <div class="modal">
     <div class="modal-head"><div class="modal-head-title">⚙ Quản lý phòng ban</div><button class="modal-x" onclick="closeModalDept()">✕</button></div>
@@ -446,22 +364,25 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════
-const SK = '5s_v4';
-const SP_CONFIG = {
-  clientId: '892df56b-fca9-4abb-911c-fc2eb369103c',
-  tenantId: '7e2939ee-709c-47c1-a64a-1fe4cffa94e3',
-  siteHost: 'biahalong.sharepoint.com',
-  sitePath: '/sites/Ban5S',
-  listName: '5S_Submissions',
-  libraryName: '5S_Photos',
+// ═══ CONFIG ═══
+const SK='5s_v4';
+const SP={
+  clientId:'892df56b-fca9-4abb-911c-fc2eb369103c',
+  tenantId:'7e2939ee-709c-47c1-a64a-1fe4cffa94e3',
+  siteHost:'biahalong.sharepoint.com',
+  sitePath:'/sites/Ban5S',
+  listName:'5S_Submissions',
+  libName:'5S_Photos',
 };
-
-const DEPT_ICONS = ['🏢','💼','👥','📈','🔧','🏭','🔬','📦','💻','🦺','🏆','📋','🎯','🌿','🚚'];
-const BAR_COLORS = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#84cc16','#f97316','#6366f1'];
-const DEFAULT_DEPTS = [
+const SP_SCOPES=[
+  'https://graph.microsoft.com/Sites.FullControl.All',
+  'https://graph.microsoft.com/Sites.ReadWrite.All',
+  'https://graph.microsoft.com/Files.ReadWrite.All',
+  'https://graph.microsoft.com/User.Read'
+];
+const DEPT_ICONS=['🏢','💼','👥','📈','🔧','🏭','🔬','📦','💻','🦺','🏆','📋','🎯','🌿','🚚'];
+const BAR_COLORS=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#84cc16','#f97316','#6366f1'];
+const DEFAULT_DEPTS=[
   {id:'d1',name:'Phòng Kế toán',icon:'💼'},{id:'d2',name:'Phòng Nhân sự - HC',icon:'👥'},
   {id:'d3',name:'Phòng Kinh doanh',icon:'📈'},{id:'d4',name:'Phòng Kỹ thuật',icon:'🔧'},
   {id:'d5',name:'Phòng Sản xuất',icon:'🏭'},{id:'d6',name:'Phòng Chất lượng (QC)',icon:'🔬'},
@@ -469,49 +390,40 @@ const DEFAULT_DEPTS = [
   {id:'d9',name:'Phòng An toàn (HSE)',icon:'🦺'},{id:'d10',name:'Ban Giám đốc',icon:'🏆'},
 ];
 
-// ═══════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════
-function loadData(){
-  try{ return JSON.parse(localStorage.getItem(SK))||createInitial(); }
-  catch{ return createInitial(); }
-}
+// ═══ DATA ═══
+function loadData(){try{return JSON.parse(localStorage.getItem(SK))||createInitial();}catch{return createInitial();}}
 function createInitial(){
   const name='Tháng '+new Date().toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
   return {depts:DEFAULT_DEPTS,cycles:[{id:'c1',name,desc:'',createdAt:new Date().toISOString(),submissions:[]}],activeCycle:'c1'};
 }
-function saveData(){ localStorage.setItem(SK,JSON.stringify(appData)); }
-
-let appData = loadData();
-let pendingPhotos = [];
-let activeCycleId = appData.activeCycle;
-let historyFilter = 'today';
-let dashPeriod = 'today';
-
-function getActiveCycle(){ return appData.cycles.find(c=>c.id===activeCycleId); }
-function getDept(id){ return appData.depts.find(d=>d.id===id); }
-function toYMD(d){ return d.toISOString().slice(0,10); }
-function today(){ return toYMD(new Date()); }
-function fmt(iso){ if(!iso)return''; return new Date(iso).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
-function fmtDate(iso){ if(!iso)return''; return new Date(iso).toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}); }
-function allSubmissions(){ return appData.cycles.flatMap(c=>c.submissions); }
-
+function saveData(){try{localStorage.setItem(SK,JSON.stringify(appData));}catch(e){console.warn('saveData error:',e);}}
+let appData=loadData();
+let pendingPhotos=[];
+let activeCycleId=appData.activeCycle;
+let historyFilter='today';
+let dashPeriod='today';
+function getActiveCycle(){return appData.cycles.find(c=>c.id===activeCycleId);}
+function getDept(id){return appData.depts.find(d=>d.id===id);}
+function toYMD(d){return d.toISOString().slice(0,10);}
+function today(){return toYMD(new Date());}
+function fmt(iso){if(!iso)return'';return new Date(iso).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+function fmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});}
+function allSubs(){return appData.cycles.flatMap(c=>c.submissions);}
 function filterByPeriod(subs,period){
-  const now=new Date(); const y=now.getFullYear(); const m=now.getMonth();
+  const now=new Date();const y=now.getFullYear();const m=now.getMonth();
   return subs.filter(s=>{
     const d=new Date(s.createdAt);
-    if(period==='today') return toYMD(d)===today();
+    if(period==='today')return toYMD(d)===today();
     if(period==='yesterday'){const y2=new Date(now);y2.setDate(y2.getDate()-1);return toYMD(d)===toYMD(y2);}
-    if(period==='week') return (now-d)<7*86400000;
-    if(period==='month') return d.getFullYear()===y&&d.getMonth()===m;
+    if(period==='week')return(now-d)<7*86400000;
+    if(period==='month')return d.getFullYear()===y&&d.getMonth()===m;
     if(period==='quarter'){const qm=Math.floor(m/3)*3;return d.getFullYear()===y&&d.getMonth()>=qm&&d.getMonth()<qm+3;}
     return true;
   });
 }
-
 function getDeptStats(cycle){
   const map={};
-  appData.depts.forEach(d=>{ map[d.id]={count:0,submissions:[],lastTime:null}; });
+  appData.depts.forEach(d=>{map[d.id]={count:0,submissions:[],lastTime:null};});
   if(!cycle)return map;
   cycle.submissions.forEach(sub=>{
     if(!map[sub.deptId])map[sub.deptId]={count:0,submissions:[],lastTime:null};
@@ -522,84 +434,53 @@ function getDeptStats(cycle){
   return map;
 }
 
-// ═══════════════════════════════════════════
-// MSAL / SHAREPOINT
-// ═══════════════════════════════════════════
-let msalInstance = null;
-let currentAccount = null;
-let spSiteId = null;
-let msalReady = false;
-
-const msalConfig = {
-  auth:{
-    clientId: SP_CONFIG.clientId,
-    authority: 'https://login.microsoftonline.com/'+SP_CONFIG.tenantId,
-    redirectUri: window.location.origin+window.location.pathname,
-  },
-  cache:{ cacheLocation:'sessionStorage' }
+// ═══ MSAL ═══
+let msalInstance=null,currentAccount=null,spSiteId=null,spListId=null,msalReady=false;
+const msalConfig={
+  auth:{clientId:SP.clientId,authority:'https://login.microsoftonline.com/'+SP.tenantId,redirectUri:window.location.origin+window.location.pathname},
+  cache:{cacheLocation:'sessionStorage'}
 };
 
-const SP_SCOPES = [
-  'https://graph.microsoft.com/Sites.FullControl.All',
-  'https://graph.microsoft.com/Sites.ReadWrite.All',
-  'https://graph.microsoft.com/Files.ReadWrite.All',
-  'https://graph.microsoft.com/User.Read'
-];
-
 async function initMSAL(){
-  const btn = document.getElementById('loginBtn');
+  const btn=document.getElementById('loginBtn');
   try{
-    if(btn){ btn.textContent='⏳ Đang khởi tạo...'; btn.disabled=true; }
-    // Wait for msal library to load (max 10 seconds)
-    let waited = 0;
-    while(typeof msal === 'undefined' && waited < 10000){
-      await new Promise(r=>setTimeout(r,200));
-      waited += 200;
-    }
-    if(typeof msal === 'undefined'){
-      throw new Error('Không tải được thư viện đăng nhập. Kiểm tra mạng!');
-    }
-    msalInstance = new msal.PublicClientApplication(msalConfig);
+    let w=0;
+    while(typeof msal==='undefined'&&w<8000){await new Promise(r=>setTimeout(r,200));w+=200;}
+    if(typeof msal==='undefined')throw new Error('Không tải được thư viện đăng nhập');
+    if(btn){btn.textContent='⏳ Đang khởi tạo...';btn.disabled=true;}
+    msalInstance=new msal.PublicClientApplication(msalConfig);
     await msalInstance.initialize();
-    // Handle redirect result (after login redirect comes back)
-    const result = await msalInstance.handleRedirectPromise();
-    if(result && result.account){
-      currentAccount = result.account;
+    const result=await msalInstance.handleRedirectPromise();
+    if(result&&result.account){
+      currentAccount=result.account;
+      updateLoginUI();
       showToast('✅ Đăng nhập: '+currentAccount.name);
-      await ensureSharePointSetup();
       await loadFromSharePoint();
-    } else {
-      const accounts = msalInstance.getAllAccounts();
+    }else{
+      const accounts=msalInstance.getAllAccounts();
       if(accounts.length>0){
         currentAccount=accounts[0];
-        // Already logged in - load SP data in background
-        setTimeout(()=>loadFromSharePoint(), 500);
+        setTimeout(()=>loadFromSharePoint(),500);
       }
     }
-    msalReady = true;
+    msalReady=true;
   }catch(e){
     console.error('MSAL init error:',e);
-    msalReady = false;
-    showToast('⚠ Lỗi khởi tạo: '+e.message);
+    msalReady=false;
   }
   updateLoginUI();
 }
 
 async function login(){
-  const btn = document.getElementById('loginBtn');
+  const btn=document.getElementById('loginBtn');
   try{
-    // Nếu chưa sẵn sàng thì thử khởi tạo lại
-    if(!msalReady || !msalInstance){
-      if(btn){ btn.textContent='⏳ Đang khởi tạo...'; btn.disabled=true; }
+    if(!msalReady||!msalInstance){
+      if(btn){btn.textContent='⏳ Đang khởi tạo...';btn.disabled=true;}
       await initMSAL();
-      if(!msalReady){
-        showToast('⚠ Không thể khởi tạo. Kiểm tra kết nối mạng!');
-        updateLoginUI();
-        return;
-      }
+      if(!msalReady){showToast('⚠ Không thể khởi tạo đăng nhập');updateLoginUI();return;}
     }
-    if(btn){ btn.disabled=true; btn.textContent='⏳ Đang chuyển hướng...'; }
-    await msalInstance.loginRedirect({ scopes:SP_SCOPES });
+    if(btn){btn.disabled=true;btn.textContent='⏳ Đang chuyển hướng...';}
+    await msalInstance.loginRedirect({scopes:SP_SCOPES});
   }catch(e){
     console.error('Login error:',e);
     showToast('⚠ Lỗi: '+(e.errorMessage||e.message));
@@ -609,250 +490,64 @@ async function login(){
 
 function logout(){
   sessionStorage.clear();
-  if(msalInstance) msalInstance.logoutRedirect();
+  if(msalInstance)msalInstance.logoutRedirect();
   currentAccount=null;
   updateLoginUI();
 }
 
 function updateLoginUI(){
-  const btn = document.getElementById('loginBtn');
-  const info = document.getElementById('loginInfo');
+  const btn=document.getElementById('loginBtn');
+  const info=document.getElementById('loginInfo');
+  const syncBtn=document.getElementById('syncBtn');
   if(!btn)return;
-  const syncBtn = document.getElementById('syncBtn');
   if(currentAccount){
-    btn.textContent='Đăng xuất'; btn.onclick=logout; btn.disabled=false;
-    if(info){ info.textContent='👤 '+currentAccount.name; info.style.display='block'; }
-    if(syncBtn) syncBtn.style.display='block';
-  } else {
-    btn.textContent='🔐 Đăng nhập Microsoft'; btn.onclick=login; btn.disabled=false;
-    if(info) info.style.display='none';
-    if(syncBtn) syncBtn.style.display='none';
+    btn.textContent='Đăng xuất';btn.onclick=logout;btn.disabled=false;
+    if(info){info.textContent='👤 '+currentAccount.name;info.style.display='block';}
+    if(syncBtn)syncBtn.style.display='block';
+  }else{
+    btn.textContent='🔐 Đăng nhập Microsoft';btn.onclick=login;btn.disabled=false;
+    if(info)info.style.display='none';
+    if(syncBtn)syncBtn.style.display='none';
   }
 }
 
 async function getToken(){
   try{
-    const res = await msalInstance.acquireTokenSilent({scopes:SP_SCOPES,account:currentAccount});
+    const res=await msalInstance.acquireTokenSilent({scopes:SP_SCOPES,account:currentAccount});
     return res.accessToken;
   }catch{
-    const res = await msalInstance.acquireTokenPopup({scopes:SP_SCOPES});
-    currentAccount=res.account;
-    return res.accessToken;
+    const res=await msalInstance.acquireTokenRedirect({scopes:SP_SCOPES});
+    return res?.accessToken;
   }
 }
 
 async function callGraph(method,url,body){
-  const token = await getToken();
-  const res = await fetch('https://graph.microsoft.com/v1.0'+url,{
+  const token=await getToken();
+  const res=await fetch('https://graph.microsoft.com/v1.0'+url,{
     method,
     headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-    body: body?JSON.stringify(body):undefined
+    body:body?JSON.stringify(body):undefined
   });
-  if(!res.ok){ const e=await res.text(); throw new Error(e); }
+  if(!res.ok){const e=await res.text();throw new Error(e);}
   return method==='DELETE'?null:res.json();
-}
-
-async function callGraphRaw(method,url,body,contentType){
-  const token = await getToken();
-  const res = await fetch('https://graph.microsoft.com/v1.0'+url,{
-    method,
-    headers:{'Authorization':'Bearer '+token,'Content-Type':contentType||'application/octet-stream'},
-    body
-  });
-  if(!res.ok){ const e=await res.text(); throw new Error(e); }
-  return res.json();
 }
 
 async function getSiteId(){
   if(spSiteId)return spSiteId;
-  console.log('Getting site ID for:', SP_CONFIG.siteHost, SP_CONFIG.sitePath);
-  const url = `/sites/${SP_CONFIG.siteHost}:${SP_CONFIG.sitePath}`;
-  console.log('Graph URL:', url);
-  const data = await callGraph('GET', url);
-  console.log('Site data:', data);
-  spSiteId = data.id;
+  const data=await callGraph('GET',`/sites/${SP.siteHost}:${SP.sitePath}`);
+  spSiteId=data.id;
   return spSiteId;
 }
 
-async function debugToken(){
-  try{
-    const token = await getToken();
-    // Decode JWT claims
-    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
-    console.log('=== TOKEN CLAIMS ===');
-    console.log('upn:', payload.upn);
-    console.log('preferred_username:', payload.preferred_username);
-    console.log('scp (scopes):', payload.scp);
-    console.log('tid (tenant):', payload.tid);
-    console.log('aud (audience):', payload.aud);
-    console.log('===================');
-
-    // Test /me
-    const me = await callGraph('GET','/me');
-    console.log('=== /me ===');
-    console.log('id:', me.id);
-    console.log('userPrincipalName:', me.userPrincipalName);
-    console.log('displayName:', me.displayName);
-    console.log('===========');
-
-    return true;
-  }catch(e){
-    console.error('Debug token error:', e);
-    return false;
-  }
-}
-
-async function ensureSharePointSetup(){
-  try{
-    showToast('⏳ Đang kết nối SharePoint...');
-    console.log('=== SharePoint Setup Start ===');
-    console.log('Account:', currentAccount?.username);
-
-    // Debug token FIRST
-    const token = await getToken();
-    try{
-      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
-      console.log('=== TOKEN DEBUG ===');
-      console.log('upn:', payload.upn || payload.preferred_username);
-      console.log('scp:', payload.scp);
-      console.log('aud:', payload.aud);
-      console.log('tid:', payload.tid);
-      console.log('===================');
-    }catch(e){ console.warn('Token decode error:', e); }
-
-    const siteId = await getSiteId();
-    console.log('Site ID:', siteId);
-
-    // Test lists and drives
-    try{
-      const lists = await callGraph('GET',`/sites/${siteId}/lists?$select=id,displayName&$top=5`);
-      console.log('=== LISTS ===');
-      lists.value.forEach(l=>console.log(' -',l.displayName, l.id));
-    }catch(e){ console.error('Lists error:', e.message); }
-
-    try{
-      const drives = await callGraph('GET',`/sites/${siteId}/drives`);
-      console.log('=== DRIVES ===');
-      drives.value.forEach(d=>console.log(' -',d.name, d.id));
-    }catch(e){ console.error('Drives error:', e.message); }
-
-    // Check if list exists
-    try{
-      const list = await callGraph('GET',`/sites/${siteId}/lists/${SP_CONFIG.listName}`);
-      console.log('List found:', list.id);
-    }catch(e){
-      console.log('List not found, creating...');
-      const newList = await callGraph('POST',`/sites/${siteId}/lists`,{
-        displayName:SP_CONFIG.listName,
-        columns:[
-          {name:'DeptId',text:{}},{name:'DeptName',text:{}},{name:'Person',text:{}},
-          {name:'Area',text:{}},{name:'Note',text:{}},{name:'PhotoUrls',text:{allowMultipleLines:true}},
-          {name:'CycleId',text:{}},{name:'CycleName',text:{}},{name:'SubmissionId',text:{}}
-        ],
-        list:{template:'genericList'}
-      });
-      console.log('List created:', newList.id);
-    }
-
-    // Check drive access
-    try{
-      const drive = await callGraph('GET',`/sites/${siteId}/drive`);
-      console.log('Drive accessible:', drive.id);
-    }catch(e){
-      console.warn('Drive access warning:', e.message);
-    }
-
-    showToast('✅ SharePoint đã sẵn sàng!');
-    console.log('=== SharePoint Setup Done ===');
-  }catch(e){
-    console.error('SP setup error full:', e);
-    let msg = e.message;
-    try{ const parsed = JSON.parse(msg); msg = parsed.error?.message || msg; }catch{}
-    showToast('⚠ Lỗi SharePoint: '+msg);
-  }
-}
-
-async function loadFromSharePoint(){
-  if(!currentAccount || !msalReady) return;
-  try{
-    showToast('⏳ Đang tải dữ liệu từ SharePoint...');
-    const siteId = await getSiteId();
-    const listId = await getOrCreateList(siteId);
-
-    // Load all items from list
-    const items = await callGraph('GET',
-      `/sites/${siteId}/lists/${listId}/items?$expand=fields&$top=500&$orderby=fields/Created desc`
-    );
-
-    if(!items.value || items.value.length === 0){
-      showToast('📭 Chưa có dữ liệu trên SharePoint');
-      return;
-    }
-
-    // Group by cycle
-    const cycleMap = {};
-    items.value.forEach(item => {
-      const f = item.fields;
-      const cycleId = f.CycleId || 'c1';
-      const cycleName = f.CycleName || 'Đợt mặc định';
-      if(!cycleMap[cycleId]){
-        cycleMap[cycleId] = {
-          id: cycleId, name: cycleName, desc:'',
-          createdAt: item.createdDateTime || new Date().toISOString(),
-          submissions:[]
-        };
-      }
-      // Build photo array from SharePoint URLs
-      const photoUrls = (f.PhotoUrls||'').split('
-').filter(u=>u.trim());
-      const photos = photoUrls.map((url,i)=>({url, name:`photo_${i+1}.jpg`, spUrl: url}));
-
-      cycleMap[cycleId].submissions.push({
-        id: f.SubmissionId || item.id,
-        deptId: f.DeptId || '',
-        person: f.Person || '',
-        area: f.Area || '',
-        note: f.Note || '',
-        photos,
-        createdAt: item.createdDateTime || new Date().toISOString(),
-        fromSP: true
-      });
-    });
-
-    // Merge with existing local data (keep local if not in SP)
-    const spCycleIds = Object.keys(cycleMap);
-    const newCycles = Object.values(cycleMap);
-
-    // Keep cycles that are only local
-    const localOnlyCycles = appData.cycles.filter(c=>!spCycleIds.includes(c.id));
-    appData.cycles = [...newCycles, ...localOnlyCycles];
-
-    // Set active cycle to most recent
-    if(newCycles.length > 0) activeCycleId = newCycles[0].id;
-    appData.activeCycle = activeCycleId;
-
-    saveData();
-    renderDashboard();
-    showToast('✅ Đã tải '+items.value.length+' lần nộp từ SharePoint!');
-
-  }catch(e){
-    console.error('Load SP error:', e);
-    showToast('⚠ Lỗi tải SharePoint: '+e.message);
-  }
-}
-
 async function getOrCreateList(siteId){
-  // Try get by name first
+  if(spListId)return spListId;
   try{
-    const lists = await callGraph('GET',`/sites/${siteId}/lists?$select=id,displayName`);
-    const found = lists.value.find(l=>l.displayName===SP_CONFIG.listName);
-    if(found){ console.log('List found:',found.id); return found.id; }
-  }catch(e){ console.warn('List search error:',e.message); }
-
-  // Create new list
-  console.log('Creating list:', SP_CONFIG.listName);
-  const newList = await callGraph('POST',`/sites/${siteId}/lists`,{
-    displayName: SP_CONFIG.listName,
+    const lists=await callGraph('GET',`/sites/${siteId}/lists?$select=id,displayName`);
+    const found=lists.value.find(l=>l.displayName===SP.listName);
+    if(found){spListId=found.id;return spListId;}
+  }catch(e){console.warn('List search:',e.message);}
+  const newList=await callGraph('POST',`/sites/${siteId}/lists`,{
+    displayName:SP.listName,
     columns:[
       {name:'DeptId',text:{}},{name:'DeptName',text:{}},{name:'Person',text:{}},
       {name:'Area',text:{}},{name:'Note',text:{}},{name:'PhotoUrls',text:{allowMultipleLines:true}},
@@ -860,105 +555,163 @@ async function getOrCreateList(siteId){
     ],
     list:{template:'genericList'}
   });
-  console.log('List created:',newList.id);
-  return newList.id;
+  spListId=newList.id;
+  return spListId;
 }
 
-async function saveSubmissionToSP(sub,cycle){
-  const siteId = await getSiteId();
-  const listId = await getOrCreateList(siteId);
-
-  const photoUrls=[];
-  for(let i=0;i<sub.photos.length;i++){
-    const base64=sub.photos[i].url.split(',')[1];
-    const binary=atob(base64);
-    const bytes=new Uint8Array(binary.length);
-    for(let j=0;j<binary.length;j++)bytes[j]=binary.charCodeAt(j);
-    const folderPath=`${SP_CONFIG.libraryName}/${sub.id}`;
-    try{ await callGraph('GET',`/sites/${siteId}/drive/root:/${folderPath}`); }
-    catch{
-      await callGraph('POST',`/sites/${siteId}/drive/root:/${SP_CONFIG.libraryName}:/children`,{
-        name:sub.id,folder:{},['@microsoft.graph.conflictBehavior']:'rename'
-      });
-    }
-    const result=await callGraphRaw('PUT',`/sites/${siteId}/drive/root:/${folderPath}/photo_${i+1}.jpg:/content`,bytes.buffer,'image/jpeg');
-    photoUrls.push(result.webUrl);
+async function uploadPhoto(dataUrl,filename,subId){
+  const siteId=await getSiteId();
+  const folderPath=`${SP.libName}/${subId}`;
+  const base64=dataUrl.split(',')[1];
+  const binary=atob(base64);
+  const bytes=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+  try{
+    const token=await getToken();
+    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/drive/root:/${folderPath}/${filename}:/content`,{
+      method:'PUT',
+      headers:{'Authorization':'Bearer '+token,'Content-Type':'image/jpeg'},
+      body:bytes.buffer
+    });
+    if(!res.ok)throw new Error(await res.text());
+    const data=await res.json();
+    return data.webUrl;
+  }catch(e){
+    console.error('Upload photo error:',e);
+    return '';
   }
-
-  const dept=getDept(sub.deptId);
-  await callGraph('POST',`/sites/${siteId}/lists/${listId}/items`,{
-    fields:{
-      Title:sub.id,SubmissionId:sub.id,DeptId:sub.deptId,DeptName:dept?.name||'',
-      Person:sub.person,Area:sub.area||'',Note:sub.note||'',
-      PhotoUrls:photoUrls.join('\n'),CycleId:cycle.id,CycleName:cycle.name,
-    }
-  });
-  return photoUrls;
 }
 
-// ═══════════════════════════════════════════
-// TAB
-// ═══════════════════════════════════════════
+async function saveToSP(sub,cycle){
+  try{
+    const siteId=await getSiteId();
+    const listId=await getOrCreateList(siteId);
+    const photoUrls=[];
+    for(let i=0;i<sub.photos.length;i++){
+      if(sub.photos[i].url&&sub.photos[i].url.startsWith('data:')){
+        const url=await uploadPhoto(sub.photos[i].url,`photo_${i+1}.jpg`,sub.id);
+        photoUrls.push(url);
+      }
+    }
+    const dept=getDept(sub.deptId);
+    await callGraph('POST',`/sites/${siteId}/lists/${listId}/items`,{
+      fields:{
+        Title:sub.id,SubmissionId:sub.id,DeptId:sub.deptId,DeptName:dept?.name||'',
+        Person:sub.person,Area:sub.area||'',Note:sub.note||'',
+        PhotoUrls:photoUrls.filter(u=>u).join('\n'),
+        CycleId:cycle.id,CycleName:cycle.name,
+      }
+    });
+    return photoUrls;
+  }catch(e){
+    console.error('saveToSP error:',e);
+    throw e;
+  }
+}
+
+async function loadFromSharePoint(){
+  if(!currentAccount||!msalReady)return;
+  try{
+    showToast('⏳ Đang tải dữ liệu từ SharePoint...');
+    const siteId=await getSiteId();
+    const listId=await getOrCreateList(siteId);
+    const items=await callGraph('GET',`/sites/${siteId}/lists/${listId}/items?$expand=fields&$top=500&$orderby=fields/Created desc`);
+    if(!items.value||items.value.length===0){showToast('📭 Chưa có dữ liệu trên SharePoint');return;}
+    const cycleMap={};
+    items.value.forEach(item=>{
+      const f=item.fields;
+      const cid=f.CycleId||'c1';
+      const cname=f.CycleName||'Đợt mặc định';
+      if(!cycleMap[cid])cycleMap[cid]={id:cid,name:cname,desc:'',createdAt:item.createdDateTime||new Date().toISOString(),submissions:[]};
+      const photoUrls=(f.PhotoUrls||'').split('\n').filter(u=>u.trim());
+      const photos=photoUrls.map((url,i)=>({url,name:`photo_${i+1}.jpg`}));
+      // Check if already exists
+      const exists=cycleMap[cid].submissions.find(s=>s.id===f.SubmissionId);
+      if(!exists){
+        cycleMap[cid].submissions.push({
+          id:f.SubmissionId||item.id,deptId:f.DeptId||'',person:f.Person||'',
+          area:f.Area||'',note:f.Note||'',photos,
+          createdAt:item.createdDateTime||new Date().toISOString(),fromSP:true
+        });
+      }
+    });
+    const newCycles=Object.values(cycleMap);
+    const spIds=new Set(Object.keys(cycleMap));
+    const localOnly=appData.cycles.filter(c=>!spIds.has(c.id));
+    appData.cycles=[...newCycles,...localOnly];
+    if(newCycles.length>0)activeCycleId=newCycles[0].id;
+    appData.activeCycle=activeCycleId;
+    saveData();
+    renderDashboard();
+    if(document.getElementById('view-practice').classList.contains('active'))renderPractice();
+    if(document.getElementById('view-history').classList.contains('active'))renderHistory();
+    showToast('✅ Đã tải '+items.value.length+' lần nộp từ SharePoint!');
+  }catch(e){
+    console.error('loadFromSP error:',e);
+    showToast('⚠ Lỗi tải SharePoint: '+e.message);
+  }
+}
+
+// ═══ TAB ═══
 function switchTab(name){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
   document.getElementById('view-'+name).classList.add('active');
-  if(name==='practice') renderPractice();
-  if(name==='history'){ populateHistoryFilters(); renderHistory(); }
-  if(name==='dashboard') renderDashboard();
+  if(name==='practice')renderPractice();
+  if(name==='history'){populateHistoryFilters();renderHistory();}
+  if(name==='dashboard')renderDashboard();
 }
 
-// ═══════════════════════════════════════════
-// PRACTICE
-// ═══════════════════════════════════════════
+// ═══ PRACTICE ═══
 function renderPractice(){
-  renderCycleSelect();
-  renderSubmitDeptOptions();
-  renderStats();
-  renderDeptAccordion();
+  renderCycleSelect();renderSubmitDeptOptions();renderStats();renderDeptAccordion();
 }
-
 function renderCycleSelect(){
-  const sel=document.getElementById('cycleSelect');
-  sel.innerHTML=appData.cycles.map(c=>`<option value="${c.id}"${c.id===activeCycleId?' selected':''}>${c.name}</option>`).join('');
+  document.getElementById('cycleSelect').innerHTML=appData.cycles.map(c=>`<option value="${c.id}"${c.id===activeCycleId?' selected':''}>${c.name}</option>`).join('');
 }
-
 function renderSubmitDeptOptions(){
-  document.getElementById('submitDept').innerHTML=
-    '<option value="">— Chọn phòng ban —</option>'+
-    appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
+  document.getElementById('submitDept').innerHTML='<option value="">— Chọn phòng ban —</option>'+appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
 }
-
 function renderStats(){
-  const cycle=getActiveCycle();
-  const stats=getDeptStats(cycle);
+  const cycle=getActiveCycle();const stats=getDeptStats(cycle);
   const total=appData.depts.length;
   const done=appData.depts.filter(d=>stats[d.id]?.count>0).length;
   const photos=cycle?cycle.submissions.reduce((s,sub)=>s+sub.photos.length,0):0;
-  setNum('s-total',total); setNum('s-done',done); setNum('s-missing',total-done); setNum('s-photos',photos);
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-missing').textContent=total-done;
+  document.getElementById('s-photos').textContent=photos;
   const pct=total>0?Math.round(done/total*100):0;
   document.getElementById('progressFill').style.width=pct+'%';
   document.getElementById('progressPct').textContent=pct+'%';
   document.getElementById('progressLabel').textContent=`${done} / ${total} phòng ban đã nộp`;
-  document.getElementById('progressBadge').textContent=`${done} / ${total}`;
+  document.getElementById('progressBadge').textContent=`${done}/${total}`;
   const missingDepts=appData.depts.filter(d=>!stats[d.id]?.count);
   document.getElementById('missingGrid').innerHTML=missingDepts.length===0
     ?'<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả phòng ban đã nộp ảnh!</div>'
     :missingDepts.map(d=>`<div class="missing-card"><span style="font-size:18px;">${d.icon}</span><div><div class="mc-name">${d.name}</div><div class="mc-sub">Chưa nộp ảnh</div></div></div>`).join('');
 }
-
 function renderDeptAccordion(){
-  const cycle=getActiveCycle();
-  const stats=getDeptStats(cycle);
+  const cycle=getActiveCycle();const stats=getDeptStats(cycle);
   const sorted=[...appData.depts].sort((a,b)=>(stats[b.id]?.count||0)-(stats[a.id]?.count||0));
   document.getElementById('deptAccordion').innerHTML=sorted.map(d=>{
-    const ds=stats[d.id]; const count=ds?.count||0; const subs=ds?.submissions||[];
+    const ds=stats[d.id];const count=ds?.count||0;const subs=ds?.submissions||[];
     const allPhotos=subs.flatMap(sub=>sub.photos.map(p=>({...p,person:sub.person,area:sub.area,time:sub.createdAt})));
     const gallery=allPhotos.length>0
-      ?`<div class="photo-gallery">${allPhotos.map(ph=>`<div class="gallery-item" onclick="openLightbox('${ph.url}','${d.name}','${ph.area||''}','${ph.person}','${fmt(ph.time)}')"><img src="${ph.url}" loading="lazy"></div>`).join('')}</div>`
+      ?`<div class="photo-gallery">${allPhotos.map(ph=>{
+          const src=ph.url&&ph.url.startsWith('data:')?ph.url:(ph.url?ph.url:'');
+          return src?`<div class="gallery-item" onclick="openLightbox('${src}','${d.name}','${ph.area||''}','${ph.person}','${fmt(ph.time)}')"><img src="${src}" loading="lazy"></div>`:'';
+        }).filter(Boolean).join('')}</div>`
       :`<div class="gallery-empty">📭 Chưa có ảnh nào.</div>`;
-    const subRows=subs.length>0?`<div style="padding:7px 16px 3px;">${subs.map(s=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12px;color:var(--sub);flex-wrap:wrap;"><span>👤 <strong style="color:var(--text)">${s.person}</strong></span>${s.area?`<span>📍 ${s.area}</span>`:''}<span>🖼 ${s.photos.length} ảnh</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;">${fmt(s.createdAt)}</span><button onclick="deleteSub('${s.id}')" style="background:none;border:1px solid var(--red-border);color:var(--red);border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer;">🗑 Xoá</button></div>`).join('')}</div>`:''
+    const subRows=subs.length>0?`<div style="padding:7px 16px 3px;">${subs.map(s=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12px;color:var(--sub);flex-wrap:wrap;">
+        <span>👤 <strong style="color:var(--text)">${s.person}</strong></span>
+        ${s.area?`<span>📍 ${s.area}</span>`:''}
+        <span>🖼 ${s.photos.length} ảnh</span>
+        <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;">${fmt(s.createdAt)}</span>
+        <button class="btn-danger" onclick="deleteSub('${s.id}')">🗑 Xoá</button>
+      </div>`).join('')}</div>`:''
     return `<div class="accordion-item" id="acc-${d.id}">
       <div class="accordion-header" onclick="toggleAcc('${d.id}')">
         <div class="dept-avatar" style="background:${count>0?'var(--green-bg)':'var(--red-bg)'};">${d.icon}</div>
@@ -970,30 +723,22 @@ function renderDeptAccordion(){
     </div>`;
   }).join('');
 }
+function toggleAcc(id){document.getElementById('acc-'+id).classList.toggle('open');}
+function onCycleChange(){activeCycleId=document.getElementById('cycleSelect').value;appData.activeCycle=activeCycleId;saveData();renderStats();renderDeptAccordion();}
 
-function toggleAcc(id){ document.getElementById('acc-'+id).classList.toggle('open'); }
-function setNum(id,n){ document.getElementById(id).textContent=n; }
-
-function onCycleChange(){
-  activeCycleId=document.getElementById('cycleSelect').value;
-  appData.activeCycle=activeCycleId; saveData(); renderStats(); renderDeptAccordion();
-}
-
-// CYCLE MODAL
-function openNewCycleModal(){ document.getElementById('newCycleName').value=''; document.getElementById('newCycleDesc').value=''; document.getElementById('modalCycle').classList.add('open'); setTimeout(()=>document.getElementById('newCycleName').focus(),100); }
-function closeModalCycle(){ document.getElementById('modalCycle').classList.remove('open'); }
+// MODALS
+function openNewCycleModal(){document.getElementById('newCycleName').value='';document.getElementById('modalCycle').classList.add('open');setTimeout(()=>document.getElementById('newCycleName').focus(),100);}
+function closeModalCycle(){document.getElementById('modalCycle').classList.remove('open');}
 function createCycle(){
   const name=document.getElementById('newCycleName').value.trim();
-  if(!name){ alert('Vui lòng nhập tên đợt'); return; }
+  if(!name){alert('Vui lòng nhập tên đợt');return;}
   const id='c'+Date.now();
-  appData.cycles.unshift({id,name,desc:document.getElementById('newCycleDesc').value,createdAt:new Date().toISOString(),submissions:[]});
-  activeCycleId=id; appData.activeCycle=id; saveData(); renderPractice(); closeModalCycle();
+  appData.cycles.unshift({id,name,desc:'',createdAt:new Date().toISOString(),submissions:[]});
+  activeCycleId=id;appData.activeCycle=id;saveData();renderPractice();closeModalCycle();
   showToast('✅ Đã tạo đợt: '+name);
 }
-
-// DEPT MODAL
-function openManageDeptModal(){ renderDeptManageList(); document.getElementById('modalDept').classList.add('open'); }
-function closeModalDept(){ document.getElementById('modalDept').classList.remove('open'); renderPractice(); }
+function openManageDeptModal(){renderDeptManageList();document.getElementById('modalDept').classList.add('open');}
+function closeModalDept(){document.getElementById('modalDept').classList.remove('open');renderPractice();}
 function renderDeptManageList(){
   document.getElementById('deptManageList').innerHTML=appData.depts.map(d=>`
     <div style="display:flex;align-items:center;gap:9px;background:var(--off);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;">
@@ -1003,59 +748,49 @@ function renderDeptManageList(){
     </div>`).join('');
 }
 function addDept(){
-  const name=document.getElementById('newDeptName').value.trim(); if(!name)return;
+  const name=document.getElementById('newDeptName').value.trim();if(!name)return;
   appData.depts.push({id:'d'+Date.now(),name,icon:DEPT_ICONS[appData.depts.length%DEPT_ICONS.length]});
-  saveData(); document.getElementById('newDeptName').value=''; renderDeptManageList();
+  saveData();document.getElementById('newDeptName').value='';renderDeptManageList();
 }
 function deleteDept(id){
   if(!confirm('Xoá phòng ban này?'))return;
-  appData.depts=appData.depts.filter(d=>d.id!==id); saveData(); renderDeptManageList();
+  appData.depts=appData.depts.filter(d=>d.id!==id);saveData();renderDeptManageList();
 }
 
-// FILE UPLOAD + COMPRESS
+// FILE UPLOAD
 function compressImage(dataUrl,maxW=500,quality=0.4){
   return new Promise(resolve=>{
     const img=new Image();
     img.onload=()=>{
       const canvas=document.createElement('canvas');
       let w=img.width,h=img.height;
-      // Scale down to maxW
       if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
-      // Also scale down if height too large
       if(h>maxW){w=Math.round(w*maxW/h);h=maxW;}
-      canvas.width=w; canvas.height=h;
+      canvas.width=w;canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
       resolve(canvas.toDataURL('image/jpeg',quality));
     };
     img.src=dataUrl;
   });
 }
-
-function handleFiles(e){ addFiles(Array.from(e.target.files)); e.target.value=''; }
-function handleDragOver(e){ e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
-function handleDragLeave(){ document.getElementById('dropZone').classList.remove('drag-over'); }
-function handleDrop(e){ e.preventDefault(); document.getElementById('dropZone').classList.remove('drag-over'); addFiles(Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/'))); }
-
+function handleFiles(e){addFiles(Array.from(e.target.files));e.target.value='';}
+function handleDragOver(e){e.preventDefault();document.getElementById('dropZone').classList.add('drag-over');}
+function handleDragLeave(){document.getElementById('dropZone').classList.remove('drag-over');}
+function handleDrop(e){e.preventDefault();document.getElementById('dropZone').classList.remove('drag-over');addFiles(Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')));}
 function addFiles(files){
   files.forEach(file=>{
     const r=new FileReader();
     r.onload=async ev=>{
-      try{
-        const compressed=await compressImage(ev.target.result);
-        pendingPhotos.push({file,dataUrl:compressed});
-        renderPreview();
-      }catch(e){ showToast('⚠ Lỗi xử lý ảnh: '+file.name); }
+      try{const compressed=await compressImage(ev.target.result);pendingPhotos.push({file,dataUrl:compressed});renderPreview();}
+      catch(e){showToast('⚠ Lỗi xử lý ảnh: '+file.name);}
     };
     r.readAsDataURL(file);
   });
 }
-
 function renderPreview(){
-  document.getElementById('previewGrid').innerHTML=pendingPhotos.map((p,i)=>
-    `<div class="preview-thumb"><img src="${p.dataUrl}"><button class="del-btn" onclick="removePreview(${i})">✕</button></div>`
-  ).join('');
+  document.getElementById('previewGrid').innerHTML=pendingPhotos.map((p,i)=>`<div class="preview-thumb"><img src="${p.dataUrl}"><button class="del-btn" onclick="removePreview(${i})">✕</button></div>`).join('');
 }
-function removePreview(idx){ pendingPhotos.splice(idx,1); renderPreview(); }
+function removePreview(idx){pendingPhotos.splice(idx,1);renderPreview();}
 
 // SUBMIT
 function submitPhotos(){
@@ -1063,78 +798,57 @@ function submitPhotos(){
   const person=document.getElementById('submitPerson').value.trim();
   const area=document.getElementById('submitArea').value.trim();
   const note=document.getElementById('submitNote').value.trim();
-  if(!deptId){ shakeEl('submitDept'); showToast('⚠ Vui lòng chọn phòng ban!'); return; }
-  if(!person){ shakeEl('submitPerson'); showToast('⚠ Vui lòng nhập tên người nộp!'); return; }
-  if(pendingPhotos.length===0){ shakeEl('dropZone'); showToast('⚠ Vui lòng chọn ít nhất 1 ảnh!'); return; }
-  const cycle=getActiveCycle(); if(!cycle){ showToast('⚠ Chưa có đợt kiểm tra!'); return; }
-
+  if(!deptId){shakeEl('submitDept');showToast('⚠ Vui lòng chọn phòng ban!');return;}
+  if(!person){shakeEl('submitPerson');showToast('⚠ Vui lòng nhập tên người nộp!');return;}
+  if(pendingPhotos.length===0){shakeEl('dropZone');showToast('⚠ Vui lòng chọn ít nhất 1 ảnh!');return;}
+  const cycle=getActiveCycle();if(!cycle){showToast('⚠ Chưa có đợt kiểm tra!');return;}
   const photos=pendingPhotos.map(p=>({url:p.dataUrl,name:p.file.name}));
   const newSub={id:'s'+Date.now(),deptId,person,area,note,photos,createdAt:new Date().toISOString()};
   cycle.submissions.push(newSub);
-  try{
-    saveData();
-  }catch(e){
-    // localStorage full — save without photo data (thumbnails only)
-    cycle.submissions.pop();
-    const lightSub={id:'s'+Date.now(),deptId,person,area,note,
-      photos:photos.map(p=>({url:'',name:p.name})),
-      createdAt:new Date().toISOString(),noLocalPhoto:true};
-    cycle.submissions.push(lightSub);
-    try{ saveData(); }catch(e2){ cycle.submissions.pop(); showToast('⚠ Bộ nhớ đầy! Vui lòng đăng nhập Microsoft để lưu ảnh lên SharePoint.'); return; }
-    showToast('⚠ Bộ nhớ thiết bị đầy — ảnh sẽ chỉ lưu lên SharePoint!');
-  }
-
+  try{saveData();}catch(e){cycle.submissions.pop();showToast('⚠ Bộ nhớ đầy!');return;}
   document.getElementById('submitDept').value='';
   document.getElementById('submitPerson').value='';
   document.getElementById('submitArea').value='';
   document.getElementById('submitNote').value='';
-  pendingPhotos=[]; renderPreview(); renderStats(); renderDeptAccordion();
-
+  pendingPhotos=[];renderPreview();renderStats();renderDeptAccordion();
   const dept=getDept(deptId);
-  showToast(`✅ ${dept?.name} đã nộp ${photos.length} ảnh!`);
-
-  setTimeout(()=>{
-    const acc=document.getElementById('acc-'+deptId);
-    if(acc&&!acc.classList.contains('open')){ acc.classList.add('open'); acc.scrollIntoView({behavior:'smooth',block:'nearest'}); }
-  },400);
-
+  showToast('✅ '+dept?.name+' đã nộp '+photos.length+' ảnh!');
+  setTimeout(()=>{const acc=document.getElementById('acc-'+deptId);if(acc&&!acc.classList.contains('open')){acc.classList.add('open');acc.scrollIntoView({behavior:'smooth',block:'nearest'});}},400);
   if(currentAccount){
-    showToast('⏳ Đang lưu lên SharePoint...');
-    saveSubmissionToSP(newSub,cycle)
+    saveToSP(newSub,cycle)
       .then(()=>showToast('☁️ Đã lưu lên SharePoint!'))
       .catch(e=>showToast('⚠ Lỗi SharePoint: '+e.message));
   }
 }
-
-function shakeEl(id){
-  const el=document.getElementById(id);
-  const s=[0,6,-6,4,-4,2,-2,0]; let i=0;
-  const t=setInterval(()=>{ el.style.transform=`translateX(${s[i++]}px)`; if(i>=s.length){clearInterval(t);el.style.transform='';} },60);
+function deleteSub(subId){
+  if(!confirm('Xoá lần nộp này?'))return;
+  appData.cycles.forEach(c=>{c.submissions=c.submissions.filter(s=>s.id!==subId);});
+  saveData();renderStats();renderDeptAccordion();renderHistory();
+  showToast('🗑 Đã xoá');
 }
-
-// EXPORT
+function shakeEl(id){
+  const el=document.getElementById(id);const s=[0,6,-6,4,-4,2,-2,0];let i=0;
+  const t=setInterval(()=>{el.style.transform=`translateX(${s[i++]}px)`;if(i>=s.length){clearInterval(t);el.style.transform='';}},60);
+}
 function exportSummary(){
-  const cycle=getActiveCycle(); if(!cycle)return;
-  const stats=getDeptStats(cycle);
-  const total=appData.depts.length;
+  const cycle=getActiveCycle();if(!cycle)return;
+  const stats=getDeptStats(cycle);const total=appData.depts.length;
   const done=appData.depts.filter(d=>stats[d.id]?.count>0).length;
   const photos=cycle.submissions.reduce((s,sub)=>s+sub.photos.length,0);
-  let txt=`BÁO CÁO THỰC HÀNH 5S\nĐợt: ${cycle.name}\nXuất: ${new Date().toLocaleString('vi-VN')}\n${'─'.repeat(50)}\nTổng: ${total} phòng ban · Đã nộp: ${done} · Tổng ảnh: ${photos}\n${'─'.repeat(50)}\n\n`;
+  let txt=`BÁO CÁO THỰC HÀNH 5S\nĐợt: ${cycle.name}\nXuất: ${new Date().toLocaleString('vi-VN')}\n${'─'.repeat(50)}\nTổng: ${total} PB · Đã nộp: ${done} · Ảnh: ${photos}\n${'─'.repeat(50)}\n\n`;
   appData.depts.forEach(d=>{
-    const ds=stats[d.id]; const cnt=ds?.count||0; const subs=ds?.submissions||[];
-    txt+=`${d.icon} ${d.name} — ${cnt>0?'✅ Đã nộp '+cnt+' ảnh':'❌ Chưa nộp'}\n`;
-    subs.forEach(s=>{ txt+=`   · ${s.person}${s.area?' ('+s.area+')':''}: ${s.photos.length} ảnh · ${fmt(s.createdAt)}\n`; });
+    const ds=stats[d.id];const cnt=ds?.count||0;const subs=ds?.submissions||[];
+    txt+=`${d.icon} ${d.name} — ${cnt>0?'✅ '+cnt+' ảnh':'❌ Chưa nộp'}\n`;
+    subs.forEach(s=>{txt+=`   · ${s.person}${s.area?' ('+s.area+')':''}: ${s.photos.length} ảnh · ${fmt(s.createdAt)}\n`;});
     txt+='\n';
   });
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
-  a.download=`BaoCao_5S_${cycle.name.replace(/\s+/g,'_')}.txt`; a.click();
+  a.download=`BaoCao_5S_${cycle.name.replace(/\s+/g,'_')}.txt`;a.click();
   showToast('📄 Đã xuất báo cáo!');
 }
 
-// ═══════════════════════════════════════════
-// HISTORY
-// ═══════════════════════════════════════════
+// ═══ HISTORY ═══
 function setHistoryFilter(f,btn){
   historyFilter=f;
   document.querySelectorAll('.date-filter-btn').forEach(b=>b.classList.remove('active'));
@@ -1142,39 +856,26 @@ function setHistoryFilter(f,btn){
   document.getElementById('hFilterDate').value='';
   renderHistory();
 }
-
 function populateHistoryFilters(){
-  document.getElementById('hFilterDept').innerHTML=
-    '<option value="">Tất cả phòng ban</option>'+
-    appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
+  document.getElementById('hFilterDept').innerHTML='<option value="">Tất cả phòng ban</option>'+appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
 }
-
 function renderHistory(){
-  let subs=allSubmissions();
+  let subs=allSubs();
   const dateVal=document.getElementById('hFilterDate').value;
   const deptVal=document.getElementById('hFilterDept').value;
   const searchVal=document.getElementById('hFilterSearch').value.toLowerCase().trim();
-
-  if(dateVal) subs=subs.filter(s=>toYMD(new Date(s.createdAt))===dateVal);
+  if(dateVal)subs=subs.filter(s=>toYMD(new Date(s.createdAt))===dateVal);
   else subs=filterByPeriod(subs,historyFilter);
-  if(deptVal) subs=subs.filter(s=>s.deptId===deptVal);
-  if(searchVal) subs=subs.filter(s=>{
-    const d=getDept(s.deptId);
-    return (d?.name||'').toLowerCase().includes(searchVal)||(s.person||'').toLowerCase().includes(searchVal)||(s.area||'').toLowerCase().includes(searchVal)||(s.note||'').toLowerCase().includes(searchVal);
-  });
+  if(deptVal)subs=subs.filter(s=>s.deptId===deptVal);
+  if(searchVal)subs=subs.filter(s=>{const d=getDept(s.deptId);return(d?.name||'').toLowerCase().includes(searchVal)||(s.person||'').toLowerCase().includes(searchVal)||(s.area||'').toLowerCase().includes(searchVal)||(s.note||'').toLowerCase().includes(searchVal);});
   subs.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
-
   const totalPhotos=subs.reduce((s,sub)=>s+sub.photos.length,0);
   const uniqueDepts=new Set(subs.map(s=>s.deptId)).size;
-  document.getElementById('historyStats').innerHTML=
-    `<span class="badge">📤 ${subs.length} lần nộp</span><span class="badge">🖼 ${totalPhotos} ảnh</span><span class="badge">🏢 ${uniqueDepts} phòng ban</span>`;
-
+  document.getElementById('historyStats').innerHTML=`<span class="badge">📤 ${subs.length} lần nộp</span><span class="badge">🖼 ${totalPhotos} ảnh</span><span class="badge">🏢 ${uniqueDepts} phòng ban</span>`;
   const groups={};
-  subs.forEach(s=>{ const d=toYMD(new Date(s.createdAt)); if(!groups[d])groups[d]=[]; groups[d].push(s); });
-
+  subs.forEach(s=>{const d=toYMD(new Date(s.createdAt));if(!groups[d])groups[d]=[];groups[d].push(s);});
   const container=document.getElementById('historyTimeline');
-  if(subs.length===0){ container.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div>Không có dữ liệu trong khoảng thời gian này</div></div>`; return; }
-
+  if(subs.length===0){container.innerHTML=`<div class="empty-state"><div style="font-size:38px;margin-bottom:9px;">📭</div><div>Không có dữ liệu trong khoảng thời gian này</div></div>`;return;}
   container.innerHTML=Object.entries(groups).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,dayS])=>{
     const dayPhotos=dayS.reduce((s,sub)=>s+sub.photos.length,0);
     return `<div class="timeline-day">
@@ -1184,7 +885,10 @@ function renderHistory(){
       </div>
       ${dayS.map(sub=>{
         const dept=getDept(sub.deptId);
-        const thumbs=sub.photos.slice(0,4).map(p=>`<div class="sub-card-thumb" onclick="openLightbox('${p.url}','${dept?.name||''}','${sub.area||''}','${sub.person}','${fmt(sub.createdAt)}')"><img src="${p.url}" loading="lazy"></div>`).join('');
+        const thumbs=sub.photos.slice(0,4).map(p=>{
+          const src=p.url&&p.url.startsWith('data:')?p.url:(p.url||'');
+          return src?`<div class="sub-card-thumb" onclick="openLightbox('${src}','${dept?.name||''}','${sub.area||''}','${sub.person}','${fmt(sub.createdAt)}')"><img src="${src}" loading="lazy"></div>`:'';
+        }).filter(Boolean).join('');
         const more=sub.photos.length>4?`<div style="width:50px;height:50px;background:var(--off);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--sub);">+${sub.photos.length-4}</div>`:'';
         return `<div class="sub-card">
           <div class="sub-card-thumbs">${thumbs}${more}</div>
@@ -1205,179 +909,92 @@ function renderHistory(){
   }).join('');
 }
 
-function deleteSub(subId){
-  if(!confirm('Xoá lần nộp này?'))return;
-  appData.cycles.forEach(c=>{ c.submissions=c.submissions.filter(s=>s.id!==subId); });
-  saveData(); renderHistory(); renderStats(); renderDeptAccordion();
-  showToast('🗑 Đã xoá');
-}
-
-// ═══════════════════════════════════════════
-// DASHBOARD
-// ═══════════════════════════════════════════
-function setDashPeriod(p,btn){
-  dashPeriod=p;
-  document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderDashboard();
-}
-
+// ═══ DASHBOARD ═══
+function setDashPeriod(p,btn){dashPeriod=p;document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderDashboard();}
 const PERIOD_LABELS={today:'Hôm nay',week:'7 ngày',month:'Tháng này',quarter:'Quý này',all:'Tất cả'};
-
 function renderDashboard(){
-  const allSubs=allSubmissions();
-  const subs=filterByPeriod(allSubs,dashPeriod);
-  const totalPhotos=subs.reduce((s,sub)=>s+sub.photos.length,0);
-  const uniqueDepts=new Set(subs.map(s=>s.deptId)).size;
-  const uniqueDays=new Set(subs.map(s=>toYMD(new Date(s.createdAt)))).size;
-  setNum('ds-photos',totalPhotos); setNum('ds-subs',subs.length); setNum('ds-depts',uniqueDepts); setNum('ds-days',uniqueDays);
+  const allS=allSubs();const subs=filterByPeriod(allS,dashPeriod);
+  document.getElementById('ds-photos').textContent=subs.reduce((s,sub)=>s+sub.photos.length,0);
+  document.getElementById('ds-subs').textContent=subs.length;
+  document.getElementById('ds-depts').textContent=new Set(subs.map(s=>s.deptId)).size;
+  document.getElementById('ds-days').textContent=new Set(subs.map(s=>toYMD(new Date(s.createdAt)))).size;
   document.getElementById('dashPeriodLabel').textContent=PERIOD_LABELS[dashPeriod]||'';
 
   // Bar chart
-  const deptPhotoMap={};
-  appData.depts.forEach(d=>{ deptPhotoMap[d.id]=0; });
-  subs.forEach(s=>{ deptPhotoMap[s.deptId]=(deptPhotoMap[s.deptId]||0)+s.photos.length; });
-  const maxBar=Math.max(...Object.values(deptPhotoMap),1);
-  const sortedDepts=[...appData.depts].sort((a,b)=>(deptPhotoMap[b.id]||0)-(deptPhotoMap[a.id]||0));
-  document.getElementById('deptBarChart').innerHTML=sortedDepts.map((d,i)=>{
-    const cnt=deptPhotoMap[d.id]||0;
-    const pct=(cnt/maxBar*100).toFixed(1);
-    const color=BAR_COLORS[i%BAR_COLORS.length];
+  const dpm={};appData.depts.forEach(d=>{dpm[d.id]=0;});
+  subs.forEach(s=>{dpm[s.deptId]=(dpm[s.deptId]||0)+s.photos.length;});
+  const maxBar=Math.max(...Object.values(dpm),1);
+  const sortedD=[...appData.depts].sort((a,b)=>(dpm[b.id]||0)-(dpm[a.id]||0));
+  document.getElementById('deptBarChart').innerHTML=sortedD.map((d,i)=>{
+    const cnt=dpm[d.id]||0;const pct=(cnt/maxBar*100).toFixed(1);const color=BAR_COLORS[i%BAR_COLORS.length];
     return `<div class="bar-row"><div class="bar-label">${d.icon} ${d.name.length>12?d.name.slice(0,12)+'…':d.name}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color};"></div></div><div class="bar-val" style="color:${color}">${cnt}</div></div>`;
   }).join('');
 
   // Rank
-  const deptSubMap={};
-  appData.depts.forEach(d=>{ deptSubMap[d.id]=0; });
-  subs.forEach(s=>{ deptSubMap[s.deptId]=(deptSubMap[s.deptId]||0)+1; });
+  const dsm={};appData.depts.forEach(d=>{dsm[d.id]=0;});
+  subs.forEach(s=>{dsm[s.deptId]=(dsm[s.deptId]||0)+1;});
   const medals=['🥇','🥈','🥉'];
-  document.getElementById('rankBody').innerHTML=sortedDepts.slice(0,10).map((d,i)=>`
-    <tr><td style="font-size:16px;text-align:center;">${medals[i]||i+1}</td>
-    <td><span style="font-size:15px;margin-right:6px;">${d.icon}</span>${d.name}</td>
-    <td><strong>${deptPhotoMap[d.id]||0}</strong></td>
-    <td>${deptSubMap[d.id]||0}</td></tr>`).join('');
+  document.getElementById('rankBody').innerHTML=sortedD.slice(0,10).map((d,i)=>`<tr><td style="text-align:center;">${medals[i]||i+1}</td><td><span style="font-size:15px;margin-right:6px;">${d.icon}</span>${d.name}</td><td><strong>${dpm[d.id]||0}</strong></td><td>${dsm[d.id]||0}</td></tr>`).join('');
 
-  // Trend 14 days
+  // Trend
   const trend=[];
-  for(let i=13;i>=0;i--){
-    const d=new Date(); d.setDate(d.getDate()-i);
-    const ymd=toYMD(d);
-    const cnt=allSubs.filter(s=>toYMD(new Date(s.createdAt))===ymd).reduce((s,sub)=>s+sub.photos.length,0);
-    trend.push({label:d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'}),cnt});
-  }
-  const maxTrend=Math.max(...trend.map(t=>t.cnt),1);
-  document.getElementById('trendChart').innerHTML=trend.map(t=>{
-    const h=Math.max(Math.round(t.cnt/maxTrend*70),t.cnt>0?4:2);
-    return `<div class="trend-bar-wrap"><div class="trend-val">${t.cnt>0?t.cnt:''}</div><div class="trend-bar" style="height:${h}px;${t.cnt===0?'background:#e4e8f0;':''}"></div><div class="trend-label">${t.label}</div></div>`;
-  }).join('');
+  for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ymd=toYMD(d);const cnt=allS.filter(s=>toYMD(new Date(s.createdAt))===ymd).reduce((s,sub)=>s+sub.photos.length,0);trend.push({label:d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'}),cnt});}
+  const maxT=Math.max(...trend.map(t=>t.cnt),1);
+  document.getElementById('trendChart').innerHTML=trend.map(t=>{const h=Math.max(Math.round(t.cnt/maxT*70),t.cnt>0?4:2);return `<div class="trend-bar-wrap"><div class="trend-val">${t.cnt>0?t.cnt:''}</div><div class="trend-bar" style="height:${h}px;${t.cnt===0?'background:#e4e8f0;':''}"></div><div class="trend-label">${t.label}</div></div>`;}).join('');
 
   // Heatmap
-  const heatData={};
-  for(let i=27;i>=0;i--){
-    const d=new Date(); d.setDate(d.getDate()-i);
-    const ymd=toYMD(d);
-    heatData[ymd]=allSubs.filter(s=>toYMD(new Date(s.createdAt))===ymd).reduce((s,sub)=>s+sub.photos.length,0);
-  }
-  const heatStart=new Date(); heatStart.setDate(heatStart.getDate()-27);
-  const cells=[];
-  for(let i=0;i<heatStart.getDay();i++)cells.push(null);
-  for(let i=0;i<28;i++){const d=new Date(heatStart);d.setDate(d.getDate()+i);cells.push(toYMD(d));}
-  const heatColors=['#f0fdf4','#bbf7d0','#4ade80','#16a34a','#14532d'];
+  const hd={};
+  for(let i=27;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ymd=toYMD(d);hd[ymd]=allS.filter(s=>toYMD(new Date(s.createdAt))===ymd).reduce((s,sub)=>s+sub.photos.length,0);}
+  const hStart=new Date();hStart.setDate(hStart.getDate()-27);
+  const cells=[];for(let i=0;i<hStart.getDay();i++)cells.push(null);for(let i=0;i<28;i++){const d=new Date(hStart);d.setDate(d.getDate()+i);cells.push(toYMD(d));}
+  const hColors=['#f0fdf4','#bbf7d0','#4ade80','#16a34a','#14532d'];
   document.getElementById('heatmapGrid').innerHTML=cells.map(ymd=>{
     if(!ymd)return`<div style="aspect-ratio:1;"></div>`;
-    const cnt=heatData[ymd]||0;
-    const ci=cnt===0?0:cnt<3?1:cnt<6?2:cnt<10?3:4;
-    return `<div class="heatmap-cell" style="background:${heatColors[ci]};${ymd===today()?'outline:2px solid var(--primary);':''}" title="${ymd}: ${cnt} ảnh" onclick="jumpToDate('${ymd}')"></div>`;
+    const cnt=hd[ymd]||0;const ci=cnt===0?0:cnt<3?1:cnt<6?2:cnt<10?3:4;
+    return `<div class="heatmap-cell" style="background:${hColors[ci]};${ymd===today()?'outline:2px solid var(--primary);':''}" title="${ymd}: ${cnt} ảnh" onclick="jumpToDate('${ymd}')"></div>`;
   }).join('');
+
+  // Yesterday
+  const yest=new Date();yest.setDate(yest.getDate()-1);const yYMD=toYMD(yest);
+  const ySubs=allS.filter(s=>toYMD(new Date(s.createdAt))===yYMD);
+  const yDeptIds=new Set(ySubs.map(s=>s.deptId));
+  const yDone=appData.depts.filter(d=>yDeptIds.has(d.id));
+  const yMissing=appData.depts.filter(d=>!yDeptIds.has(d.id));
+  const yPhotos=ySubs.reduce((s,sub)=>s+sub.photos.length,0);
+  document.getElementById('yesterdayBadge').textContent=`${yDone.length}/${appData.depts.length} phòng ban · ${yPhotos} ảnh`;
+  document.getElementById('yesterdayDoneGrid').innerHTML=yDone.length===0
+    ?'<div style="color:var(--muted);font-size:13px;">Không có phòng ban nào nộp ảnh hôm qua</div>'
+    :yDone.map(d=>{const ds=ySubs.filter(s=>s.deptId===d.id);const dp=ds.reduce((s,sub)=>s+sub.photos.length,0);const persons=[...new Set(ds.map(s=>s.person))].join(', ');return `<div class="done-card"><span style="font-size:20px;">${d.icon}</span><div><div class="dc-name">${d.name}</div><div class="dc-sub">🖼 ${dp} ảnh · ${ds.length} lần · 👤 ${persons}</div></div></div>`;}).join('');
+  document.getElementById('yesterdayMissingGrid').innerHTML=yMissing.length===0
+    ?'<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả đã nộp hôm qua!</div>'
+    :yMissing.map(d=>`<div class="missing-card"><span style="font-size:18px;">${d.icon}</span><div><div class="mc-name">${d.name}</div><div class="mc-sub">Chưa nộp hôm qua</div></div></div>`).join('');
 
   // Missing in period
   const activeDeptIds=new Set(subs.map(s=>s.deptId));
-  const missingDepts=appData.depts.filter(d=>!activeDeptIds.has(d.id));
-  document.getElementById('dashMissingGrid').innerHTML=missingDepts.length===0
-    ?`<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả phòng ban đều có hoạt động!</div>`
-    :missingDepts.map(d=>`<div class="missing-card"><span style="font-size:18px;">${d.icon}</span><div><div class="mc-name">${d.name}</div><div class="mc-sub">Không có ảnh trong kỳ</div></div></div>`).join('');
-
-  // Yesterday stats
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
-  const yYMD = toYMD(yesterday);
-  const ySubsAll = allSubs.filter(s=>toYMD(new Date(s.createdAt))===yYMD);
-
-  // Depts that submitted yesterday
-  const yDeptIds = new Set(ySubsAll.map(s=>s.deptId));
-  const yDoneDepts = appData.depts.filter(d=>yDeptIds.has(d.id));
-  const yMissingDepts = appData.depts.filter(d=>!yDeptIds.has(d.id));
-  const yPhotoCount = ySubsAll.reduce((s,sub)=>s+sub.photos.length,0);
-
-  document.getElementById('yesterdayBadge').textContent = `${yDoneDepts.length} / ${appData.depts.length} phòng ban · ${yPhotoCount} ảnh`;
-
-  document.getElementById('yesterdayDoneGrid').innerHTML = yDoneDepts.length===0
-    ?`<div style="color:var(--muted);font-size:13px;padding:8px 0;">Không có phòng ban nào nộp ảnh hôm qua</div>`
-    :yDoneDepts.map(d=>{
-      const dSubs = ySubsAll.filter(s=>s.deptId===d.id);
-      const dPhotos = dSubs.reduce((s,sub)=>s+sub.photos.length,0);
-      const persons = [...new Set(dSubs.map(s=>s.person))].join(', ');
-      return `<div style="background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:flex-start;gap:9px;">
-        <span style="font-size:20px;">${d.icon}</span>
-        <div>
-          <div style="font-size:13px;font-weight:700;color:var(--green);">${d.name}</div>
-          <div style="font-size:11px;color:var(--green);margin-top:2px;">🖼 ${dPhotos} ảnh · ${dSubs.length} lần nộp</div>
-          <div style="font-size:11px;color:var(--sub);margin-top:1px;">👤 ${persons}</div>
-        </div>
-      </div>`;
-    }).join('');
-
-  document.getElementById('yesterdayMissingGrid').innerHTML = yMissingDepts.length===0
-    ?`<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả đã nộp hôm qua!</div>`
-    :yMissingDepts.map(d=>`<div class="missing-card"><span style="font-size:18px;">${d.icon}</span><div><div class="mc-name">${d.name}</div><div class="mc-sub">Chưa nộp hôm qua</div></div></div>`).join('');
+  document.getElementById('dashMissingGrid').innerHTML=appData.depts.filter(d=>!activeDeptIds.has(d.id)).length===0
+    ?'<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả đều có hoạt động!</div>'
+    :appData.depts.filter(d=>!activeDeptIds.has(d.id)).map(d=>`<div class="missing-card"><span style="font-size:18px;">${d.icon}</span><div><div class="mc-name">${d.name}</div><div class="mc-sub">Không có ảnh trong kỳ</div></div></div>`).join('');
 
   // Cycle summary
   document.getElementById('cycleBody').innerHTML=appData.cycles.map(c=>{
-    const total=appData.depts.length;
-    const doneCount=new Set(c.submissions.map(s=>s.deptId)).size;
+    const total=appData.depts.length;const doneCount=new Set(c.submissions.map(s=>s.deptId)).size;
     const photos=c.submissions.reduce((s,sub)=>s+sub.photos.length,0);
     const pct=total>0?Math.round(doneCount/total*100):0;
     const color=pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
-    return `<tr>
-      <td><strong>${c.name}</strong></td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${fmt(c.createdAt)}</td>
-      <td>${doneCount}/${total}</td><td>${c.submissions.length}</td><td><strong>${photos}</strong></td>
-      <td style="min-width:90px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;background:var(--off);border-radius:99px;height:6px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:${color};width:${pct}%;"></div></div><span style="font-size:11px;font-weight:700;">${pct}%</span></div></td>
-    </tr>`;
+    return `<tr><td><strong>${c.name}</strong></td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${fmt(c.createdAt)}</td><td>${doneCount}/${total}</td><td>${c.submissions.length}</td><td><strong>${photos}</strong></td><td style="min-width:90px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;background:var(--off);border-radius:99px;height:6px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:${color};width:${pct}%;"></div></div><span style="font-size:11px;font-weight:700;">${pct}%</span></div></td></tr>`;
   }).join('');
 }
+function jumpToDate(ymd){switchTab('history');document.getElementById('hFilterDate').value=ymd;document.querySelectorAll('.date-filter-btn').forEach(b=>b.classList.remove('active'));historyFilter='all';renderHistory();}
 
-function jumpToDate(ymd){
-  switchTab('history');
-  document.getElementById('hFilterDate').value=ymd;
-  document.querySelectorAll('.date-filter-btn').forEach(b=>b.classList.remove('active'));
-  historyFilter='all';
-  renderHistory();
-}
-
-// ═══════════════════════════════════════════
-// LIGHTBOX / TOAST
-// ═══════════════════════════════════════════
-function openLightbox(url,dept,area,person,time){
-  document.getElementById('lbImg').src=url;
-  document.getElementById('lbInfo').innerHTML=`<strong>${dept}</strong>${area?' · '+area:''} · ${person} · ${time}`;
-  document.getElementById('lightbox').classList.add('open');
-}
-function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
-
+// ═══ LIGHTBOX / TOAST ═══
+function openLightbox(url,dept,area,person,time){document.getElementById('lbImg').src=url;document.getElementById('lbInfo').innerHTML=`<strong>${dept}</strong>${area?' · '+area:''} · ${person} · ${time}`;document.getElementById('lightbox').classList.add('open');}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('open');}
 let toastTimer;
-function showToast(msg){
-  clearTimeout(toastTimer);
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
-}
+function showToast(msg){clearTimeout(toastTimer);const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
 
-// ═══════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════
+// ═══ INIT ═══
 document.getElementById('headerDate').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
 renderDashboard();
-// Khởi tạo MSAL ngay khi script chạy
 (async()=>{ await initMSAL(); })();
 </script>
 </body>

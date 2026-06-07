@@ -408,7 +408,7 @@ main{max-width:1120px;margin:0 auto;padding:28px 20px 80px;}
     <div class="f2">
       <div class="fg"><label>Phòng / Ban *</label><select id="submitDept"><option value="">— Chọn phòng ban —</option></select></div>
       <div class="fg"><label>Khu vực / Vị trí</label><input type="text" id="submitArea" placeholder="VD: Khu sản xuất A..."></div>
-      <div class="fg"><label>Người nộp</label><input type="text" id="submitPerson" placeholder="Tự động điền từ tài khoản" readonly style="background:var(--surface);color:var(--sub);"></div>
+      <div class="fg"><label>Người nộp</label><input type="text" id="submitPerson" placeholder="Họ và tên..."></div>
       <div class="fg"><label>Ghi chú</label><input type="text" id="submitNote" placeholder="Nội dung thực hiện 5S..."></div>
     </div>
     <div class="dropzone" id="dropZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
@@ -467,7 +467,7 @@ main{max-width:1120px;margin:0 auto;padding:28px 20px 80px;}
     <div class="sec-hd"><span class="sec-title">📝 Ghi nhận Gemba Walk</span></div>
     <div class="sec-body">
       <div class="f2">
-        <div class="fg"><label>Người kiểm tra</label><input type="text" id="gw-inspector" placeholder="Tự động từ tài khoản" readonly style="background:var(--surface);color:var(--sub);"></div>
+        <div class="fg"><label>Người kiểm tra</label><input type="text" id="gw-inspector" placeholder="Họ và tên..."></div>
         <div class="fg"><label>Bộ phận</label><select id="gw-dept"><option value="">— Chọn bộ phận —</option></select></div>
         <div class="fg"><label>Khu vực kiểm tra *</label><input type="text" id="gw-area" placeholder="VD: Khu sản xuất A, Kho B..."></div>
         <div class="fg"><label>Hạng mục</label><select id="gw-category">
@@ -981,6 +981,12 @@ function renderPractice(){
   const cn=document.getElementById('currentCycleName');
   const cycle=getActiveCycle();
   if(cn&&cycle)cn.textContent=cycle.name;
+  // Re-fill person name if logged in
+  if(currentAccount){
+    const name=currentAccount.name||currentAccount.username||'';
+    const personEl=document.getElementById('submitPerson');
+    if(personEl&&!personEl.value)personEl.value=name;
+  }
 }
 function renderCycleSelect(){
   const sel=document.getElementById('cycleSelect');if(!sel)return;

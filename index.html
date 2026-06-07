@@ -650,9 +650,13 @@ async function loadFromSharePoint(silent=false){
     if(newCycles.length>0)activeCycleId=newCycles[0].id;
     appData.activeCycle=activeCycleId;
     saveData();
+    // Re-render tất cả views
     renderDashboard();
-    if(document.getElementById('view-practice').classList.contains('active'))renderPractice();
-    if(document.getElementById('view-history').classList.contains('active'))renderHistory();
+    renderPractice();
+    if(document.getElementById('view-history').classList.contains('active')){
+      populateHistoryFilters();
+      renderHistory();
+    }
     if(!silent) showToast('✅ Đã tải '+items.value.length+' lần nộp từ SharePoint!');
   }catch(e){
     console.error('loadFromSP error:',e);

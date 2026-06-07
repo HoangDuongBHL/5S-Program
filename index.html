@@ -820,13 +820,16 @@ function deleteDept(id){
 }
 
 // FILE UPLOAD + COMPRESS
-function compressImage(dataUrl,maxW=800,quality=0.72){
+function compressImage(dataUrl,maxW=500,quality=0.4){
   return new Promise(resolve=>{
     const img=new Image();
     img.onload=()=>{
       const canvas=document.createElement('canvas');
       let w=img.width,h=img.height;
+      // Scale down to maxW
       if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+      // Also scale down if height too large
+      if(h>maxW){w=Math.round(w*maxW/h);h=maxW;}
       canvas.width=w; canvas.height=h;
       canvas.getContext('2d').drawImage(img,0,0,w,h);
       resolve(canvas.toDataURL('image/jpeg',quality));
@@ -875,8 +878,18 @@ function submitPhotos(){
   const photos=pendingPhotos.map(p=>({url:p.dataUrl,name:p.file.name}));
   const newSub={id:'s'+Date.now(),deptId,person,area,note,photos,createdAt:new Date().toISOString()};
   cycle.submissions.push(newSub);
-  try{ saveData(); }
-  catch(e){ cycle.submissions.pop(); showToast('⚠ Bộ nhớ đầy, thử chọn ít ảnh hơn!'); return; }
+  try{
+    saveData();
+  }catch(e){
+    // localStorage full — save without photo data (thumbnails only)
+    cycle.submissions.pop();
+    const lightSub={id:'s'+Date.now(),deptId,person,area,note,
+      photos:photos.map(p=>({url:'',name:p.name})),
+      createdAt:new Date().toISOString(),noLocalPhoto:true};
+    cycle.submissions.push(lightSub);
+    try{ saveData(); }catch(e2){ cycle.submissions.pop(); showToast('⚠ Bộ nhớ đầy! Vui lòng đăng nhập Microsoft để lưu ảnh lên SharePoint.'); return; }
+    showToast('⚠ Bộ nhớ thiết bị đầy — ảnh sẽ chỉ lưu lên SharePoint!');
+  }
 
   document.getElementById('submitDept').value='';
   document.getElementById('submitPerson').value='';

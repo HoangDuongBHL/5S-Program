@@ -243,6 +243,15 @@ main{max-width:1120px;margin:0 auto;padding:28px 20px 80px;}
 /* EMPTY */
 .empty{text-align:center;padding:36px;color:var(--muted);}
 
+/* BAR CHART */
+.bar-row{display:flex;align-items:center;gap:10px;}
+.bar-dept-name{font-size:12px;font-weight:600;color:var(--sub);min-width:140px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-track{flex:1;background:var(--border);border-radius:99px;height:10px;overflow:hidden;position:relative;}
+.bar-fill{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.34,1.56,.64,1);position:relative;}
+.bar-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;min-width:32px;color:var(--text);}
+.bar-zero .bar-dept-name{color:var(--muted);}
+.bar-zero .bar-val{color:var(--muted);}
+
 /* RESPONSIVE */
 @media(max-width:480px){
   main{padding:14px 10px 80px;}
@@ -334,9 +343,18 @@ main{max-width:1120px;margin:0 auto;padding:28px 20px 80px;}
     <div class="sec-hd"><span class="sec-title">⚠️ Chưa nộp ảnh</span><span class="badge" id="dash-miss-badge">0</span></div>
     <div class="sec-body"><div class="dept-grid" id="dashMissingGrid"></div></div>
   </div>
-  <div class="sec" style="margin-bottom:28px;">
+  <div class="sec" style="margin-bottom:12px;">
     <div class="sec-hd"><span class="sec-title">✅ Đã nộp ảnh</span><span class="badge" id="dash-done-badge">0</span></div>
     <div class="sec-body"><div class="dept-grid" id="dashDoneGrid"></div></div>
+  </div>
+  <div class="sec" style="margin-bottom:28px;">
+    <div class="sec-hd">
+      <span class="sec-title">📊 Số ảnh nộp theo phòng ban</span>
+      <span class="badge" id="chartPeriodLabel">Hôm nay</span>
+    </div>
+    <div style="padding:20px 20px 8px;">
+      <div id="deptBarChart" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
   </div>
 
   <!-- ── BÁO CÁO 2: GEMBA WALK ── -->
@@ -354,6 +372,8 @@ main{max-width:1120px;margin:0 auto;padding:28px 20px 80px;}
     <div class="sec-hd"><span class="sec-title">📋 Lịch sử Gemba Walk gần nhất</span><span class="badge" id="dsgw-badge">0 lần</span></div>
     <div id="dashGWList" style="padding:12px 18px;display:flex;flex-direction:column;gap:8px;"></div>
   </div>
+
+
 </div>
 
 <!-- ═══ THỰC HÀNH 5S ═══ -->
@@ -616,10 +636,10 @@ async function initMSAL(){
     const result=await msalInstance.handleRedirectPromise();
     if(result&&result.account){
       currentAccount=result.account;
-      onLoginSuccess();
+      await onLoginSuccess();
     }else{
       const accounts=msalInstance.getAllAccounts();
-      if(accounts.length>0){currentAccount=accounts[0];onLoginSuccess();}
+      if(accounts.length>0){currentAccount=accounts[0];await onLoginSuccess();}
       else showLoginScreen();
     }
     msalReady=true;
@@ -661,7 +681,7 @@ function logout(){
   if(msalInstance)msalInstance.logoutRedirect();
 }
 
-function onLoginSuccess(){
+async function onLoginSuccess(){
   const email=(currentAccount.username||currentAccount.upn||'').toLowerCase();
   const name=currentAccount.name||email;
   const admin=isAdmin(email);
@@ -856,6 +876,7 @@ function renderDashboard(){
   const missingCount=appData.depts.length-doneCount;
   const totalDepts=appData.depts.length;
   const periodNames={today:'hôm nay',yesterday:'hôm qua',week:'7 ngày qua',month:'tháng này',all:'tất cả'};
+  const periodLabels={today:'Hôm nay',yesterday:'Hôm qua',week:'7 ngày',month:'Tháng này',all:'Tất cả'};
   document.getElementById('ds-photos').textContent=totalPhotos;
   document.getElementById('ds-done').textContent=doneCount;
   document.getElementById('ds-missing').textContent=missingCount;
@@ -910,6 +931,33 @@ function renderDashboard(){
     if(gwFiltered.length>5){
       gwListEl.innerHTML+=`<div style="text-align:center;padding:8px;font-size:12px;color:var(--sub);">... và ${gwFiltered.length-5} lần khác</div>`;
     }
+  }
+
+  // ── BAR CHART: ảnh theo phòng ban ──
+  const BAR_COLORS=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#84cc16','#f97316','#6366f1','#14b8a6','#f43f5e'];
+  const deptPhotoMap={};
+  appData.depts.forEach(d=>{deptPhotoMap[d.id]=0;});
+  subs.forEach(s=>{deptPhotoMap[s.deptId]=(deptPhotoMap[s.deptId]||0)+s.photos.length;});
+  const maxPhotos=Math.max(...Object.values(deptPhotoMap),1);
+  const sortedByPhotos=[...appData.depts].sort((a,b)=>(deptPhotoMap[b.id]||0)-(deptPhotoMap[a.id]||0));
+
+  const chartEl=document.getElementById('deptBarChart');
+  const periodLbl=document.getElementById('chartPeriodLabel');
+  if(periodLbl)periodLbl.textContent=periodLabels[dashPeriod]||'';
+  if(chartEl){
+    chartEl.innerHTML=sortedByPhotos.map((d,i)=>{
+      const cnt=deptPhotoMap[d.id]||0;
+      const pct=Math.round(cnt/maxPhotos*100);
+      const color=BAR_COLORS[i%BAR_COLORS.length];
+      const isEmpty=cnt===0;
+      return `<div class="bar-row ${isEmpty?'bar-zero':''}">
+        <div class="bar-dept-name" title="${d.name}">${d.icon} ${d.name.length>14?d.name.slice(0,14)+'…':d.name}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${isEmpty?'0':pct}%;background:${isEmpty?'var(--border)':color};"></div>
+        </div>
+        <div class="bar-val" style="color:${isEmpty?'var(--muted)':color};">${cnt}</div>
+      </div>`;
+    }).join('');
   }
   const missingDepts=appData.depts.filter(d=>!activeDeptIds.has(d.id));
   document.getElementById('dashMissingGrid').innerHTML=missingDepts.length===0

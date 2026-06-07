@@ -703,26 +703,27 @@ async function onLoginSuccess(){
   document.getElementById('adminSection').style.display=admin?'block':'none';
   document.getElementById('userCycleInfo').style.display=admin?'none':'block';
 
-  // Lấy displayName thực từ Graph API
-  try{
-    const token=await getToken();
-    const meRes=await fetch('https://graph.microsoft.com/v1.0/me?$select=displayName,givenName,surname',{
-      headers:{'Authorization':'Bearer '+token}
-    });
-    if(meRes.ok){
-      const me=await meRes.json();
-      const fullName=me.displayName||me.givenName+' '+me.surname||name;
-      document.getElementById('submitPerson').value=fullName;
-      document.getElementById('gw-inspector').value=fullName;
-      document.getElementById('userName').textContent=fullName.split(' ').slice(-1)[0]||fullName;
-    }else{
-      document.getElementById('submitPerson').value=name;
-      document.getElementById('gw-inspector').value=name;
-    }
-  }catch(e){
-    document.getElementById('submitPerson').value=name;
-    document.getElementById('gw-inspector').value=name;
-  }
+  // Điền tên ngay từ currentAccount
+  document.getElementById('submitPerson').value=name;
+  document.getElementById('gw-inspector').value=name;
+
+  // Sau đó cập nhật lại từ Graph API /me nếu được
+  setTimeout(async()=>{
+    try{
+      const token=await getToken();
+      const meRes=await fetch('https://graph.microsoft.com/v1.0/me?$select=displayName',{
+        headers:{'Authorization':'Bearer '+token}
+      });
+      if(meRes.ok){
+        const me=await meRes.json();
+        if(me.displayName){
+          document.getElementById('submitPerson').value=me.displayName;
+          document.getElementById('gw-inspector').value=me.displayName;
+          document.getElementById('userName').textContent=me.displayName.split(' ').slice(-1)[0]||me.displayName;
+        }
+      }
+    }catch(e){ console.warn('Cannot fetch displayName:', e); }
+  }, 1000);
 
   // Load data
   renderDashboard();

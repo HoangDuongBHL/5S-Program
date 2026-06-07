@@ -518,13 +518,21 @@ async function initMSAL(){
     if(btn){ btn.textContent='⏳ Đang khởi tạo...'; btn.disabled=true; }
     msalInstance = new msal.PublicClientApplication(msalConfig);
     await msalInstance.initialize();
-    await msalInstance.handleRedirectPromise();
-    const accounts = msalInstance.getAllAccounts();
-    if(accounts.length>0) currentAccount=accounts[0];
+    // Handle redirect result (after login redirect comes back)
+    const result = await msalInstance.handleRedirectPromise();
+    if(result && result.account){
+      currentAccount = result.account;
+      showToast('✅ Đăng nhập: '+currentAccount.name);
+      await ensureSharePointSetup();
+    } else {
+      const accounts = msalInstance.getAllAccounts();
+      if(accounts.length>0) currentAccount=accounts[0];
+    }
     msalReady = true;
   }catch(e){
     console.error('MSAL init error:',e);
     msalReady = false;
+    showToast('⚠ Lỗi khởi tạo: '+e.message);
   }
   updateLoginUI();
 }
@@ -533,24 +541,21 @@ async function login(){
   const btn = document.getElementById('loginBtn');
   try{
     if(!msalReady){
-      await initMSAL();
-      if(!msalReady){ showToast('⚠ Không thể khởi tạo đăng nhập'); return; }
+      showToast('⚠ Chưa sẵn sàng, vui lòng thử lại');
+      return;
     }
-    if(btn){ btn.disabled=true; btn.textContent='⏳ Đang đăng nhập...'; }
-    const res = await msalInstance.loginPopup({ scopes:SP_SCOPES });
-    currentAccount = res.account;
-    updateLoginUI();
-    showToast('✅ Đăng nhập: '+currentAccount.name);
-    await ensureSharePointSetup();
+    if(btn){ btn.disabled=true; btn.textContent='⏳ Đang chuyển hướng...'; }
+    // Dùng redirect thay popup — ổn định hơn trên mọi trình duyệt
+    await msalInstance.loginRedirect({ scopes:SP_SCOPES });
   }catch(e){
     console.error('Login error:',e);
-    if(e.errorCode!=='user_cancelled') showToast('⚠ Lỗi: '+(e.errorMessage||e.message));
+    showToast('⚠ Lỗi: '+(e.errorMessage||e.message));
     updateLoginUI();
   }
 }
 
 function logout(){
-  if(msalInstance) msalInstance.logoutPopup();
+  if(msalInstance) msalInstance.logoutRedirect();
   currentAccount=null;
   updateLoginUI();
 }

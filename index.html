@@ -252,6 +252,7 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
   </div>
   <div class="header-right">
     <div id="loginInfo"></div>
+    <button id="syncBtn" onclick="loadFromSharePoint()" style="display:none;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:7px 12px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🔄 Đồng bộ</button>
     <button id="loginBtn">🔐 Đăng nhập Microsoft</button>
     <div class="header-date" id="headerDate"></div>
   </div>
@@ -566,9 +567,14 @@ async function initMSAL(){
       currentAccount = result.account;
       showToast('✅ Đăng nhập: '+currentAccount.name);
       await ensureSharePointSetup();
+      await loadFromSharePoint();
     } else {
       const accounts = msalInstance.getAllAccounts();
-      if(accounts.length>0) currentAccount=accounts[0];
+      if(accounts.length>0){
+        currentAccount=accounts[0];
+        // Already logged in - load SP data in background
+        setTimeout(()=>loadFromSharePoint(), 500);
+      }
     }
     msalReady = true;
   }catch(e){
@@ -612,12 +618,15 @@ function updateLoginUI(){
   const btn = document.getElementById('loginBtn');
   const info = document.getElementById('loginInfo');
   if(!btn)return;
+  const syncBtn = document.getElementById('syncBtn');
   if(currentAccount){
     btn.textContent='Đăng xuất'; btn.onclick=logout; btn.disabled=false;
     if(info){ info.textContent='👤 '+currentAccount.name; info.style.display='block'; }
+    if(syncBtn) syncBtn.style.display='block';
   } else {
     btn.textContent='🔐 Đăng nhập Microsoft'; btn.onclick=login; btn.disabled=false;
     if(info) info.style.display='none';
+    if(syncBtn) syncBtn.style.display='none';
   }
 }
 
@@ -760,6 +769,75 @@ async function ensureSharePointSetup(){
     let msg = e.message;
     try{ const parsed = JSON.parse(msg); msg = parsed.error?.message || msg; }catch{}
     showToast('⚠ Lỗi SharePoint: '+msg);
+  }
+}
+
+async function loadFromSharePoint(){
+  if(!currentAccount || !msalReady) return;
+  try{
+    showToast('⏳ Đang tải dữ liệu từ SharePoint...');
+    const siteId = await getSiteId();
+    const listId = await getOrCreateList(siteId);
+
+    // Load all items from list
+    const items = await callGraph('GET',
+      `/sites/${siteId}/lists/${listId}/items?$expand=fields&$top=500&$orderby=fields/Created desc`
+    );
+
+    if(!items.value || items.value.length === 0){
+      showToast('📭 Chưa có dữ liệu trên SharePoint');
+      return;
+    }
+
+    // Group by cycle
+    const cycleMap = {};
+    items.value.forEach(item => {
+      const f = item.fields;
+      const cycleId = f.CycleId || 'c1';
+      const cycleName = f.CycleName || 'Đợt mặc định';
+      if(!cycleMap[cycleId]){
+        cycleMap[cycleId] = {
+          id: cycleId, name: cycleName, desc:'',
+          createdAt: item.createdDateTime || new Date().toISOString(),
+          submissions:[]
+        };
+      }
+      // Build photo array from SharePoint URLs
+      const photoUrls = (f.PhotoUrls||'').split('
+').filter(u=>u.trim());
+      const photos = photoUrls.map((url,i)=>({url, name:`photo_${i+1}.jpg`, spUrl: url}));
+
+      cycleMap[cycleId].submissions.push({
+        id: f.SubmissionId || item.id,
+        deptId: f.DeptId || '',
+        person: f.Person || '',
+        area: f.Area || '',
+        note: f.Note || '',
+        photos,
+        createdAt: item.createdDateTime || new Date().toISOString(),
+        fromSP: true
+      });
+    });
+
+    // Merge with existing local data (keep local if not in SP)
+    const spCycleIds = Object.keys(cycleMap);
+    const newCycles = Object.values(cycleMap);
+
+    // Keep cycles that are only local
+    const localOnlyCycles = appData.cycles.filter(c=>!spCycleIds.includes(c.id));
+    appData.cycles = [...newCycles, ...localOnlyCycles];
+
+    // Set active cycle to most recent
+    if(newCycles.length > 0) activeCycleId = newCycles[0].id;
+    appData.activeCycle = activeCycleId;
+
+    saveData();
+    renderDashboard();
+    showToast('✅ Đã tải '+items.value.length+' lần nộp từ SharePoint!');
+
+  }catch(e){
+    console.error('Load SP error:', e);
+    showToast('⚠ Lỗi tải SharePoint: '+e.message);
   }
 }
 

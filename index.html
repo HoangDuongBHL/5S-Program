@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>5S Program — Bia Hà Long</title>
+<title>5S Program — Bia Hà Long v2.1</title>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js" crossorigin="anonymous" onerror="loadMsalFallback()"></script>
 <script>function loadMsalFallback(){var s=document.createElement('script');s.src='https://unpkg.com/@azure/msal-browser@2.38.0/lib/msal-browser.min.js';s.crossOrigin='anonymous';document.head.appendChild(s);}</script>
@@ -731,8 +731,10 @@ async function onLoginSuccess(){
   renderGemba();
   loadFromSharePoint(true);
 
-  // Initial sync right after login
+  // Initial sync right after login - always show progress
   await loadFromSharePoint(false);
+  // Keep syncing on interval
+  
 
   // Auto sync every 60s
   if(!window._syncInterval){
@@ -1149,24 +1151,31 @@ async function deleteSub(subId){
   const admin=isAdmin((currentAccount?.username||'').toLowerCase());
   if(!admin){showToast('⚠ Chỉ Admin mới được xoá!');return;}
   if(!confirm('Xoá lần nộp này?'))return;
+  showToast('⏳ Đang xoá...');
+  // Xoá SharePoint TRƯỚC
+  if(currentAccount&&msalInstance){
+    try{
+      const siteId=await getSiteId();
+      const listId=await getOrCreateList(siteId);
+      const token=await getToken();
+      const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items?$expand=fields&$select=id,fields/SubmissionId&$top=500`,{
+        headers:{'Authorization':'Bearer '+token,'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'}
+      });
+      const data=await res.json();
+      const found=data.value&&data.value.find(item=>item.fields?.SubmissionId===subId);
+      if(found){
+        await callGraph('DELETE',`/sites/${siteId}/lists/${listId}/items/${found.id}`);
+        try{await callGraph('DELETE',`/sites/${siteId}/drive/root:/${SP.libName}/${subId}`);}catch(e){}
+      }
+    }catch(e){
+      showToast('⚠ Lỗi xoá SharePoint: '+e.message);
+      return;
+    }
+  }
+  // Xoá local SAU khi SP thành công
   appData.cycles.forEach(c=>{c.submissions=c.submissions.filter(s=>s.id!==subId);});
   saveData();renderStats();renderDeptAccordion();renderHistory();renderDashboard();
-  showToast('🗑 Đã xoá');
-  if(!currentAccount||!msalReady)return;
-  try{
-    const siteId=await getSiteId();const listId=await getOrCreateList(siteId);
-    const token=await getToken();
-    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items?$expand=fields&$select=id,fields/SubmissionId&$top=500`,{
-      headers:{'Authorization':'Bearer '+token,'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'}
-    });
-    const data=await res.json();
-    const found=data.value&&data.value.find(item=>item.fields?.SubmissionId===subId);
-    if(found){
-      await callGraph('DELETE',`/sites/${siteId}/lists/${listId}/items/${found.id}`);
-      try{await callGraph('DELETE',`/sites/${siteId}/drive/root:/${SP.libName}/${subId}`);}catch(e){}
-      showToast('🗑 Đã xoá khỏi SharePoint!');
-    }
-  }catch(e){showToast('⚠ Xoá local xong, lỗi SharePoint: '+e.message);}
+  showToast('🗑 Đã xoá thành công!');
 }
 
 function shakeEl(id){const el=document.getElementById(id);const s=[0,6,-6,4,-4,2,-2,0];let i=0;const t=setInterval(()=>{el.style.transform=`translateX(${s[i++]}px)`;if(i>=s.length){clearInterval(t);el.style.transform='';}},60);}
@@ -1177,8 +1186,14 @@ function exportSummary(){
   const stats=getDeptStats(cycle);const total=appData.depts.length;
   const done=appData.depts.filter(d=>stats[d.id]?.count>0).length;
   const photos=cycle.submissions.reduce((s,sub)=>s+sub.photos.length,0);
-  let txt=`BÁO CÁO THỰC HÀNH 5S\nĐợt: ${cycle.name}\nXuất: ${new Date().toLocaleString('vi-VN')}\n${'─'.repeat(50)}\nTổng: ${total} PB · Đã nộp: ${done} · Ảnh: ${photos}\n${'─'.repeat(50)}\n\n`;
-  appData.depts.forEach(d=>{const ds=stats[d.id];const cnt=ds?.count||0;const subs=ds?.submissions||[];txt+=`${d.icon} ${d.name} — ${cnt>0?'✅ '+cnt+' ảnh':'❌ Chưa nộp'}\n`;subs.forEach(s=>{txt+=`   · ${s.person}${s.area?' ('+s.area+')':''}: ${s.photos.length} ảnh · ${fmt(s.createdAt)}\n`;});txt+='\n';});
+  let sep='─'.repeat(50);
+  let txt='BÁO CÁO THỰC HÀNH 5S\nĐợt: '+cycle.name+'\nXuất: '+new Date().toLocaleString('vi-VN')+'\n'+sep+'\nTổng: '+total+' PB · Đã nộp: '+done+' · Ảnh: '+photos+'\n'+sep+'\n\n';
+  appData.depts.forEach(d=>{
+    const ds=stats[d.id];const cnt=ds?.count||0;const subs=ds?.submissions||[];
+    txt+=d.icon+' '+d.name+' — '+(cnt>0?'✅ '+cnt+' ảnh':'❌ Chưa nộp')+'\n';
+    subs.forEach(s=>{txt+='   · '+s.person+(s.area?' ('+s.area+')':'')+': '+s.photos.length+' ảnh · '+fmt(s.createdAt)+'\n';});
+    txt+='\n';
+  });
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));a.download=`BaoCao_5S_${cycle.name.replace(/\s+/g,'_')}.txt`;a.click();
   showToast('📄 Đã xuất báo cáo!');
 }
@@ -1252,8 +1267,7 @@ let gwRecords=loadGWData();
 
 function toggleCheck(el){
   el.classList.toggle('checked');
-  const box=el.querySelector('.chk-box');
-  box.textContent=el.classList.contains('checked')?'✓':'';
+  el.querySelector('.chk-box').textContent=el.classList.contains('checked')?'✓':'';
 }
 function selectGWScore(n){
   gwScore=n;
@@ -1355,11 +1369,9 @@ function showToast(msg){clearTimeout(toastTimer);const t=document.getElementById
 
 // ═══ INIT ═══
 document.getElementById('headerDate').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
-// App visible immediately - no login required
 renderDashboard();
 renderPractice();
 renderGemba();
-// Init MSAL in background only for SharePoint sync
 (async()=>{ await initMSAL(); })();
 </script>
 </body>

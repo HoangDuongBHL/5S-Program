@@ -609,10 +609,10 @@ async function saveToSP(sub,cycle){
   }
 }
 
-async function loadFromSharePoint(){
+async function loadFromSharePoint(silent=false){
   if(!currentAccount||!msalReady)return;
   try{
-    showToast('⏳ Đang tải dữ liệu từ SharePoint...');
+    if(!silent) showToast('⏳ Đang tải dữ liệu từ SharePoint...');
     const siteId=await getSiteId();
     const listId=await getOrCreateList(siteId);
     const token=await getToken();
@@ -624,7 +624,7 @@ async function loadFromSharePoint(){
     });
     if(!spRes.ok)throw new Error(await spRes.text());
     const items=await spRes.json();
-    if(!items.value||items.value.length===0){showToast('📭 Chưa có dữ liệu trên SharePoint');return;}
+    if(!items.value||items.value.length===0){if(!silent)showToast('📭 Chưa có dữ liệu trên SharePoint');return;}
     const cycleMap={};
     items.value.forEach(item=>{
       const f=item.fields;
@@ -653,7 +653,7 @@ async function loadFromSharePoint(){
     renderDashboard();
     if(document.getElementById('view-practice').classList.contains('active'))renderPractice();
     if(document.getElementById('view-history').classList.contains('active'))renderHistory();
-    showToast('✅ Đã tải '+items.value.length+' lần nộp từ SharePoint!');
+    if(!silent) showToast('✅ Đã tải '+items.value.length+' lần nộp từ SharePoint!');
   }catch(e){
     console.error('loadFromSP error:',e);
     showToast('⚠ Lỗi tải SharePoint: '+e.message);
@@ -1003,7 +1003,17 @@ function showToast(msg){clearTimeout(toastTimer);const t=document.getElementById
 // ═══ INIT ═══
 document.getElementById('headerDate').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
 renderDashboard();
-(async()=>{ await initMSAL(); })();
+(async()=>{
+  await initMSAL();
+  // Tự động đồng bộ mỗi 60 giây nếu đã đăng nhập
+  setInterval(()=>{
+    if(currentAccount && msalReady) loadFromSharePoint(true);
+  }, 60000);
+  // Đồng bộ khi tab được focus lại (người dùng chuyển về tab này)
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden && currentAccount && msalReady) loadFromSharePoint(true);
+  });
+})();
 </script>
 </body>
 </html>

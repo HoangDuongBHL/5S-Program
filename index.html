@@ -695,11 +695,32 @@ async function ensureSharePointSetup(){
   }
 }
 
+async function getOrCreateList(siteId){
+  // Try get by name first
+  try{
+    const lists = await callGraph('GET',`/sites/${siteId}/lists?$select=id,displayName`);
+    const found = lists.value.find(l=>l.displayName===SP_CONFIG.listName);
+    if(found){ console.log('List found:',found.id); return found.id; }
+  }catch(e){ console.warn('List search error:',e.message); }
+
+  // Create new list
+  console.log('Creating list:', SP_CONFIG.listName);
+  const newList = await callGraph('POST',`/sites/${siteId}/lists`,{
+    displayName: SP_CONFIG.listName,
+    columns:[
+      {name:'DeptId',text:{}},{name:'DeptName',text:{}},{name:'Person',text:{}},
+      {name:'Area',text:{}},{name:'Note',text:{}},{name:'PhotoUrls',text:{allowMultipleLines:true}},
+      {name:'CycleId',text:{}},{name:'CycleName',text:{}},{name:'SubmissionId',text:{}}
+    ],
+    list:{template:'genericList'}
+  });
+  console.log('List created:',newList.id);
+  return newList.id;
+}
+
 async function saveSubmissionToSP(sub,cycle){
   const siteId = await getSiteId();
-  const lists = await callGraph('GET',`/sites/${siteId}/lists?$filter=displayName eq '${SP_CONFIG.listName}'`);
-  const listId = lists.value[0]?.id;
-  if(!listId)throw new Error('List không tồn tại');
+  const listId = await getOrCreateList(siteId);
 
   const photoUrls=[];
   for(let i=0;i<sub.photos.length;i++){

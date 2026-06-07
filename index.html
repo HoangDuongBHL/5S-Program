@@ -841,6 +841,8 @@ async function loadFromSharePoint(silent=false){
     });
     if(!res.ok)throw new Error(await res.text());
     const items=await res.json();
+    console.log('SP items loaded:', items.value?.length);
+    if(!silent)showToast('📥 SP: '+( items.value?.length||0)+' items');
     if(!items.value||items.value.length===0){
       appData.cycles.forEach(c=>{c.submissions=[];});
       saveData();renderDashboard();renderPractice();
@@ -861,7 +863,13 @@ async function loadFromSharePoint(silent=false){
     const newCycles=Object.values(cycleMap);
     appData.cycles=newCycles.length>0?newCycles:[{id:'c1',name:'Đợt mặc định',desc:'',createdAt:new Date().toISOString(),submissions:[]}];
     activeCycleId=appData.cycles[0].id;appData.activeCycle=activeCycleId;
-    saveData();renderDashboard();renderPractice();populateHistoryFilters();renderHistory();
+    saveData();
+    // Force re-render with new data
+    renderDashboard();
+    renderPractice();
+    populateHistoryFilters();
+    renderHistory();
+    console.log('After SP load - allSubs count:', allSubs().length);
     if(!silent)showToast('✅ Đã tải '+items.value.length+' lần nộp từ SharePoint!');
   }catch(e){
     console.error('loadFromSP error:',e);

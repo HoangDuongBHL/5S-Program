@@ -6,7 +6,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Chương trình 5S</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" crossorigin="anonymous"></script>
+<script>
+// Load MSAL dynamically with fallback
+(function(){
+  var urls = [
+    'https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js',
+    'https://unpkg.com/@azure/msal-browser@2.38.0/lib/msal-browser.min.js',
+    'https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.0/lib/msal-browser.min.js'
+  ];
+  var idx = 0;
+  function loadNext(){
+    if(idx >= urls.length){ console.error('All MSAL CDN failed'); return; }
+    var s = document.createElement('script');
+    s.src = urls[idx++];
+    s.crossOrigin = 'anonymous';
+    s.onerror = loadNext;
+    document.head.appendChild(s);
+  }
+  loadNext();
+})();
+</script>
 <style>
 :root{
   --white:#fff;--off:#f7f8fc;--border:#e4e8f0;--border2:#d0d7e8;
@@ -516,6 +535,15 @@ async function initMSAL(){
   const btn = document.getElementById('loginBtn');
   try{
     if(btn){ btn.textContent='⏳ Đang khởi tạo...'; btn.disabled=true; }
+    // Wait for msal library to load (max 10 seconds)
+    let waited = 0;
+    while(typeof msal === 'undefined' && waited < 10000){
+      await new Promise(r=>setTimeout(r,200));
+      waited += 200;
+    }
+    if(typeof msal === 'undefined'){
+      throw new Error('Không tải được thư viện đăng nhập. Kiểm tra mạng!');
+    }
     msalInstance = new msal.PublicClientApplication(msalConfig);
     await msalInstance.initialize();
     // Handle redirect result (after login redirect comes back)

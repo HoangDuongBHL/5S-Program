@@ -238,7 +238,7 @@ main{max-width:1100px;margin:0 auto;padding:24px 16px 80px;}
 
 @media(max-width:480px){main{padding:14px 10px 80px;}.submit-section{padding:16px;}.sub-card{flex-direction:column;}.sub-card-thumbs{max-width:100%;}.sub-card-time{margin-left:0;}}
 </style>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -515,15 +515,32 @@ let currentAccount = null;
 let spSiteId = null;
 
 async function initMSAL() {
-  msalInstance = new msal.PublicClientApplication(msalConfig);
-  await msalInstance.initialize();
-  const result = await msalInstance.handleRedirectPromise();
-  if (result) currentAccount = result.account;
-  else {
-    const accounts = msalInstance.getAllAccounts();
-    if (accounts.length > 0) currentAccount = accounts[0];
+  const btn = document.getElementById('loginBtn');
+  try {
+    // Wait for MSAL library to be available
+    let waited = 0;
+    while (typeof msal === 'undefined' && waited < 10000) {
+      await new Promise(r => setTimeout(r, 200));
+      waited += 200;
+    }
+    if (typeof msal === 'undefined') throw new Error('Thư viện MSAL chưa load được. Kiểm tra kết nối mạng.');
+
+    if (btn) { btn.textContent = '⏳ Đang khởi tạo...'; btn.disabled = true; }
+    msalInstance = new msal.PublicClientApplication(msalConfig);
+    await msalInstance.initialize();
+    const result = await msalInstance.handleRedirectPromise();
+    if (result) currentAccount = result.account;
+    else {
+      const accounts = msalInstance.getAllAccounts();
+      if (accounts.length > 0) currentAccount = accounts[0];
+    }
+    updateLoginUI();
+    if (btn) btn.disabled = false;
+  } catch(e) {
+    console.error('MSAL init failed:', e);
+    if (btn) { btn.textContent = '🔐 Đăng nhập Microsoft'; btn.disabled = false; btn.onclick = login; }
+    showToast('⚠ ' + e.message);
   }
-  updateLoginUI();
 }
 
 async function getToken() {
@@ -540,6 +557,11 @@ async function getToken() {
 
 async function login() {
   try {
+    if (!msalInstance || typeof msal === 'undefined') {
+      showToast('⏳ Đang khởi tạo...');
+      await initMSAL();
+      if (!msalInstance) return;
+    }
     const res = await msalInstance.loginPopup({
       scopes: ['https://graph.microsoft.com/Sites.ReadWrite.All','https://graph.microsoft.com/Files.ReadWrite.All']
     });

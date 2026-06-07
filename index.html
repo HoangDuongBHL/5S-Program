@@ -615,6 +615,8 @@ async function loadFromSharePoint(silent=false){
     if(!silent) showToast('⏳ Đang tải dữ liệu từ SharePoint...');
     const siteId=await getSiteId();
     const listId=await getOrCreateList(siteId);
+    // Xoá dữ liệu local cũ trước khi load từ SharePoint
+    // Giữ lại cấu hình phòng ban, chỉ xoá submissions
     const token=await getToken();
     const spRes=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items?$expand=fields&$top=500`,{
       headers:{
@@ -624,7 +626,13 @@ async function loadFromSharePoint(silent=false){
     });
     if(!spRes.ok)throw new Error(await spRes.text());
     const items=await spRes.json();
-    if(!items.value||items.value.length===0){if(!silent)showToast('📭 Chưa có dữ liệu trên SharePoint');return;}
+    // Nếu SP không có dữ liệu → xoá sạch local submissions
+    if(!items.value||items.value.length===0){
+      appData.cycles.forEach(c=>{c.submissions=[];});
+      saveData();renderDashboard();renderPractice();
+      if(!silent)showToast('📭 Chưa có dữ liệu trên SharePoint');
+      return;
+    }
     const cycleMap={};
     items.value.forEach(item=>{
       const f=item.fields;
@@ -633,7 +641,6 @@ async function loadFromSharePoint(silent=false){
       if(!cycleMap[cid])cycleMap[cid]={id:cid,name:cname,desc:'',createdAt:item.createdDateTime||new Date().toISOString(),submissions:[]};
       const photoUrls=(f.PhotoUrls||'').split('\n').filter(u=>u.trim());
       const photos=photoUrls.map((url,i)=>({url,name:`photo_${i+1}.jpg`}));
-      // Check if already exists
       const exists=cycleMap[cid].submissions.find(s=>s.id===f.SubmissionId);
       if(!exists){
         cycleMap[cid].submissions.push({
@@ -643,11 +650,10 @@ async function loadFromSharePoint(silent=false){
         });
       }
     });
+    // Thay toàn bộ bằng dữ liệu SP
     const newCycles=Object.values(cycleMap);
-    const spIds=new Set(Object.keys(cycleMap));
-    const localOnly=appData.cycles.filter(c=>!spIds.has(c.id));
-    appData.cycles=[...newCycles,...localOnly];
-    if(newCycles.length>0)activeCycleId=newCycles[0].id;
+    appData.cycles=newCycles.length>0?newCycles:[{id:'c1',name:'Đợt mặc định',desc:'',createdAt:new Date().toISOString(),submissions:[]}];
+    activeCycleId=appData.cycles[0].id;
     appData.activeCycle=activeCycleId;
     saveData();
     // Re-render tất cả views

@@ -540,12 +540,17 @@ async function initMSAL(){
 async function login(){
   const btn = document.getElementById('loginBtn');
   try{
-    if(!msalReady){
-      showToast('⚠ Chưa sẵn sàng, vui lòng thử lại');
-      return;
+    // Nếu chưa sẵn sàng thì thử khởi tạo lại
+    if(!msalReady || !msalInstance){
+      if(btn){ btn.textContent='⏳ Đang khởi tạo...'; btn.disabled=true; }
+      await initMSAL();
+      if(!msalReady){
+        showToast('⚠ Không thể khởi tạo. Kiểm tra kết nối mạng!');
+        updateLoginUI();
+        return;
+      }
     }
     if(btn){ btn.disabled=true; btn.textContent='⏳ Đang chuyển hướng...'; }
-    // Dùng redirect thay popup — ổn định hơn trên mọi trình duyệt
     await msalInstance.loginRedirect({ scopes:SP_SCOPES });
   }catch(e){
     console.error('Login error:',e);
@@ -1105,7 +1110,8 @@ function showToast(msg){
 // ═══════════════════════════════════════════
 document.getElementById('headerDate').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
 renderDashboard();
-window.addEventListener('load', ()=>initMSAL());
+// Khởi tạo MSAL ngay khi script chạy
+(async()=>{ await initMSAL(); })();
 </script>
 </body>
 </html>

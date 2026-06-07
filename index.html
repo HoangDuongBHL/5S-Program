@@ -828,11 +828,40 @@ function submitPhotos(){
       .catch(e=>showToast('⚠ Lỗi SharePoint: '+e.message));
   }
 }
-function deleteSub(subId){
+async function deleteSub(subId){
   if(!confirm('Xoá lần nộp này?'))return;
+  // Xoá local
   appData.cycles.forEach(c=>{c.submissions=c.submissions.filter(s=>s.id!==subId);});
   saveData();renderStats();renderDeptAccordion();renderHistory();
   showToast('🗑 Đã xoá');
+
+  // Xoá trên SharePoint nếu đã đăng nhập
+  if(!currentAccount||!msalReady)return;
+  try{
+    const siteId=await getSiteId();
+    const listId=await getOrCreateList(siteId);
+
+    // Tìm item trong list theo SubmissionId
+    const token=await getToken();
+    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items?$filter=fields/SubmissionId eq '${subId}'&$select=id`,{
+      headers:{'Authorization':'Bearer '+token,'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'}
+    });
+    const data=await res.json();
+    if(data.value&&data.value.length>0){
+      const itemId=data.value[0].id;
+      await callGraph('DELETE',`/sites/${siteId}/lists/${listId}/items/${itemId}`);
+    }
+
+    // Xoá folder ảnh trong Drive
+    try{
+      await callGraph('DELETE',`/sites/${siteId}/drive/root:/${SP.libName}/${subId}`);
+    }catch(e){console.warn('Folder delete:',e.message);}
+
+    showToast('🗑 Đã xoá khỏi SharePoint!');
+  }catch(e){
+    console.error('Delete SP error:',e);
+    showToast('⚠ Xoá local xong nhưng lỗi SharePoint: '+e.message);
+  }
 }
 function shakeEl(id){
   const el=document.getElementById(id);const s=[0,6,-6,4,-4,2,-2,0];let i=0;

@@ -308,9 +308,22 @@ main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
       </div>
     </div>
   </div>
+  <!-- Hôm qua -->
   <div class="card">
-    <div class="card-header"><span class="card-title">⚠ Phòng ban chưa nộp trong kỳ</span></div>
-    <div class="card-body"><div class="missing-grid" id="dashMissingGrid"></div></div>
+    <div class="card-header"><span class="card-title">📅 Hôm qua — Phòng ban đã nộp</span><span class="badge" id="yesterdayBadge">0 phòng ban</span></div>
+    <div class="card-body" style="padding:0;">
+      <div id="yesterdayDoneGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;padding:14px 18px;"></div>
+    </div>
+  </div>
+  <div class="dash-grid">
+    <div class="card">
+      <div class="card-header"><span class="card-title">❌ Hôm qua — Chưa nộp</span></div>
+      <div class="card-body"><div class="missing-grid" id="yesterdayMissingGrid"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">⚠ Kỳ này — Chưa nộp</span></div>
+      <div class="card-body"><div class="missing-grid" id="dashMissingGrid"></div></div>
+    </div>
   </div>
   <div class="card">
     <div class="card-header"><span class="card-title">📋 Tổng hợp theo đợt kiểm tra</span></div>
@@ -1150,6 +1163,39 @@ function renderDashboard(){
   document.getElementById('dashMissingGrid').innerHTML=missingDepts.length===0
     ?`<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả phòng ban đều có hoạt động!</div>`
     :missingDepts.map(d=>`<div class="missing-card"><span style="font-size:18px;">${d.icon}</span><div><div class="mc-name">${d.name}</div><div class="mc-sub">Không có ảnh trong kỳ</div></div></div>`).join('');
+
+  // Yesterday stats
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  const yYMD = toYMD(yesterday);
+  const ySubsAll = allSubs.filter(s=>toYMD(new Date(s.createdAt))===yYMD);
+
+  // Depts that submitted yesterday
+  const yDeptIds = new Set(ySubsAll.map(s=>s.deptId));
+  const yDoneDepts = appData.depts.filter(d=>yDeptIds.has(d.id));
+  const yMissingDepts = appData.depts.filter(d=>!yDeptIds.has(d.id));
+  const yPhotoCount = ySubsAll.reduce((s,sub)=>s+sub.photos.length,0);
+
+  document.getElementById('yesterdayBadge').textContent = `${yDoneDepts.length} / ${appData.depts.length} phòng ban · ${yPhotoCount} ảnh`;
+
+  document.getElementById('yesterdayDoneGrid').innerHTML = yDoneDepts.length===0
+    ?`<div style="color:var(--muted);font-size:13px;padding:8px 0;">Không có phòng ban nào nộp ảnh hôm qua</div>`
+    :yDoneDepts.map(d=>{
+      const dSubs = ySubsAll.filter(s=>s.deptId===d.id);
+      const dPhotos = dSubs.reduce((s,sub)=>s+sub.photos.length,0);
+      const persons = [...new Set(dSubs.map(s=>s.person))].join(', ');
+      return `<div style="background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:flex-start;gap:9px;">
+        <span style="font-size:20px;">${d.icon}</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--green);">${d.name}</div>
+          <div style="font-size:11px;color:var(--green);margin-top:2px;">🖼 ${dPhotos} ảnh · ${dSubs.length} lần nộp</div>
+          <div style="font-size:11px;color:var(--sub);margin-top:1px;">👤 ${persons}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+  document.getElementById('yesterdayMissingGrid').innerHTML = yMissingDepts.length===0
+    ?`<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả đã nộp hôm qua!</div>`
+    :yMissingDepts.map(d=>`<div class="missing-card"><span style="font-size:18px;">${d.icon}</span><div><div class="mc-name">${d.name}</div><div class="mc-sub">Chưa nộp hôm qua</div></div></div>`).join('');
 
   // Cycle summary
   document.getElementById('cycleBody').innerHTML=appData.cycles.map(c=>{

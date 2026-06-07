@@ -309,7 +309,8 @@ main{max-width:1120px;margin:0 auto;padding:28px 20px 80px;}
 
 <!-- ═══ DASHBOARD ═══ -->
 <div class="view active" id="view-dashboard">
-  <div class="ph"><div class="ph-title">Dashboard tổng quan</div><div class="ph-sub">Theo dõi tiến độ thực hành 5S toàn công ty</div></div>
+  <div class="ph"><div class="ph-title">Dashboard tổng quan</div><div class="ph-sub">Theo dõi tiến độ thực hành 5S và Gemba Walk toàn công ty</div></div>
+
   <div class="period-row">
     <button class="pp active" onclick="setDashPeriod('today',this)">Hôm nay</button>
     <button class="pp" onclick="setDashPeriod('yesterday',this)">Hôm qua</button>
@@ -317,18 +318,41 @@ main{max-width:1120px;margin:0 auto;padding:28px 20px 80px;}
     <button class="pp" onclick="setDashPeriod('month',this)">Tháng này</button>
     <button class="pp" onclick="setDashPeriod('all',this)">Tất cả</button>
   </div>
-  <div class="stats-3">
+
+  <!-- ── BÁO CÁO 1: THỰC HÀNH 5S ── -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <div style="width:4px;height:22px;background:var(--primary);border-radius:2px;"></div>
+    <div style="font-size:16px;font-weight:800;letter-spacing:-.3px;">1. Thực hành 5S</div>
+    <div style="font-size:12px;color:var(--muted);font-weight:400;">Báo cáo nộp ảnh theo phòng ban</div>
+  </div>
+  <div class="stats-3" style="margin-bottom:16px;">
     <div class="sc"><div class="sc-lbl">🖼 Ảnh đã chụp</div><div class="sc-val" id="ds-photos" style="color:var(--primary)">0</div><div class="sc-sub" id="ds-period-sub">trong hôm nay</div><div class="sc-bar"><div class="sc-bar-fill" id="ds-bar" style="width:0%;background:var(--primary)"></div></div></div>
     <div class="sc"><div class="sc-lbl">✅ Phòng ban đã nộp</div><div class="sc-val" id="ds-done" style="color:var(--green)">0</div><div class="sc-sub" id="ds-done-sub">/ 0 phòng ban</div><div class="sc-bar"><div class="sc-bar-fill" id="ds-done-bar" style="width:0%;background:var(--green)"></div></div></div>
     <div class="sc"><div class="sc-lbl">⏳ Chưa nộp</div><div class="sc-val" id="ds-missing" style="color:var(--red)">0</div><div class="sc-sub">phòng ban</div><div class="sc-bar"><div class="sc-bar-fill" id="ds-missing-bar" style="width:0%;background:var(--red)"></div></div></div>
   </div>
-  <div class="sec">
-    <div class="sec-hd"><span class="sec-title">⚠️ Phòng ban chưa nộp ảnh</span><span class="badge" id="dash-miss-badge">0</span></div>
+  <div class="sec" style="margin-bottom:8px;">
+    <div class="sec-hd"><span class="sec-title">⚠️ Chưa nộp ảnh</span><span class="badge" id="dash-miss-badge">0</span></div>
     <div class="sec-body"><div class="dept-grid" id="dashMissingGrid"></div></div>
   </div>
-  <div class="sec">
-    <div class="sec-hd"><span class="sec-title">✅ Phòng ban đã nộp ảnh</span><span class="badge" id="dash-done-badge">0</span></div>
+  <div class="sec" style="margin-bottom:28px;">
+    <div class="sec-hd"><span class="sec-title">✅ Đã nộp ảnh</span><span class="badge" id="dash-done-badge">0</span></div>
     <div class="sec-body"><div class="dept-grid" id="dashDoneGrid"></div></div>
+  </div>
+
+  <!-- ── BÁO CÁO 2: GEMBA WALK ── -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <div style="width:4px;height:22px;background:var(--purple);border-radius:2px;"></div>
+    <div style="font-size:16px;font-weight:800;letter-spacing:-.3px;">2. Gemba Walk</div>
+    <div style="font-size:12px;color:var(--muted);font-weight:400;">Báo cáo kiểm tra thực địa</div>
+  </div>
+  <div class="stats-3" style="margin-bottom:16px;">
+    <div class="sc"><div class="sc-lbl" style="color:var(--purple);">🚶 Tổng lượt walk</div><div class="sc-val" id="dsgw-total" style="color:var(--purple)">0</div><div class="sc-sub" id="dsgw-period-sub">trong kỳ</div><div class="sc-bar"><div class="sc-bar-fill" id="dsgw-bar" style="width:0%;background:var(--purple)"></div></div></div>
+    <div class="sc"><div class="sc-lbl">⭐ Điểm TB</div><div class="sc-val" id="dsgw-avg" style="color:var(--amber)">—</div><div class="sc-sub">trên thang 5.0</div></div>
+    <div class="sc"><div class="sc-lbl">🗺 Khu vực</div><div class="sc-val" id="dsgw-areas" style="color:var(--green)">0</div><div class="sc-sub">đã kiểm tra</div></div>
+  </div>
+  <div class="sec" style="margin-bottom:8px;">
+    <div class="sec-hd"><span class="sec-title">📋 Lịch sử Gemba Walk gần nhất</span><span class="badge" id="dsgw-badge">0 lần</span></div>
+    <div id="dashGWList" style="padding:12px 18px;display:flex;flex-direction:column;gap:8px;"></div>
   </div>
 </div>
 
@@ -659,9 +683,26 @@ function onLoginSuccess(){
   document.getElementById('adminSection').style.display=admin?'block':'none';
   document.getElementById('userCycleInfo').style.display=admin?'none':'block';
 
-  // Auto fill person field
-  document.getElementById('submitPerson').value=name;
-  document.getElementById('gw-inspector').value=name;
+  // Lấy displayName thực từ Graph API
+  try{
+    const token=await getToken();
+    const meRes=await fetch('https://graph.microsoft.com/v1.0/me?$select=displayName,givenName,surname',{
+      headers:{'Authorization':'Bearer '+token}
+    });
+    if(meRes.ok){
+      const me=await meRes.json();
+      const fullName=me.displayName||me.givenName+' '+me.surname||name;
+      document.getElementById('submitPerson').value=fullName;
+      document.getElementById('gw-inspector').value=fullName;
+      document.getElementById('userName').textContent=fullName.split(' ').slice(-1)[0]||fullName;
+    }else{
+      document.getElementById('submitPerson').value=name;
+      document.getElementById('gw-inspector').value=name;
+    }
+  }catch(e){
+    document.getElementById('submitPerson').value=name;
+    document.getElementById('gw-inspector').value=name;
+  }
 
   // Load data
   renderDashboard();
@@ -827,6 +868,49 @@ function renderDashboard(){
   document.getElementById('dash-done-badge').textContent=doneCount+' phòng ban';
   const tabCnt=document.getElementById('tab-missing-cnt');
   if(tabCnt){if(missingCount>0){tabCnt.textContent=missingCount;tabCnt.style.display='inline';}else tabCnt.style.display='none';}
+
+  // ── GEMBA WALK SECTION ──
+  const gwFiltered = gwRecords.filter(r=>{
+    const d=new Date(r.createdAt);
+    const now=new Date();const y=now.getFullYear();const m=now.getMonth();
+    if(dashPeriod==='today')return toYMD(d)===today();
+    if(dashPeriod==='yesterday'){const y2=new Date(now);y2.setDate(y2.getDate()-1);return toYMD(d)===toYMD(y2);}
+    if(dashPeriod==='week')return(now-d)<7*86400000;
+    if(dashPeriod==='month')return d.getFullYear()===y&&d.getMonth()===m;
+    return true;
+  });
+  const gwTotal=gwFiltered.length;
+  const gwAvg=gwTotal>0?(gwFiltered.reduce((s,r)=>s+r.score,0)/gwTotal).toFixed(1):'—';
+  const gwAreas=new Set(gwFiltered.map(r=>r.area)).size;
+  document.getElementById('dsgw-total').textContent=gwTotal;
+  document.getElementById('dsgw-avg').textContent=gwAvg;
+  document.getElementById('dsgw-areas').textContent=gwAreas;
+  document.getElementById('dsgw-badge').textContent=gwTotal+' lần';
+  document.getElementById('dsgw-period-sub').textContent='trong '+(periodNames[dashPeriod]||'');
+  document.getElementById('dsgw-bar').style.width=gwTotal>0?'100%':'0%';
+
+  const scoreLabels=['','Kém','Yếu','Trung bình','Tốt','Xuất sắc'];
+  const gwListEl=document.getElementById('dashGWList');
+  if(gwFiltered.length===0){
+    gwListEl.innerHTML='<div style="color:var(--muted);font-size:13px;padding:4px 0;">Chưa có lần Gemba Walk nào trong kỳ này</div>';
+  }else{
+    gwListEl.innerHTML=gwFiltered.slice(0,5).map(r=>{
+      const dept=getDept(r.dept);
+      const scoreBg=['','var(--red-bg)','var(--amber-bg)','#fff7ed','var(--blue-bg)','var(--green-bg)'];
+      const scoreColor=['','var(--red)','var(--amber)','#f97316','var(--blue)','var(--green)'];
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+        <div style="width:36px;height:36px;border-radius:8px;background:${scoreBg[r.score]};color:${scoreColor[r.score]};display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;flex-shrink:0;">${r.score}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;">📍 ${r.area} <span style="font-size:11px;background:var(--purple-bg);color:var(--purple);padding:1px 7px;border-radius:10px;border:1px solid var(--purple-border);margin-left:4px;">${scoreLabels[r.score]}</span></div>
+          <div style="font-size:11px;color:var(--sub);margin-top:2px;">👤 ${r.inspector}${dept?' · '+dept.icon+' '+dept.name:''} ${r.category?' · '+r.category:''}</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);white-space:nowrap;">${fmt(r.createdAt)}</div>
+      </div>`;
+    }).join('');
+    if(gwFiltered.length>5){
+      gwListEl.innerHTML+=`<div style="text-align:center;padding:8px;font-size:12px;color:var(--sub);">... và ${gwFiltered.length-5} lần khác</div>`;
+    }
+  }
   const missingDepts=appData.depts.filter(d=>!activeDeptIds.has(d.id));
   document.getElementById('dashMissingGrid').innerHTML=missingDepts.length===0
     ?'<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả phòng ban đã nộp ảnh!</div>'

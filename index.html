@@ -238,6 +238,7 @@ main{max-width:1100px;margin:0 auto;padding:24px 16px 80px;}
 
 @media(max-width:480px){main{padding:14px 10px 80px;}.submit-section{padding:16px;}.sub-card{flex-direction:column;}.sub-card-thumbs{max-width:100%;}.sub-card-time{margin-left:0;}}
 </style>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
 </head>
 <body>
 
@@ -250,7 +251,11 @@ main{max-width:1100px;margin:0 auto;padding:24px 16px 80px;}
       <div class="brand-sub">Hệ thống quản lý thực hành 5S doanh nghiệp</div>
     </div>
   </div>
-  <div class="header-date" id="headerDate">--/--/----</div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div id="loginInfo" style="display:none;color:rgba(255,255,255,.85);font-size:12px;background:rgba(255,255,255,.1);padding:5px 12px;border-radius:16px;"></div>
+    <button id="loginBtn" onclick="login()" style="background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:7px 14px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🔐 Đăng nhập Microsoft</button>
+    <div class="header-date" id="headerDate">--/--/----</div>
+  </div>
 </header>
 
 <!-- TAB BAR -->
@@ -486,6 +491,191 @@ main{max-width:1100px;margin:0 auto;padding:24px 16px 80px;}
 // DATA
 // ═══════════════════════════════════════
 const SK = '5s_data_v3';
+
+// ── SHAREPOINT CONFIG ──
+const SP_CONFIG = {
+  clientId: '892df56b-fca9-4abb-911c-fc2eb369103c',
+  tenantId: '7e2939ee-709c-47c1-a64a-1fe4cffa94e3',
+  siteUrl:  'https://biahalong.sharepoint.com/sites/Ban5S',
+  listName: '5S_Submissions',
+  libraryName: '5S_Photos',
+};
+
+const msalConfig = {
+  auth: {
+    clientId: SP_CONFIG.clientId,
+    authority: 'https://login.microsoftonline.com/' + SP_CONFIG.tenantId,
+    redirectUri: window.location.origin + window.location.pathname,
+  },
+  cache: { cacheLocation: 'sessionStorage' }
+};
+
+let msalInstance = null;
+let currentAccount = null;
+let spSiteId = null;
+
+async function initMSAL() {
+  msalInstance = new msal.PublicClientApplication(msalConfig);
+  await msalInstance.initialize();
+  const result = await msalInstance.handleRedirectPromise();
+  if (result) currentAccount = result.account;
+  else {
+    const accounts = msalInstance.getAllAccounts();
+    if (accounts.length > 0) currentAccount = accounts[0];
+  }
+  updateLoginUI();
+}
+
+async function getToken() {
+  const scopes = ['https://graph.microsoft.com/Sites.ReadWrite.All','https://graph.microsoft.com/Files.ReadWrite.All'];
+  try {
+    const res = await msalInstance.acquireTokenSilent({ scopes, account: currentAccount });
+    return res.accessToken;
+  } catch {
+    const res = await msalInstance.acquireTokenPopup({ scopes });
+    currentAccount = res.account;
+    return res.accessToken;
+  }
+}
+
+async function login() {
+  try {
+    const res = await msalInstance.loginPopup({
+      scopes: ['https://graph.microsoft.com/Sites.ReadWrite.All','https://graph.microsoft.com/Files.ReadWrite.All']
+    });
+    currentAccount = res.account;
+    updateLoginUI();
+    showToast('✅ Đăng nhập thành công: ' + currentAccount.name);
+    await ensureSharePointSetup();
+  } catch(e) { showToast('⚠ Đăng nhập thất bại: ' + e.message); }
+}
+
+function logout() {
+  msalInstance.logoutPopup();
+  currentAccount = null;
+  updateLoginUI();
+}
+
+function updateLoginUI() {
+  const btn = document.getElementById('loginBtn');
+  const info = document.getElementById('loginInfo');
+  if (currentAccount) {
+    btn.textContent = 'Đăng xuất';
+    btn.onclick = logout;
+    info.textContent = '👤 ' + currentAccount.name;
+    info.style.display = 'block';
+  } else {
+    btn.textContent = '🔐 Đăng nhập Microsoft';
+    btn.onclick = login;
+    info.style.display = 'none';
+  }
+}
+
+async function callGraph(method, url, body) {
+  const token = await getToken();
+  const res = await fetch('https://graph.microsoft.com/v1.0' + url, {
+    method,
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) { const e = await res.text(); throw new Error(e); }
+  return method === 'DELETE' ? null : res.json();
+}
+
+async function callGraphRaw(method, url, body, contentType) {
+  const token = await getToken();
+  const res = await fetch('https://graph.microsoft.com/v1.0' + url, {
+    method,
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': contentType || 'application/octet-stream' },
+    body
+  });
+  if (!res.ok) { const e = await res.text(); throw new Error(e); }
+  return res.json();
+}
+
+async function getSiteId() {
+  if (spSiteId) return spSiteId;
+  const host = 'biahalong.sharepoint.com';
+  const path = '/sites/Ban5S';
+  const data = await callGraph('GET', `/sites/${host}:${path}`);
+  spSiteId = data.id;
+  return spSiteId;
+}
+
+async function ensureSharePointSetup() {
+  try {
+    showToast('⏳ Đang kết nối SharePoint...');
+    const siteId = await getSiteId();
+    // Check/create List
+    try {
+      await callGraph('GET', `/sites/${siteId}/lists/${SP_CONFIG.listName}`);
+    } catch {
+      await callGraph('POST', `/sites/${siteId}/lists`, {
+        displayName: SP_CONFIG.listName,
+        columns: [
+          {name:'DeptId',text:{}},{name:'DeptName',text:{}},
+          {name:'Person',text:{}},{name:'Area',text:{}},
+          {name:'Note',text:{}},{name:'PhotoUrls',text:{allowMultipleLines:true}},
+          {name:'CycleId',text:{}},{name:'CycleName',text:{}},
+          {name:'SubmissionId',text:{}}
+        ],
+        list: { template: 'genericList' }
+      });
+    }
+    showToast('✅ SharePoint đã sẵn sàng!');
+  } catch(e) { showToast('⚠ Lỗi kết nối SharePoint: ' + e.message); }
+}
+
+async function uploadPhotoToSP(dataUrl, filename, submissionId) {
+  const siteId = await getSiteId();
+  // Get or create folder
+  const folderPath = SP_CONFIG.libraryName + '/' + submissionId;
+  try {
+    await callGraph('GET', `/sites/${siteId}/drive/root:/${folderPath}`);
+  } catch {
+    await callGraph('POST', `/sites/${siteId}/drive/root:/${SP_CONFIG.libraryName}:/children`, {
+      name: submissionId, folder: {}, '@microsoft.graph.conflictBehavior': 'rename'
+    });
+  }
+  // Convert base64 to blob
+  const base64 = dataUrl.split(',')[1];
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  const result = await callGraphRaw('PUT', `/sites/${siteId}/drive/root:/${folderPath}/${filename}:/content`, bytes.buffer, 'image/jpeg');
+  return result.webUrl;
+}
+
+async function saveSubmissionToSP(sub, cycle) {
+  const siteId = await getSiteId();
+  const lists = await callGraph('GET', `/sites/${siteId}/lists?$filter=displayName eq '${SP_CONFIG.listName}'`);
+  const listId = lists.value[0]?.id;
+  if (!listId) throw new Error('List không tồn tại');
+
+  // Upload photos
+  const photoUrls = [];
+  for (let i = 0; i < sub.photos.length; i++) {
+    const url = await uploadPhotoToSP(sub.photos[i].url, `photo_${i+1}.jpg`, sub.id);
+    photoUrls.push(url);
+  }
+
+  const dept = getDept(sub.deptId);
+  await callGraph('POST', `/sites/${siteId}/lists/${listId}/items`, {
+    fields: {
+      Title: sub.id,
+      SubmissionId: sub.id,
+      DeptId: sub.deptId,
+      DeptName: dept?.name || '',
+      Person: sub.person,
+      Area: sub.area || '',
+      Note: sub.note || '',
+      PhotoUrls: photoUrls.join('\n'),
+      CycleId: cycle.id,
+      CycleName: cycle.name,
+    }
+  });
+  return photoUrls;
+}
 const DEPT_ICONS = ['🏢','💼','👥','📈','🔧','🏭','🔬','📦','💻','🦺','🏆','📋','🎯','🌿','🚚','🍽️','🅿️','🚿','📐','🧪'];
 const BAR_COLORS = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#84cc16','#f97316','#6366f1'];
 const DEFAULT_DEPTS = [
@@ -914,19 +1104,32 @@ function submitPhotos(){
   if(pendingPhotos.length===0){shakeEl('dropZone');showToast('⚠ Vui lòng chọn ít nhất 1 ảnh!');return;}
   const cycle=getActiveCycle();if(!cycle){showToast('⚠ Chưa có đợt kiểm tra!');return;}
   const photos=pendingPhotos.map(p=>({url:p.dataUrl,name:p.file.name}));
-  cycle.submissions.push({id:'s'+Date.now(),deptId,person,area,note,photos,createdAt:new Date().toISOString()});
-  try{
-    saveData();
-  }catch(e){
-    showToast('⚠ Lỗi lưu dữ liệu! Ảnh quá lớn hoặc bộ nhớ đầy. Thử chọn ít ảnh hơn.');
-    cycle.submissions.pop();
-    return;
+  const subId = 's'+Date.now();
+  const newSub = {id:subId,deptId,person,area,note,photos,createdAt:new Date().toISOString()};
+  cycle.submissions.push(newSub);
+  try{ saveData(); }catch(e){
+    showToast('⚠ Lỗi lưu dữ liệu! Ảnh quá lớn hoặc bộ nhớ đầy.');
+    cycle.submissions.pop(); return;
   }
   document.getElementById('submitDept').value='';document.getElementById('submitPerson').value='';document.getElementById('submitArea').value='';document.getElementById('submitNote').value='';
   pendingPhotos=[];renderPreview();renderStats();renderDeptAccordion();
   const dept=getDept(deptId);
   showToast(`✅ ${dept?.name} đã nộp ${photos.length} ảnh!`);
   setTimeout(()=>{const acc=document.getElementById('acc-'+deptId);if(acc&&!acc.classList.contains('open')){acc.classList.add('open');acc.scrollIntoView({behavior:'smooth',block:'nearest'});}},400);
+  // Save to SharePoint if logged in
+  if(currentAccount){
+    showToast('⏳ Đang lưu lên SharePoint...');
+    saveSubmissionToSP(newSub, cycle)
+      .then(photoUrls=>{
+        newSub.spPhotoUrls = photoUrls;
+        newSub.syncedToSP = true;
+        saveData();
+        showToast('☁️ Đã lưu lên SharePoint thành công!');
+      })
+      .catch(e=>showToast('⚠ Lưu SharePoint thất bại: '+e.message));
+  } else {
+    showToast('⚠ Bạn chưa đăng nhập Microsoft — ảnh chỉ lưu local!');
+  }
 }
 
 function shakeEl(id){const el=document.getElementById(id);const s=[0,6,-6,4,-4,2,-2,0];let i=0;const t=setInterval(()=>{el.style.transform=`translateX(${s[i++]}px)`;if(i>=s.length){clearInterval(t);el.style.transform='';}},60);}

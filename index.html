@@ -582,7 +582,12 @@ function createInitial(){
   return {depts:DEFAULT_DEPTS,cycles:[{id:'c1',name,desc:'',createdAt:new Date().toISOString(),submissions:[]}],activeCycle:'c1'};
 }
 function saveData(){try{localStorage.setItem(SK,JSON.stringify(appData));}catch(e){console.warn(e);}}
-let appData=loadData();
+// Start with empty data - will be replaced by SharePoint data after login
+function createEmpty(){
+  const name='Tháng '+new Date().toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
+  return {depts:[],cycles:[{id:'c1',name,desc:'',createdAt:new Date().toISOString(),submissions:[]}],activeCycle:'c1'};
+}
+let appData=createEmpty();
 let pendingPhotos=[];
 let activeCycleId=appData.activeCycle;
 let historyFilter='today';
@@ -830,11 +835,74 @@ async function saveToSP(sub,cycle){
   return photoUrls;
 }
 
+// ═══ SP CONFIG (DEPTS) ═══
+async function getOrCreateConfigList(siteId){
+  const configName='5S_Config';
+  try{
+    const lists=await callGraph('GET',`/sites/${siteId}/lists?$select=id,displayName`);
+    const found=lists.value.find(l=>l.displayName===configName);
+    if(found)return found.id;
+  }catch(e){console.warn(e);}
+  const newList=await callGraph('POST',`/sites/${siteId}/lists`,{
+    displayName:configName,
+    columns:[{name:'ConfigKey',text:{}},{name:'ConfigValue',text:{allowMultipleLines:true}}],
+    list:{template:'genericList'}
+  });
+  return newList.id;
+}
+
+async function loadDeptsFromSP(siteId){
+  try{
+    const configListId=await getOrCreateConfigList(siteId);
+    const token=await getToken();
+    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${configListId}/items?$expand=fields&$select=fields/ConfigKey,fields/ConfigValue`,{
+      headers:{'Authorization':'Bearer '+token,'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'}
+    });
+    const data=await res.json();
+    const deptItem=data.value&&data.value.find(i=>i.fields?.ConfigKey==='departments');
+    if(deptItem&&deptItem.fields.ConfigValue){
+      return JSON.parse(deptItem.fields.ConfigValue);
+    }
+  }catch(e){console.warn('loadDeptsFromSP error:',e);}
+  return null;
+}
+
+async function saveDeptsToSP(siteId,depts){
+  try{
+    const configListId=await getOrCreateConfigList(siteId);
+    const token=await getToken();
+    // Check if exists
+    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${configListId}/items?$expand=fields&$select=id,fields/ConfigKey`,{
+      headers:{'Authorization':'Bearer '+token,'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'}
+    });
+    const data=await res.json();
+    const existing=data.value&&data.value.find(i=>i.fields?.ConfigKey==='departments');
+    if(existing){
+      await callGraph('PATCH',`/sites/${siteId}/lists/${configListId}/items/${existing.id}`,{
+        fields:{ConfigValue:JSON.stringify(depts)}
+      });
+    } else {
+      await callGraph('POST',`/sites/${siteId}/lists/${configListId}/items`,{
+        fields:{Title:'departments',ConfigKey:'departments',ConfigValue:JSON.stringify(depts)}
+      });
+    }
+    console.log('Depts saved to SP');
+  }catch(e){console.warn('saveDeptsToSP error:',e);}
+}
+
 async function loadFromSharePoint(silent=false){
   if(!currentAccount||!msalInstance)return;
   try{
-    if(!silent)showToast('⏳ Đang tải dữ liệu từ SharePoint...');
     const siteId=await getSiteId();const listId=await getOrCreateList(siteId);
+    // Load depts config from SharePoint
+    const depts=await loadDeptsFromSP(siteId);
+    if(depts&&depts.length>0){
+      appData.depts=depts;
+    } else {
+      // First time: save current depts to SP
+      await saveDeptsToSP(siteId,appData.depts.length>0?appData.depts:DEFAULT_DEPTS);
+      appData.depts=appData.depts.length>0?appData.depts:DEFAULT_DEPTS;
+    }
     const token=await getToken();
     const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items?$expand=fields&$top=500`,{
       headers:{'Authorization':'Bearer '+token,'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'}
@@ -1076,7 +1144,17 @@ function createCycle(){
   showToast('✅ Đã tạo đợt: '+name);
 }
 function openManageDeptModal(){renderDeptManageList();document.getElementById('modalDept').classList.add('open');}
-function closeModalDept(){document.getElementById('modalDept').classList.remove('open');renderPractice();}
+async function closeModalDept(){
+  document.getElementById('modalDept').classList.remove('open');
+  renderPractice();
+  // Sync depts to SharePoint
+  if(currentAccount&&msalInstance){
+    try{
+      const siteId=await getSiteId();
+      await saveDeptsToSP(siteId,appData.depts);
+    }catch(e){console.warn('saveDeptsToSP on close:',e);}
+  }
+}
 function renderDeptManageList(){
   document.getElementById('deptManageList').innerHTML=appData.depts.map(d=>`
     <div style="display:flex;align-items:center;gap:9px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;">

@@ -554,11 +554,45 @@ const SK='5s_v4';
 const SP={
   clientId:'892df56b-fca9-4abb-911c-fc2eb369103c',
   tenantId:'7e2939ee-709c-47c1-a64a-1fe4cffa94e3',
+  clientSecret:'F228Q~q.6~PCbVrtR0xKy47asQm9L1os',
   siteHost:'biahalong.sharepoint.com',
   sitePath:'/sites/Ban5S',
   listName:'5S_Submissions',
   libName:'5S_Photos',
 };
+
+// App-only token (không cần user login) - chỉ để đọc dữ liệu
+let appOnlyToken=null;
+let appOnlyTokenExpiry=0;
+
+async function getAppOnlyToken(){
+  if(appOnlyToken && Date.now()<appOnlyTokenExpiry) return appOnlyToken;
+  const body=new URLSearchParams({
+    grant_type:'client_credentials',
+    client_id:SP.clientId,
+    client_secret:SP.clientSecret,
+    scope:'https://graph.microsoft.com/.default'
+  });
+  const res=await fetch(`https://login.microsoftonline.com/${SP.tenantId}/oauth2/v2.0/token`,{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded'},
+    body
+  });
+  if(!res.ok) throw new Error('Cannot get app token');
+  const data=await res.json();
+  appOnlyToken=data.access_token;
+  appOnlyTokenExpiry=Date.now()+(data.expires_in-60)*1000;
+  return appOnlyToken;
+}
+
+async function callGraphPublic(url){
+  const token=await getAppOnlyToken();
+  const res=await fetch('https://graph.microsoft.com/v1.0'+url,{
+    headers:{'Authorization':'Bearer '+token}
+  });
+  if(!res.ok){const e=await res.text();throw new Error(e);}
+  return res.json();
+}
 const SP_SCOPES=[
   'https://graph.microsoft.com/Sites.FullControl.All',
   'https://graph.microsoft.com/Sites.ReadWrite.All',
@@ -582,12 +616,8 @@ function createInitial(){
   return {depts:DEFAULT_DEPTS,cycles:[{id:'c1',name,desc:'',createdAt:new Date().toISOString(),submissions:[]}],activeCycle:'c1'};
 }
 function saveData(){try{localStorage.setItem(SK,JSON.stringify(appData));}catch(e){console.warn(e);}}
-// Start with empty data - will be replaced by SharePoint data after login
-function createEmpty(){
-  const name='Tháng '+new Date().toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
-  return {depts:[],cycles:[{id:'c1',name,desc:'',createdAt:new Date().toISOString(),submissions:[]}],activeCycle:'c1'};
-}
-let appData=createEmpty();
+// Always start fresh - all data comes from SharePoint
+let appData=createInitial();
 let pendingPhotos=[];
 let activeCycleId=appData.activeCycle;
 let historyFilter='today';
@@ -645,8 +675,13 @@ async function initMSAL(){
       await onLoginSuccess();
     }else{
       const accounts=msalInstance.getAllAccounts();
-      if(accounts.length>0){currentAccount=accounts[0];await onLoginSuccess();}
-      else showLoginScreen();
+      if(accounts.length>0){
+        currentAccount=accounts[0];
+        // Có session sẵn → sync SP ngay lập tức
+        await onLoginSuccess();
+      } else {
+        showLoginScreen();
+      }
     }
   }catch(e){
     console.error('MSAL init error:',e);
@@ -736,9 +771,8 @@ async function onLoginSuccess(){
   renderGemba();
   loadFromSharePoint(true);
 
-  // Initial sync right after login - always show progress
+  // Sync ngay sau khi login - luôn hiện toast
   await loadFromSharePoint(false);
-  // Keep syncing on interval
   
 
   // Auto sync every 60s
@@ -890,6 +924,80 @@ async function saveDeptsToSP(siteId,depts){
   }catch(e){console.warn('saveDeptsToSP error:',e);}
 }
 
+async function loadDataPublic(){
+  // Load dữ liệu không cần đăng nhập - dùng app token
+  try{
+    showToast('⏳ Đang tải dữ liệu...');
+    const siteData=await callGraphPublic(`/sites/${SP.siteHost}:${SP.sitePath}`);
+    const siteId=siteData.id;
+    if(!spSiteId)spSiteId=siteId;
+
+    // Load depts config
+    try{
+      const configLists=await callGraphPublic(`/sites/${siteId}/lists?$select=id,displayName`);
+      const configList=configLists.value.find(l=>l.displayName==='5S_Config');
+      if(configList){
+        const token=await getAppOnlyToken();
+        const cRes=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${configList.id}/items?$expand=fields`,{
+          headers:{'Authorization':'Bearer '+token,'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'}
+        });
+        const cData=await cRes.json();
+        const deptItem=cData.value&&cData.value.find(i=>i.fields?.ConfigKey==='departments');
+        if(deptItem&&deptItem.fields.ConfigValue){
+          appData.depts=JSON.parse(deptItem.fields.ConfigValue);
+        }
+      }
+    }catch(e){console.warn('Load depts public:',e);}
+
+    // Load submissions
+    const subLists=await callGraphPublic(`/sites/${siteId}/lists?$select=id,displayName`);
+    const subList=subLists.value.find(l=>l.displayName===SP.listName);
+    if(!subList){
+      restoreDashboardHTML();renderDashboard();renderPractice();
+      showToast('📭 Chưa có dữ liệu');return;
+    }
+    if(!spListId)spListId=subList.id;
+
+    const token=await getAppOnlyToken();
+    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${subList.id}/items?$expand=fields&$top=500`,{
+      headers:{'Authorization':'Bearer '+token,'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'}
+    });
+    const items=await res.json();
+
+    if(!items.value||items.value.length===0){
+      appData.cycles.forEach(c=>{c.submissions=[];});
+      restoreDashboardHTML();renderDashboard();renderPractice();
+      showToast('📭 Chưa có dữ liệu trên SharePoint');return;
+    }
+
+    // Parse data
+    const cycleMap={};
+    items.value.forEach(item=>{
+      const f=item.fields;
+      const cid=f.CycleId||'c1';const cname=f.CycleName||'Đợt mặc định';
+      if(!cycleMap[cid])cycleMap[cid]={id:cid,name:cname,desc:'',createdAt:item.createdDateTime||new Date().toISOString(),submissions:[]};
+      const photoUrls=(f.PhotoUrls||'').split('\n').filter(u=>u.trim());
+      const photos=photoUrls.map((url,i)=>({url,name:`photo_${i+1}.jpg`}));
+      if(!cycleMap[cid].submissions.find(s=>s.id===f.SubmissionId)){
+        cycleMap[cid].submissions.push({id:f.SubmissionId||item.id,deptId:f.DeptId||'',person:f.Person||'',area:f.Area||'',note:f.Note||'',photos,createdAt:item.createdDateTime||new Date().toISOString(),fromSP:true});
+      }
+    });
+    const newCycles=Object.values(cycleMap);
+    appData.cycles=newCycles.length>0?newCycles:[{id:'c1',name:'Đợt mặc định',desc:'',createdAt:new Date().toISOString(),submissions:[]}];
+    activeCycleId=appData.cycles[0].id;appData.activeCycle=activeCycleId;
+    saveData();
+    restoreDashboardHTML();
+    renderDashboard();renderPractice();populateHistoryFilters();renderHistory();
+    showToast('✅ Đã tải '+items.value.length+' lần nộp!');
+  }catch(e){
+    console.error('loadDataPublic error:',e);
+    restoreDashboardHTML();
+    if(appData.depts.length===0)appData.depts=DEFAULT_DEPTS;
+    renderDashboard();renderPractice();
+    showToast('⚠ Lỗi tải dữ liệu: '+e.message);
+  }
+}
+
 async function loadFromSharePoint(silent=false){
   if(!currentAccount||!msalInstance)return;
   try{
@@ -913,7 +1021,9 @@ async function loadFromSharePoint(silent=false){
     if(!silent)showToast('📥 SP: '+( items.value?.length||0)+' items');
     if(!items.value||items.value.length===0){
       appData.cycles.forEach(c=>{c.submissions=[];});
-      saveData();renderDashboard();renderPractice();
+      saveData();
+      restoreDashboardHTML();
+      renderDashboard();renderPractice();
       if(!silent)showToast('📭 Chưa có dữ liệu trên SharePoint');
       return;
     }
@@ -931,13 +1041,13 @@ async function loadFromSharePoint(silent=false){
     const newCycles=Object.values(cycleMap);
     appData.cycles=newCycles.length>0?newCycles:[{id:'c1',name:'Đợt mặc định',desc:'',createdAt:new Date().toISOString(),submissions:[]}];
     activeCycleId=appData.cycles[0].id;appData.activeCycle=activeCycleId;
-    saveData();
-    // Force re-render with new data
+    saveData(); // Cache SP data to localStorage
+    // Restore and re-render all views with SP data
+    restoreDashboardHTML();
     renderDashboard();
     renderPractice();
     populateHistoryFilters();
     renderHistory();
-    console.log('After SP load - allSubs count:', allSubs().length);
     if(!silent)showToast('✅ Đã tải '+items.value.length+' lần nộp từ SharePoint!');
   }catch(e){
     console.error('loadFromSP error:',e);
@@ -1455,10 +1565,21 @@ function showToast(msg){clearTimeout(toastTimer);const t=document.getElementById
 
 // ═══ INIT ═══
 document.getElementById('headerDate').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
-renderDashboard();
-renderPractice();
+// Store original dashboard HTML for restore after SP load
+const _dashHTML = document.getElementById('view-dashboard').innerHTML;
+function restoreDashboardHTML(){
+  if(!document.getElementById('ds-photos')){
+    document.getElementById('view-dashboard').innerHTML=_dashHTML;
+  }
+}
+
 renderGemba();
-(async()=>{ await initMSAL(); })();
+// Load dữ liệu ngay lập tức không cần đăng nhập
+(async()=>{
+  await loadDataPublic();
+  // Song song: khởi tạo MSAL cho tính năng admin
+  await initMSAL();
+})();
 </script>
 </body>
 </html>

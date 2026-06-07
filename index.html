@@ -4,366 +4,506 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Chương trình 5S</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js" crossorigin="anonymous"
-  onerror="loadMsalFallback()"></script>
-<script>
-function loadMsalFallback(){
-  var s=document.createElement('script');
-  s.src='https://unpkg.com/@azure/msal-browser@2.38.0/lib/msal-browser.min.js';
-  s.crossOrigin='anonymous';
-  document.head.appendChild(s);
-}
-</script>
+<title>5S Program — Bia Hà Long</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://alcdn.msauth.net/browser/2.38.0/js/msal-browser.min.js" crossorigin="anonymous" onerror="loadMsalFallback()"></script>
+<script>function loadMsalFallback(){var s=document.createElement('script');s.src='https://unpkg.com/@azure/msal-browser@2.38.0/lib/msal-browser.min.js';s.crossOrigin='anonymous';document.head.appendChild(s);}</script>
 <style>
 :root{
-  --white:#fff;--off:#f7f8fc;--border:#e4e8f0;--border2:#d0d7e8;
-  --text:#1a1f36;--sub:#5c6585;--muted:#9aa3be;
-  --green:#16a34a;--green-bg:#f0fdf4;--green-border:#bbf7d0;
+  --bg:#f0f4f8;--white:#fff;--surface:#f8fafc;--border:#e2e8f0;--border2:#cbd5e1;
+  --text:#0f172a;--sub:#475569;--muted:#94a3b8;
+  --green:#059669;--green-bg:#ecfdf5;--green-border:#a7f3d0;
   --red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
-  --amber:#d97706;--amber-bg:#fffbeb;
+  --amber:#d97706;--amber-bg:#fffbeb;--amber-border:#fde68a;
   --blue:#2563eb;--blue-bg:#eff6ff;--blue-border:#bfdbfe;
-  --primary:#1e40af;--pl:#3b82f6;
-  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
-  --shadow:0 4px 16px rgba(0,0,0,.08);
-  --shadow-lg:0 10px 40px rgba(0,0,0,.1);
+  --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-border:#ddd6fe;
+  --primary:#1e40af;
   --radius:12px;--radius-sm:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.08);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--off);color:var(--text);min-height:100vh;font-size:14px;}
-.site-header{background:linear-gradient(135deg,#1e3a8a,#1e40af 50%,#2563eb);padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(30,64,175,.4);position:sticky;top:0;z-index:50;}
-.header-brand{display:flex;align-items:center;gap:12px;}
-.brand-badge{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:20px;}
-.brand-name{color:#fff;font-size:17px;font-weight:800;letter-spacing:-.3px;}
-.brand-sub{color:rgba(255,255,255,.65);font-size:11px;}
-.header-right{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;}
-#loginInfo{display:none;color:rgba(255,255,255,.9);font-size:12px;background:rgba(255,255,255,.12);padding:5px 12px;border-radius:16px;white-space:nowrap;}
-#syncBtn{display:none;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:7px 12px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
-#loginBtn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.35);color:#fff;padding:7px 14px;border-radius:8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
-#loginBtn:disabled{opacity:.6;cursor:not-allowed;}
-.header-date{color:rgba(255,255,255,.8);font-family:'JetBrains Mono',monospace;font-size:11px;background:rgba(255,255,255,.1);padding:5px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.2);white-space:nowrap;}
-.tab-bar{background:var(--white);border-bottom:2px solid var(--border);padding:0 16px;display:flex;overflow-x:auto;}
-.tab-btn{background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;padding:14px 16px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
-.tab-btn:hover{color:var(--primary);}
-.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);}
-main{max-width:1100px;margin:0 auto;padding:22px 14px 80px;}
+body{font-family:'Be Vietnam Pro',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+
+/* LOGIN SCREEN */
+.login-screen{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 50%,#1e40af 100%);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:0;}
+.login-screen.show{display:flex;}
+.login-box{background:rgba(255,255,255,.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:48px 44px;width:100%;max-width:420px;text-align:center;}
+.login-logo{width:64px;height:64px;background:linear-gradient(135deg,#3b82f6,#22d3ee);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 20px;}
+.login-title{font-size:26px;font-weight:800;color:#fff;letter-spacing:-.5px;margin-bottom:6px;}
+.login-sub{font-size:14px;color:rgba(255,255,255,.6);margin-bottom:36px;line-height:1.5;}
+.login-btn{width:100%;background:#fff;color:#1e40af;border:none;border-radius:var(--radius-sm);padding:14px;font-family:'Be Vietnam Pro',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;margin-bottom:12px;}
+.login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.2);}
+.login-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.login-btn-icon{font-size:20px;}
+.login-note{font-size:12px;color:rgba(255,255,255,.4);margin-top:16px;}
+.login-loading{display:none;color:rgba(255,255,255,.7);font-size:13px;margin-top:12px;}
+
+/* HEADER */
+.header{background:var(--white);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow);}
+.header-logo{display:flex;align-items:center;gap:10px;}
+.logo-mark{width:36px;height:36px;background:linear-gradient(135deg,#1e40af,#2563eb);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0;}
+.logo-name{font-size:15px;font-weight:800;color:var(--text);letter-spacing:-.3px;}
+.logo-co{font-size:11px;color:var(--muted);font-weight:400;}
+.header-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:5px 12px 5px 5px;}
+.user-avatar{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#1e40af,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;}
+.user-name{font-size:12px;font-weight:600;color:var(--text);}
+.user-role{font-size:10px;color:var(--muted);}
+.admin-badge{background:#fef9c3;color:#92400e;border:1px solid #fde68a;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;font-family:'JetBrains Mono',monospace;}
+.btn-logout{background:none;border:1px solid var(--border);color:var(--sub);padding:5px 10px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;font-family:'Be Vietnam Pro',sans-serif;transition:all .2s;}
+.btn-logout:hover{border-color:var(--red);color:var(--red);}
+.header-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);}
+#syncBtn{background:var(--surface);border:1px solid var(--border);color:var(--sub);padding:6px 10px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Be Vietnam Pro',sans-serif;}
+#syncBtn:hover{border-color:var(--blue);color:var(--blue);}
+
+/* TABBAR */
+.tabbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;display:flex;overflow-x:auto;}
+.tabbar::-webkit-scrollbar{display:none;}
+.tab{background:none;border:none;border-bottom:2.5px solid transparent;padding:0 18px;height:48px;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap;transition:all .2s;margin-bottom:-1px;}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+.tab-cnt{background:var(--red-bg);color:var(--red);font-family:'JetBrains Mono',monospace;font-size:10px;padding:1px 6px;border-radius:10px;border:1px solid var(--red-border);}
+
+/* MAIN */
+main{max-width:1120px;margin:0 auto;padding:28px 20px 80px;}
 .view{display:none;}.view.active{display:block;}
-.card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:16px;}
-.card-header{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.card-title{font-size:14px;font-weight:700;display:flex;align-items:center;gap:7px;}
-.card-body{padding:14px 18px;}
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
-@media(max-width:680px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
-.stat-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:15px 17px;box-shadow:var(--shadow-sm);}
-.stat-icon{font-size:20px;margin-bottom:7px;}
-.stat-val{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1;margin-bottom:3px;}
-.stat-label{font-size:12px;color:var(--sub);}
-.cycle-row{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
-.cycle-label{font-size:13px;font-weight:600;color:var(--sub);}
-.cycle-select{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:8px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none;}
-.btn-primary{background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:8px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
-.btn-primary:hover{background:#1e3a8a;}
-.btn-outline{background:var(--white);border:1.5px solid var(--border2);color:var(--text);border-radius:var(--radius-sm);padding:8px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
-.btn-outline:hover{border-color:var(--pl);color:var(--primary);}
-.btn-danger{background:var(--white);border:1px solid var(--red-border);color:var(--red);border-radius:4px;padding:2px 8px;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;}
-.progress-wrap{padding:13px 18px;border-bottom:1px solid var(--border);}
-.progress-label-row{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;font-weight:600;}
-.progress-track{background:var(--off);border-radius:99px;height:8px;overflow:hidden;}
-.progress-fill{height:100%;border-radius:99px;transition:width .6s ease;}
-.missing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
-.missing-card{background:var(--red-bg);border:1.5px solid var(--red-border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:center;gap:9px;}
-.mc-name{font-size:12px;font-weight:700;color:var(--red);}
-.mc-sub{font-size:11px;color:#f87171;margin-top:1px;}
-.done-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;}
-.done-card{background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:flex-start;gap:9px;}
-.dc-name{font-size:12px;font-weight:700;color:var(--green);}
-.dc-sub{font-size:11px;color:#16a34a;margin-top:1px;}
-.submit-section{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:2px dashed var(--blue-border);border-radius:var(--radius);padding:22px;margin-bottom:22px;}
-.submit-title{font-size:15px;font-weight:800;color:var(--primary);margin-bottom:3px;}
-.submit-desc{font-size:13px;color:var(--sub);margin-bottom:16px;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-@media(max-width:540px){.form-grid{grid-template-columns:1fr;}}
-.form-group label{display:block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--sub);margin-bottom:6px;}
-.form-group input,.form-group select{width:100%;background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
-.form-group input:focus,.form-group select:focus{border-color:var(--pl);}
-.drop-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:22px;text-align:center;background:var(--white);margin-bottom:12px;transition:all .2s;}
-.drop-zone.drag-over{border-color:var(--pl);background:var(--blue-bg);}
+
+/* PAGE HEADER */
+.ph{margin-bottom:22px;}
+.ph-title{font-size:20px;font-weight:800;letter-spacing:-.4px;margin-bottom:3px;}
+.ph-sub{font-size:13px;color:var(--sub);}
+
+/* PERIOD PILLS */
+.period-row{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap;}
+.pp{background:var(--white);border:1.5px solid var(--border);color:var(--sub);border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Be Vietnam Pro',sans-serif;}
+.pp:hover{border-color:var(--primary);color:var(--primary);}
+.pp.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+
+/* STAT CARDS */
+.stats-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px;}
+.stats-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+@media(max-width:700px){.stats-3{grid-template-columns:1fr 1fr;}.stats-4{grid-template-columns:1fr 1fr;}}
+.sc{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.sc-lbl{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.sc-val{font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:600;line-height:1;margin-bottom:4px;}
+.sc-sub{font-size:12px;color:var(--muted);}
+.sc-bar{height:4px;background:var(--border);border-radius:99px;margin-top:12px;overflow:hidden;}
+.sc-bar-fill{height:100%;border-radius:99px;transition:width .6s ease;}
+
+/* SECTION */
+.sec{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;}
+.sec-hd{padding:13px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.sec-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;}
+.sec-body{padding:16px 18px;}
+
+/* DEPT CARDS */
+.dept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px;}
+.dept-done{background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:flex-start;gap:9px;}
+.dd-name{font-size:12px;font-weight:700;color:var(--green);}
+.dd-sub{font-size:11px;color:#059669;opacity:.8;margin-top:1px;}
+.dept-miss{background:var(--red-bg);border:1.5px solid var(--red-border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:center;gap:9px;}
+.dm-name{font-size:12px;font-weight:700;color:var(--red);}
+.dm-sub{font-size:11px;color:var(--red);opacity:.7;margin-top:1px;}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--sub);font-family:'JetBrains Mono',monospace;}
+
+/* PROGRESS */
+.prog-wrap{padding:13px 18px;border-bottom:1px solid var(--border);}
+.prog-meta{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:7px;}
+.prog-track{background:var(--surface);border-radius:99px;height:7px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--primary),var(--green));transition:width .6s ease;}
+
+/* FORM */
+.submit-box{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:2px dashed var(--blue-border);border-radius:var(--radius);padding:22px;margin-bottom:20px;}
+.sb-title{font-size:15px;font-weight:800;color:var(--primary);margin-bottom:3px;}
+.sb-sub{font-size:13px;color:var(--sub);margin-bottom:18px;}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+@media(max-width:540px){.f2{grid-template-columns:1fr;}}
+.fg label{display:block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sub);margin-bottom:6px;}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--blue);}
+.fg textarea{resize:vertical;min-height:72px;}
+.fg select option{background:var(--white);}
+.dropzone{border:2px dashed var(--border2);border-radius:var(--radius);padding:22px;text-align:center;background:var(--white);margin-bottom:12px;transition:all .2s;}
+.dropzone.drag-over{border-color:var(--blue);background:var(--blue-bg);}
 .drop-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px;}
-.drop-btn{border:none;border-radius:8px;padding:10px 18px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;}
-.drop-btn-cam{background:var(--primary);color:#fff;}
-.drop-btn-gal{background:var(--white);color:var(--primary);border:2px solid var(--primary)!important;}
-.preview-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
-.preview-thumb{position:relative;width:74px;height:74px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--border);animation:fadeIn .25s ease;}
-@keyframes fadeIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
-.preview-thumb img{width:100%;height:100%;object-fit:cover;}
-.del-btn{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:17px;height:17px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.btn-submit{background:linear-gradient(135deg,var(--primary),var(--pl));color:#fff;border:none;border-radius:var(--radius-sm);padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(37,99,235,.3);transition:all .2s;}
-.btn-submit:hover{transform:translateY(-2px);}
-.accordion-item{border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;background:var(--white);box-shadow:var(--shadow-sm);}
-.accordion-header{display:flex;align-items:center;gap:11px;padding:12px 16px;cursor:pointer;user-select:none;transition:background .15s;}
-.accordion-header:hover{background:var(--off);}
-.acc-toggle{margin-left:auto;color:var(--muted);font-size:17px;transition:transform .3s;}
-.accordion-item.open .acc-toggle{transform:rotate(180deg);}
-.accordion-body{display:none;border-top:1px solid var(--border);}
-.accordion-item.open .accordion-body{display:block;}
-.dept-avatar{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
-.status-chip{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;}
-.chip-done{background:var(--green-bg);color:var(--green);}
-.chip-missing{background:var(--red-bg);color:var(--red);}
-.photo-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:7px;padding:13px 16px;}
-.gallery-item{aspect-ratio:1;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;border:1.5px solid var(--border);transition:transform .2s;}
-.gallery-item:hover{transform:scale(1.04);}
-.gallery-item img{width:100%;height:100%;object-fit:cover;}
-.gallery-empty{padding:26px;text-align:center;color:var(--muted);font-size:13px;}
-.date-filter-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-.date-filter-btn{background:var(--white);border:1.5px solid var(--border2);color:var(--sub);border-radius:20px;padding:6px 13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;}
-.date-filter-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;}
-.history-filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
-.history-filters input,.history-filters select{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:8px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text);outline:none;flex:1;min-width:130px;}
-.timeline-day{margin-bottom:18px;}
-.timeline-day-label{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:.4px;text-transform:uppercase;padding:5px 0;border-bottom:1px solid var(--border);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
-.timeline-day-count{background:var(--blue-bg);color:var(--blue);font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 8px;border-radius:10px;}
-.sub-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:13px 15px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;box-shadow:var(--shadow-sm);}
-.sub-card-thumbs{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;max-width:170px;}
-.sub-card-thumb{width:50px;height:50px;border-radius:6px;overflow:hidden;cursor:pointer;border:1px solid var(--border);}
-.sub-card-thumb img{width:100%;height:100%;object-fit:cover;}
-.sub-card-info{flex:1;min-width:0;}
-.sub-card-header{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;}
-.sub-card-dept{font-size:13px;font-weight:700;}
-.sub-card-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-left:auto;}
-.sub-card-count{background:var(--blue-bg);color:var(--blue);font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;font-family:'JetBrains Mono',monospace;}
-.sub-card-del{background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:2px;}
-.sub-card-del:hover{color:var(--red);}
-.sub-card-note{font-size:12px;background:var(--off);border-radius:6px;padding:5px 9px;margin-top:4px;}
-.dash-period-row{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
-.period-btn{background:var(--white);border:1.5px solid var(--border2);color:var(--sub);border-radius:20px;padding:7px 15px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
-.period-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;}
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-@media(max-width:680px){.dash-grid{grid-template-columns:1fr;}}
-.bar-chart{display:flex;flex-direction:column;gap:9px;}
-.bar-row{display:flex;align-items:center;gap:9px;}
-.bar-label{font-size:12px;font-weight:600;min-width:120px;text-align:right;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.bar-track{flex:1;background:var(--off);border-radius:99px;height:9px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:99px;transition:width .6s ease;}
-.bar-val{font-family:'JetBrains Mono',monospace;font-size:12px;min-width:24px;font-weight:600;}
-.trend-chart{display:flex;align-items:flex-end;gap:3px;height:80px;}
-.trend-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
-.trend-bar{width:100%;background:linear-gradient(180deg,var(--pl),var(--primary));border-radius:3px 3px 0 0;transition:height .5s ease;min-height:2px;}
-.trend-label{font-size:9px;color:var(--muted);white-space:nowrap;}
-.trend-val{font-size:9px;font-weight:700;color:var(--primary);}
-.heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-.heatmap-cell{aspect-ratio:1;border-radius:3px;cursor:pointer;transition:transform .15s;}
-.heatmap-cell:hover{transform:scale(1.2);z-index:1;}
-.heatmap-label-row{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:3px;}
-.heatmap-day-label{font-size:9px;color:var(--muted);text-align:center;font-weight:600;}
-.rank-table{width:100%;border-collapse:collapse;}
-.rank-table th{background:var(--off);padding:8px 11px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--sub);}
-.rank-table td{padding:9px 11px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
-.rank-table tr:last-child td{border-bottom:none;}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;align-items:center;justify-content:center;padding:16px;}
+.dbtn{border:none;border-radius:var(--radius-sm);padding:10px 18px;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;}
+.dbtn-cam{background:var(--primary);color:#fff;}
+.dbtn-gal{background:var(--white);color:var(--primary);border:1.5px solid var(--blue-border);}
+.prev-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;}
+.thumb{position:relative;width:72px;height:72px;border-radius:var(--radius-sm);overflow:hidden;border:1.5px solid var(--border);animation:pop .2s ease;}
+@keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+.thumb img{width:100%;height:100%;object-fit:cover;}
+.thumb-del{position:absolute;top:3px;right:3px;background:rgba(0,0,0,.65);color:#fff;border:none;border-radius:50%;width:17px;height:17px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.btn-big{background:linear-gradient(135deg,var(--primary),#2563eb);color:#fff;border:none;border-radius:var(--radius-sm);padding:13px;font-family:'Be Vietnam Pro',sans-serif;font-size:14px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(37,99,235,.3);transition:all .2s;}
+.btn-big:hover{transform:translateY(-1px);}
+
+/* BUTTONS */
+.btn{border:none;border-radius:var(--radius-sm);padding:8px 14px;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s;}
+.btn-p{background:var(--primary);color:#fff;}
+.btn-p:hover{background:#1e3a8a;}
+.btn-o{background:var(--white);border:1.5px solid var(--border2);color:var(--text);}
+.btn-o:hover{border-color:var(--blue);color:var(--blue);}
+.btn-del{background:none;border:1px solid var(--red-border);color:var(--red);border-radius:4px;padding:2px 8px;font-size:10px;font-weight:600;cursor:pointer;font-family:'JetBrains Mono',monospace;}
+.btn-del:hover{background:var(--red-bg);}
+.cycle-row{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.cycle-sel{background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:7px 12px;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;color:var(--text);outline:none;}
+
+/* ACCORDION */
+.acc{border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;background:var(--white);box-shadow:var(--shadow);}
+.acc-hd{display:flex;align-items:center;gap:10px;padding:12px 15px;cursor:pointer;user-select:none;transition:background .15s;}
+.acc-hd:hover{background:var(--surface);}
+.acc-arrow{margin-left:auto;color:var(--muted);font-size:15px;transition:transform .3s;}
+.acc.open .acc-arrow{transform:rotate(180deg);}
+.acc-body{display:none;border-top:1px solid var(--border);}
+.acc.open .acc-body{display:block;}
+.dept-av{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.chip{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;font-family:'JetBrains Mono',monospace;}
+.chip-ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.chip-no{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px;padding:12px 15px;}
+.photo-item{aspect-ratio:1;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;border:1.5px solid var(--border);transition:transform .2s;}
+.photo-item:hover{transform:scale(1.04);}
+.photo-item img{width:100%;height:100%;object-fit:cover;}
+
+/* HISTORY */
+.hist-day{margin-bottom:18px;}
+.hist-day-lbl{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.6px;text-transform:uppercase;padding:4px 0;border-bottom:1px solid var(--border);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;}
+.hist-cnt{background:var(--blue-bg);color:var(--blue);font-size:10px;padding:2px 8px;border-radius:10px;border:1px solid var(--blue-border);}
+.hcard{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;box-shadow:var(--shadow);}
+.hcard-thumbs{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap;max-width:160px;}
+.hcard-thumb{width:48px;height:48px;border-radius:6px;overflow:hidden;cursor:pointer;border:1px solid var(--border);}
+.hcard-thumb img{width:100%;height:100%;object-fit:cover;}
+.hcard-info{flex:1;min-width:0;}
+.hcard-top{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap;}
+.hcard-dept{font-size:13px;font-weight:700;}
+.hcard-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;}
+.hcard-cnt{background:var(--blue-bg);color:var(--blue);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;font-family:'JetBrains Mono',monospace;border:1px solid var(--blue-border);}
+.hcard-note{font-size:12px;background:var(--surface);border-radius:6px;padding:5px 9px;margin-top:4px;color:var(--sub);}
+
+/* GEMBA */
+.gemba-hero{background:linear-gradient(135deg,#1e3a8a,#2563eb 60%,#0ea5e9);border-radius:var(--radius);padding:28px 32px;margin-bottom:20px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.gh-title{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:6px;}
+.gh-sub{font-size:13px;opacity:.8;max-width:400px;line-height:1.6;}
+.checklist-item{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:7px;cursor:pointer;transition:all .2s;background:var(--white);}
+.checklist-item:hover{border-color:var(--blue);}
+.checklist-item.checked{background:var(--green-bg);border-color:var(--green-border);}
+.chk-box{width:20px;height:20px;border-radius:5px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:11px;}
+.checklist-item.checked .chk-box{background:var(--green);border-color:var(--green);color:#fff;}
+.checklist-item.checked .chk-lbl{color:var(--green);text-decoration:line-through;opacity:.7;}
+.chk-lbl{font-size:13px;font-weight:500;}
+.score-row{display:flex;gap:8px;margin-bottom:16px;}
+.score-btn{flex:1;padding:10px 6px;border:1.5px solid var(--border);background:var(--white);border-radius:var(--radius-sm);cursor:pointer;text-align:center;transition:all .2s;font-family:'Be Vietnam Pro',sans-serif;}
+.score-btn:hover{transform:translateY(-2px);}
+.score-btn.s1.active{background:var(--red-bg);border-color:var(--red);color:var(--red);}
+.score-btn.s2.active{background:var(--amber-bg);border-color:var(--amber);color:var(--amber);}
+.score-btn.s3.active{background:#fff7ed;border-color:#f97316;color:#f97316;}
+.score-btn.s4.active{background:var(--blue-bg);border-color:var(--blue);color:var(--blue);}
+.score-btn.s5.active{background:var(--green-bg);border-color:var(--green);color:var(--green);}
+.score-num{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;line-height:1;}
+.score-lbl{font-size:10px;font-weight:600;margin-top:3px;}
+.gw-hcard{background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);padding:13px 15px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:13px;}
+.gw-score-badge{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;flex-shrink:0;}
+.sb1{background:var(--red-bg);color:var(--red);}
+.sb2{background:var(--amber-bg);color:var(--amber);}
+.sb3{background:#fff7ed;color:#f97316;}
+.sb4{background:var(--blue-bg);color:var(--blue);}
+.sb5{background:var(--green-bg);color:var(--green);}
+.gw-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+@media(max-width:600px){.gw-stats{grid-template-columns:1fr 1fr;}}
+
+/* ADMIN PANEL */
+.admin-section{background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1.5px solid #fde68a;border-radius:var(--radius);padding:20px;margin-bottom:20px;}
+.admin-title{font-size:14px;font-weight:800;color:#92400e;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.admin-sub{font-size:12px;color:#b45309;margin-bottom:16px;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.open{display:flex;}
-.modal{background:var(--white);border-radius:var(--radius);max-width:460px;width:100%;box-shadow:var(--shadow-lg);overflow:hidden;}
-.modal-head{padding:17px 21px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.modal-head-title{font-size:15px;font-weight:800;}
-.modal-x{background:none;border:none;font-size:19px;cursor:pointer;color:var(--muted);}
-.modal-body{padding:17px 21px;}
-.modal-foot{padding:12px 21px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
-.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:300;align-items:center;justify-content:center;}
+.modal{background:var(--white);border-radius:var(--radius);max-width:440px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.15);overflow:hidden;}
+.modal-hd{padding:15px 20px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-ttl{font-size:15px;font-weight:800;}
+.modal-x{background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);}
+.modal-body{padding:16px 20px;}
+.modal-ft{padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+
+/* LIGHTBOX */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;align-items:center;justify-content:center;}
 .lightbox.open{display:flex;}
 .lightbox img{max-width:92vw;max-height:86vh;object-fit:contain;border-radius:8px;}
-.lb-close{position:absolute;top:16px;right:18px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:19px;border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.lb-info{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);backdrop-filter:blur(8px);color:#fff;padding:6px 14px;border-radius:14px;font-size:12px;text-align:center;white-space:nowrap;}
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--text);color:#fff;padding:11px 20px;border-radius:28px;font-size:13px;font-weight:600;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:200;white-space:nowrap;box-shadow:var(--shadow-lg);}
+.lb-close{position:absolute;top:16px;right:18px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:18px;border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.lb-info{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.65);backdrop-filter:blur(8px);color:rgba(255,255,255,.9);padding:6px 14px;border-radius:14px;font-size:11px;white-space:nowrap;font-family:'JetBrains Mono',monospace;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--text);color:#fff;padding:11px 22px;border-radius:24px;font-size:13px;font-weight:600;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:400;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.18);}
 .toast.show{transform:translateX(-50%) translateY(0);}
-.badge{display:inline-flex;align-items:center;background:var(--off);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--sub);}
-.empty-state{text-align:center;padding:36px;color:var(--muted);}
-@media(max-width:460px){main{padding:12px 10px 70px;}.submit-section{padding:15px;}.sub-card{flex-direction:column;}.brand-sub,.header-date{display:none;}}
+
+/* EMPTY */
+.empty{text-align:center;padding:36px;color:var(--muted);}
+
+/* RESPONSIVE */
+@media(max-width:480px){
+  main{padding:14px 10px 80px;}
+  .submit-box,.gemba-hero{padding:16px;}
+  .hcard{flex-direction:column;}
+  .logo-co,.header-date{display:none;}
+  .gemba-hero .gh-icon{display:none;}
+}
 </style>
 </head>
 <body>
-<header class="site-header">
-  <div class="header-brand">
-    <div class="brand-badge">🏆</div>
-    <div><div class="brand-name">CHƯƠNG TRÌNH 5S</div><div class="brand-sub">Hệ thống quản lý thực hành 5S</div></div>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">🏆</div>
+    <div class="login-title">Chương trình 5S</div>
+    <div class="login-sub">Hệ thống quản lý thực hành 5S<br>Bia Hà Long</div>
+    <button class="login-btn" id="loginMainBtn" onclick="login()">
+      <span class="login-btn-icon">🔐</span>
+      Đăng nhập bằng Microsoft 365
+    </button>
+    <div class="login-loading" id="loginLoading">⏳ Đang xử lý...</div>
+    <div class="login-note">Chỉ dành cho tài khoản Bia Hà Long (@biahalong.com)</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header" id="mainHeader">
+  <div class="header-logo">
+    <div class="logo-mark">5S</div>
+    <div>
+      <div class="logo-name">Chương trình 5S</div>
+      <div class="logo-co">Bia Hà Long</div>
+    </div>
   </div>
   <div class="header-right">
-    <div id="loginInfo"></div>
     <button id="syncBtn" onclick="loadFromSharePoint()">🔄 Đồng bộ</button>
-    <button id="loginBtn" onclick="login()">🔐 Đăng nhập Microsoft</button>
+    <div class="user-chip" id="userChip">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <div>
+        <div class="user-name" id="userName">...</div>
+        <div class="user-role" id="userRole">User</div>
+      </div>
+      <span class="admin-badge" id="adminBadge" style="display:none;">ADMIN</span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Đăng xuất</button>
     <div class="header-date" id="headerDate"></div>
   </div>
 </header>
-<div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('dashboard')" id="tab-dashboard">📊 Dashboard</button>
-  <button class="tab-btn" onclick="switchTab('practice')" id="tab-practice">📸 Thực hành 5S</button>
-  <button class="tab-btn" onclick="switchTab('history')" id="tab-history">📅 Lịch sử ảnh</button>
-</div>
-<main>
 
-<!-- DASHBOARD -->
+<!-- TABBAR -->
+<div class="tabbar" id="mainTabbar">
+  <button class="tab active" onclick="switchView('dashboard')" id="tab-dashboard">📊 Dashboard</button>
+  <button class="tab" onclick="switchView('practice')" id="tab-practice">
+    📸 Thực hành 5S
+    <span class="tab-cnt" id="tab-missing-cnt" style="display:none;"></span>
+  </button>
+  <button class="tab" onclick="switchView('gemba')" id="tab-gemba">🚶 Gemba Walk</button>
+</div>
+
+<main id="mainContent">
+
+<!-- ═══ DASHBOARD ═══ -->
 <div class="view active" id="view-dashboard">
-  <div class="dash-period-row">
-    <button class="period-btn active" onclick="setDashPeriod('today',this)">Hôm nay</button>
-    <button class="period-btn" onclick="setDashPeriod('week',this)">7 ngày</button>
-    <button class="period-btn" onclick="setDashPeriod('month',this)">Tháng này</button>
-    <button class="period-btn" onclick="setDashPeriod('quarter',this)">Quý này</button>
-    <button class="period-btn" onclick="setDashPeriod('all',this)">Tất cả</button>
+  <div class="ph"><div class="ph-title">Dashboard tổng quan</div><div class="ph-sub">Theo dõi tiến độ thực hành 5S toàn công ty</div></div>
+  <div class="period-row">
+    <button class="pp active" onclick="setDashPeriod('today',this)">Hôm nay</button>
+    <button class="pp" onclick="setDashPeriod('yesterday',this)">Hôm qua</button>
+    <button class="pp" onclick="setDashPeriod('week',this)">7 ngày</button>
+    <button class="pp" onclick="setDashPeriod('month',this)">Tháng này</button>
+    <button class="pp" onclick="setDashPeriod('all',this)">Tất cả</button>
   </div>
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-icon">🖼</div><div class="stat-val" id="ds-photos" style="color:var(--primary)">0</div><div class="stat-label">Ảnh trong kỳ</div></div>
-    <div class="stat-card"><div class="stat-icon">📤</div><div class="stat-val" id="ds-subs" style="color:var(--blue)">0</div><div class="stat-label">Lần nộp</div></div>
-    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="ds-depts" style="color:var(--green)">0</div><div class="stat-label">Phòng ban tham gia</div></div>
-    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-val" id="ds-days" style="color:var(--amber)">0</div><div class="stat-label">Ngày có hoạt động</div></div>
+  <div class="stats-3">
+    <div class="sc"><div class="sc-lbl">🖼 Ảnh đã chụp</div><div class="sc-val" id="ds-photos" style="color:var(--primary)">0</div><div class="sc-sub" id="ds-period-sub">trong hôm nay</div><div class="sc-bar"><div class="sc-bar-fill" id="ds-bar" style="width:0%;background:var(--primary)"></div></div></div>
+    <div class="sc"><div class="sc-lbl">✅ Phòng ban đã nộp</div><div class="sc-val" id="ds-done" style="color:var(--green)">0</div><div class="sc-sub" id="ds-done-sub">/ 0 phòng ban</div><div class="sc-bar"><div class="sc-bar-fill" id="ds-done-bar" style="width:0%;background:var(--green)"></div></div></div>
+    <div class="sc"><div class="sc-lbl">⏳ Chưa nộp</div><div class="sc-val" id="ds-missing" style="color:var(--red)">0</div><div class="sc-sub">phòng ban</div><div class="sc-bar"><div class="sc-bar-fill" id="ds-missing-bar" style="width:0%;background:var(--red)"></div></div></div>
   </div>
-
-  <!-- Hôm qua -->
-  <div class="card">
-    <div class="card-header"><span class="card-title">📅 Hôm qua — Phòng ban đã nộp</span><span class="badge" id="yesterdayBadge">0 phòng ban</span></div>
-    <div class="card-body" style="padding:12px 18px;"><div class="done-grid" id="yesterdayDoneGrid"></div></div>
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-title">⚠️ Phòng ban chưa nộp ảnh</span><span class="badge" id="dash-miss-badge">0</span></div>
+    <div class="sec-body"><div class="dept-grid" id="dashMissingGrid"></div></div>
   </div>
-  <div class="dash-grid">
-    <div class="card">
-      <div class="card-header"><span class="card-title">❌ Hôm qua — Chưa nộp</span></div>
-      <div class="card-body"><div class="missing-grid" id="yesterdayMissingGrid"></div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">⚠ Kỳ này — Chưa nộp</span></div>
-      <div class="card-body"><div class="missing-grid" id="dashMissingGrid"></div></div>
-    </div>
-  </div>
-
-  <div class="dash-grid">
-    <div class="card">
-      <div class="card-header"><span class="card-title">🏢 Ảnh theo phòng ban</span><span class="badge" id="dashPeriodLabel">Hôm nay</span></div>
-      <div class="card-body"><div class="bar-chart" id="deptBarChart"></div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">🏅 Xếp hạng tích cực nhất</span></div>
-      <div class="card-body" style="padding:0;"><table class="rank-table"><thead><tr><th>#</th><th>Phòng ban</th><th>Ảnh</th><th>Lần nộp</th></tr></thead><tbody id="rankBody"></tbody></table></div>
-    </div>
-  </div>
-  <div class="dash-grid">
-    <div class="card">
-      <div class="card-header"><span class="card-title">📈 Xu hướng 14 ngày</span></div>
-      <div class="card-body"><div class="trend-chart" id="trendChart"></div></div>
-    </div>
-    <div class="card">
-      <div class="card-header"><span class="card-title">🗓 Bản đồ hoạt động 4 tuần</span></div>
-      <div class="card-body">
-        <div class="heatmap-label-row"><div class="heatmap-day-label">CN</div><div class="heatmap-day-label">T2</div><div class="heatmap-day-label">T3</div><div class="heatmap-day-label">T4</div><div class="heatmap-day-label">T5</div><div class="heatmap-day-label">T6</div><div class="heatmap-day-label">T7</div></div>
-        <div class="heatmap-grid" id="heatmapGrid"></div>
-      </div>
-    </div>
-  </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">📋 Tổng hợp theo đợt</span></div>
-    <div class="card-body" style="padding:0;"><table class="rank-table"><thead><tr><th>Đợt</th><th>Ngày tạo</th><th>PB</th><th>Lần nộp</th><th>Ảnh</th><th>Tỉ lệ</th></tr></thead><tbody id="cycleBody"></tbody></table></div>
+  <div class="sec">
+    <div class="sec-hd"><span class="sec-title">✅ Phòng ban đã nộp ảnh</span><span class="badge" id="dash-done-badge">0</span></div>
+    <div class="sec-body"><div class="dept-grid" id="dashDoneGrid"></div></div>
   </div>
 </div>
 
-<!-- THỰC HÀNH 5S -->
+<!-- ═══ THỰC HÀNH 5S ═══ -->
 <div class="view" id="view-practice">
-  <div class="cycle-row">
-    <span class="cycle-label">Đợt kiểm tra:</span>
-    <select class="cycle-select" id="cycleSelect" onchange="onCycleChange()"></select>
-    <button class="btn-primary" onclick="openNewCycleModal()">＋ Tạo đợt mới</button>
-    <button class="btn-outline" onclick="openManageDeptModal()">⚙ Phòng ban</button>
-    <button class="btn-outline" onclick="exportSummary()" style="margin-left:auto;">⬇ Xuất báo cáo</button>
-  </div>
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-icon">🏢</div><div class="stat-val" id="s-total" style="color:var(--primary)">0</div><div class="stat-label">Tổng phòng ban</div></div>
-    <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="s-done" style="color:var(--green)">0</div><div class="stat-label">Đã nộp ảnh</div></div>
-    <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-val" id="s-missing" style="color:var(--red)">0</div><div class="stat-label">Chưa nộp</div></div>
-    <div class="stat-card"><div class="stat-icon">🖼</div><div class="stat-val" id="s-photos" style="color:var(--amber)">0</div><div class="stat-label">Tổng ảnh đã nộp</div></div>
-  </div>
-  <div class="card">
-    <div class="card-header"><span class="card-title">📊 Tiến độ nộp ảnh</span><span class="badge" id="progressBadge">0/0</span></div>
-    <div class="progress-wrap">
-      <div class="progress-label-row"><span id="progressLabel" style="color:var(--primary);font-size:13px;"></span><span id="progressPct" style="color:var(--primary);font-weight:800;"></span></div>
-      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;background:linear-gradient(90deg,#2563eb,#16a34a);"></div></div>
-    </div>
-    <div class="card-body" style="padding-top:10px;">
-      <div style="font-size:11px;font-weight:700;color:var(--red);margin-bottom:9px;text-transform:uppercase;">⚠ Chưa nộp ảnh</div>
-      <div class="missing-grid" id="missingGrid"></div>
+  <div class="ph"><div class="ph-title">Thực hành 5S</div><div class="ph-sub">Nộp ảnh báo cáo khu vực quản lý và xem lịch sử</div></div>
+
+  <!-- Admin tools -->
+  <div id="adminSection" style="display:none;margin-bottom:16px;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-o" onclick="openManageDeptModal()">⚙ Quản lý phòng ban</button>
+      <button class="btn btn-o" onclick="exportSummary()">⬇ Xuất báo cáo</button>
     </div>
   </div>
-  <div class="submit-section">
-    <div class="submit-title">📤 Nộp ảnh 5S</div>
-    <div class="submit-desc">Phòng ban chụp ảnh khu vực quản lý và nộp tại đây — không cần gửi Zalo nữa!</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Phòng / Ban *</label><select id="submitDept"><option value="">— Chọn phòng ban —</option></select></div>
-      <div class="form-group"><label>Khu vực / Vị trí</label><input type="text" id="submitArea" placeholder="VD: Khu sản xuất A..."></div>
-      <div class="form-group"><label>Người nộp *</label><input type="text" id="submitPerson" placeholder="Họ và tên..."></div>
-      <div class="form-group"><label>Ghi chú</label><input type="text" id="submitNote" placeholder="Nội dung thực hiện 5S..."></div>
+
+  <!-- Progress -->
+  <div class="sec" style="margin-bottom:20px;">
+    <div class="sec-hd"><span class="sec-title">📊 Tiến độ nộp ảnh</span><span class="badge" id="progressBadge">0/0</span></div>
+    <div class="prog-wrap">
+      <div class="prog-meta"><span id="progressLabel" style="color:var(--primary);font-family:'JetBrains Mono',monospace;font-size:12px;"></span><span id="progressPct" style="color:var(--primary);font-family:'JetBrains Mono',monospace;font-weight:700;"></span></div>
+      <div class="prog-track"><div class="prog-fill" id="progressFill" style="width:0%;"></div></div>
     </div>
-    <div class="drop-zone" id="dropZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-      <div style="font-size:30px;margin-bottom:7px;">📷</div>
-      <div style="font-size:14px;font-weight:700;">Chọn cách thêm ảnh</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:3px;">Kéo thả ảnh vào đây hoặc dùng nút bên dưới</div>
+    <div class="sec-body" style="padding-top:10px;">
+      <div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px;">⚠ Chưa nộp ảnh</div>
+      <div class="dept-grid" id="missingGrid"></div>
+    </div>
+  </div>
+
+  <!-- Submit form -->
+  <div class="submit-box">
+    <div class="sb-title">📤 Nộp ảnh 5S</div>
+    <div class="sb-sub">Chụp ảnh khu vực quản lý và nộp tại đây — không cần gửi Zalo!</div>
+    <div class="f2">
+      <div class="fg"><label>Phòng / Ban *</label><select id="submitDept"><option value="">— Chọn phòng ban —</option></select></div>
+      <div class="fg"><label>Khu vực / Vị trí</label><input type="text" id="submitArea" placeholder="VD: Khu sản xuất A..."></div>
+      <div class="fg"><label>Người nộp</label><input type="text" id="submitPerson" placeholder="Tự động điền từ tài khoản" readonly style="background:var(--surface);color:var(--sub);"></div>
+      <div class="fg"><label>Ghi chú</label><input type="text" id="submitNote" placeholder="Nội dung thực hiện 5S..."></div>
+    </div>
+    <div class="dropzone" id="dropZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+      <div style="font-size:28px;margin-bottom:7px;">📷</div>
+      <div style="font-size:14px;font-weight:700;">Chọn ảnh để nộp</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px;">Kéo thả hoặc dùng nút bên dưới</div>
       <div class="drop-btns">
-        <button type="button" class="drop-btn drop-btn-cam" onclick="document.getElementById('fileCamera').click()">📸 Chụp ảnh</button>
-        <button type="button" class="drop-btn drop-btn-gal" onclick="document.getElementById('fileGallery').click()">🖼 Chọn từ thư viện</button>
+        <button type="button" class="dbtn dbtn-cam" onclick="document.getElementById('fileCamera').click()">📸 Chụp ảnh</button>
+        <button type="button" class="dbtn dbtn-gal" onclick="document.getElementById('fileGallery').click()">🖼 Thư viện</button>
       </div>
     </div>
     <input type="file" id="fileCamera" accept="image/*" capture="environment" multiple onchange="handleFiles(event)" style="display:none;">
     <input type="file" id="fileGallery" accept="image/*" multiple onchange="handleFiles(event)" style="display:none;">
-    <div class="preview-grid" id="previewGrid"></div>
-    <button class="btn-submit" onclick="submitPhotos()">📤 NỘP ẢNH 5S</button>
+    <div class="prev-row" id="previewGrid"></div>
+    <button class="btn-big" onclick="submitPhotos()">📤 NỘP ẢNH 5S</button>
   </div>
-  <div style="font-size:17px;font-weight:800;margin-bottom:13px;">Chi tiết theo phòng ban</div>
-  <div id="deptAccordion"></div>
-</div>
 
-<!-- LỊCH SỬ ẢNH -->
-<div class="view" id="view-history">
-  <div style="font-size:17px;font-weight:800;margin-bottom:14px;">📅 Lịch sử nộp ảnh</div>
-  <div class="date-filter-row">
-    <button class="date-filter-btn active" onclick="setHistoryFilter('today',this)">Hôm nay</button>
-    <button class="date-filter-btn" onclick="setHistoryFilter('yesterday',this)">Hôm qua</button>
-    <button class="date-filter-btn" onclick="setHistoryFilter('week',this)">7 ngày qua</button>
-    <button class="date-filter-btn" onclick="setHistoryFilter('month',this)">Tháng này</button>
-    <button class="date-filter-btn" onclick="setHistoryFilter('all',this)">Tất cả</button>
+  <!-- Chi tiết phòng ban -->
+  <div style="font-size:16px;font-weight:800;margin-bottom:12px;letter-spacing:-.3px;">Chi tiết theo phòng ban</div>
+  <div id="deptAccordion"></div>
+
+  <!-- Lịch sử -->
+  <div style="font-size:16px;font-weight:800;margin:22px 0 12px;letter-spacing:-.3px;">Lịch sử ảnh</div>
+  <div class="period-row" id="hist-pills">
+    <button class="pp active" onclick="setHistoryFilter('today',this)">Hôm nay</button>
+    <button class="pp" onclick="setHistoryFilter('yesterday',this)">Hôm qua</button>
+    <button class="pp" onclick="setHistoryFilter('week',this)">7 ngày</button>
+    <button class="pp" onclick="setHistoryFilter('month',this)">Tháng này</button>
+    <button class="pp" onclick="setHistoryFilter('all',this)">Tất cả</button>
   </div>
-  <div class="history-filters">
-    <input type="date" id="hFilterDate" onchange="renderHistory()">
-    <select id="hFilterDept" onchange="renderHistory()"><option value="">Tất cả phòng ban</option></select>
-    <input type="text" id="hFilterSearch" placeholder="🔍 Tìm theo tên, khu vực..." oninput="renderHistory()" style="flex:2;">
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+    <input type="date" id="hFilterDate" onchange="renderHistory()" style="background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:7px 12px;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;color:var(--text);outline:none;flex:1;min-width:130px;">
+    <select id="hFilterDept" onchange="renderHistory()" style="background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:7px 12px;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;color:var(--text);outline:none;flex:1;min-width:140px;"><option value="">Tất cả phòng ban</option></select>
+    <input type="text" id="hFilterSearch" placeholder="🔍 Tìm kiếm..." oninput="renderHistory()" style="background:var(--white);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:7px 12px;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;color:var(--text);outline:none;flex:2;min-width:150px;">
   </div>
-  <div id="historyStats" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;"></div>
+  <div id="historyStats" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;"></div>
   <div id="historyTimeline"></div>
 </div>
+
+<!-- ═══ GEMBA WALK ═══ -->
+<div class="view" id="view-gemba">
+  <div class="gemba-hero">
+    <div>
+      <div class="gh-title">🚶 Gemba Walk</div>
+      <div class="gh-sub">Kiểm tra thực địa tại nơi làm việc — ghi nhận, đánh giá và cải tiến liên tục.</div>
+    </div>
+    <div class="gh-icon" style="font-size:60px;opacity:.9;">🏭</div>
+  </div>
+  <div class="gw-stats">
+    <div class="sc"><div class="sc-lbl">🚶 Tổng lượt</div><div class="sc-val" id="gw-total" style="color:var(--primary)">0</div><div class="sc-sub">lần kiểm tra</div></div>
+    <div class="sc"><div class="sc-lbl">⭐ Điểm TB</div><div class="sc-val" id="gw-avg" style="color:var(--amber)">—</div><div class="sc-sub">trên 5.0</div></div>
+    <div class="sc"><div class="sc-lbl">🖼 Tổng ảnh</div><div class="sc-val" id="gw-photos" style="color:var(--blue)">0</div><div class="sc-sub">ảnh thực địa</div></div>
+    <div class="sc"><div class="sc-lbl">🗺 Khu vực</div><div class="sc-val" id="gw-areas" style="color:var(--green)">0</div><div class="sc-sub">đã kiểm tra</div></div>
+  </div>
+  <div class="sec" style="margin-bottom:20px;">
+    <div class="sec-hd"><span class="sec-title">📝 Ghi nhận Gemba Walk</span></div>
+    <div class="sec-body">
+      <div class="f2">
+        <div class="fg"><label>Người kiểm tra</label><input type="text" id="gw-inspector" placeholder="Tự động từ tài khoản" readonly style="background:var(--surface);color:var(--sub);"></div>
+        <div class="fg"><label>Bộ phận</label><select id="gw-dept"><option value="">— Chọn bộ phận —</option></select></div>
+        <div class="fg"><label>Khu vực kiểm tra *</label><input type="text" id="gw-area" placeholder="VD: Khu sản xuất A, Kho B..."></div>
+        <div class="fg"><label>Hạng mục</label><select id="gw-category">
+          <option value="">— Chọn hạng mục —</option>
+          <option>Sàng lọc (Sort - S1)</option>
+          <option>Sắp xếp (Set in order - S2)</option>
+          <option>Sạch sẽ (Shine - S3)</option>
+          <option>Săn sóc (Standardize - S4)</option>
+          <option>Sẵn sàng (Sustain - S5)</option>
+          <option>An toàn lao động</option>
+          <option>Tổng thể chung</option>
+        </select></div>
+      </div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sub);margin-bottom:10px;">CHECKLIST KIỂM TRA</div>
+      <div id="gwChecklist">
+        <div class="checklist-item" onclick="toggleCheck(this)"><div class="chk-box"></div><span class="chk-lbl">Khu vực gọn gàng, không có vật dụng không cần thiết</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><div class="chk-box"></div><span class="chk-lbl">Dụng cụ, thiết bị được sắp xếp đúng vị trí quy định</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><div class="chk-box"></div><span class="chk-lbl">Sàn, tường, máy móc sạch sẽ, không có dầu mỡ, rác thải</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><div class="chk-box"></div><span class="chk-lbl">Nhãn dán, biển báo, ký hiệu đầy đủ và rõ ràng</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><div class="chk-box"></div><span class="chk-lbl">Nhân viên tuân thủ quy trình và nội quy 5S</span></div>
+        <div class="checklist-item" onclick="toggleCheck(this)"><div class="chk-box"></div><span class="chk-lbl">Lối thoát hiểm và thiết bị PCCC không bị che khuất</span></div>
+      </div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sub);margin:16px 0 10px;">ĐÁNH GIÁ ĐIỂM SỐ 5S</div>
+      <div class="score-row" id="gwScoreRow">
+        <button class="score-btn s1" onclick="selectGWScore(1)"><div class="score-num">1</div><div class="score-lbl">Kém</div></button>
+        <button class="score-btn s2" onclick="selectGWScore(2)"><div class="score-num">2</div><div class="score-lbl">Yếu</div></button>
+        <button class="score-btn s3" onclick="selectGWScore(3)"><div class="score-num">3</div><div class="score-lbl">TB</div></button>
+        <button class="score-btn s4" onclick="selectGWScore(4)"><div class="score-num">4</div><div class="score-lbl">Tốt</div></button>
+        <button class="score-btn s5" onclick="selectGWScore(5)"><div class="score-num">5</div><div class="score-lbl">Xuất sắc</div></button>
+      </div>
+      <div class="fg" style="margin-bottom:16px;"><label>Ghi chú / Phát hiện / Khuyến nghị</label>
+        <textarea id="gw-note" placeholder="Mô tả tình trạng, vấn đề phát hiện, hành động khuyến nghị..."></textarea>
+      </div>
+      <div class="dropzone" id="gwDropZone" ondragover="handleGWDragOver(event)" ondragleave="handleGWDragLeave(event)" ondrop="handleGWDrop(event)">
+        <div style="font-size:26px;margin-bottom:7px;">📷</div>
+        <div style="font-size:13px;font-weight:700;">Chụp ảnh thực địa</div>
+        <div class="drop-btns">
+          <button type="button" class="dbtn dbtn-cam" onclick="document.getElementById('gwCamera').click()">📸 Chụp ảnh</button>
+          <button type="button" class="dbtn dbtn-gal" onclick="document.getElementById('gwGallery').click()">🖼 Thư viện</button>
+        </div>
+      </div>
+      <input type="file" id="gwCamera" accept="image/*" capture="environment" multiple onchange="handleGWFiles(event)" style="display:none;">
+      <input type="file" id="gwGallery" accept="image/*" multiple onchange="handleGWFiles(event)" style="display:none;">
+      <div class="prev-row" id="gwPreviewGrid"></div>
+      <button class="btn-big" onclick="submitGWRecord()" style="background:linear-gradient(135deg,#7c3aed,#2563eb);">🚶 LƯU KẾT QUẢ GEMBA WALK</button>
+    </div>
+  </div>
+  <div style="font-size:16px;font-weight:800;margin-bottom:14px;letter-spacing:-.3px;">Lịch sử Gemba Walk</div>
+  <div id="gwHistoryList"></div>
+</div>
+
 </main>
 
+<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <img id="lbImg" src="" alt=""><button class="lb-close" onclick="closeLightbox()">✕</button>
   <div class="lb-info" id="lbInfo"></div>
 </div>
 <div class="toast" id="toast"></div>
-<div class="modal-overlay" id="modalCycle" onclick="if(event.target===this)closeModalCycle()">
-  <div class="modal">
-    <div class="modal-head"><div class="modal-head-title">➕ Tạo đợt kiểm tra mới</div><button class="modal-x" onclick="closeModalCycle()">✕</button></div>
-    <div class="modal-body">
-      <div class="form-group" style="margin-bottom:12px;"><label>Tên đợt</label><input type="text" id="newCycleName" placeholder="VD: Tháng 6/2026..."></div>
-    </div>
-    <div class="modal-foot"><button class="btn-outline" onclick="closeModalCycle()">Huỷ</button><button class="btn-primary" onclick="createCycle()">Tạo đợt</button></div>
-  </div>
-</div>
+
+<!-- MODALS -->
+
 <div class="modal-overlay" id="modalDept" onclick="if(event.target===this)closeModalDept()">
   <div class="modal">
-    <div class="modal-head"><div class="modal-head-title">⚙ Quản lý phòng ban</div><button class="modal-x" onclick="closeModalDept()">✕</button></div>
+    <div class="modal-hd"><div class="modal-ttl">⚙ Quản lý phòng ban</div><button class="modal-x" onclick="closeModalDept()">✕</button></div>
     <div class="modal-body">
       <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <input type="text" id="newDeptName" placeholder="Tên phòng / ban mới..." style="flex:1;background:var(--off);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:9px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;outline:none;">
-        <button class="btn-primary" onclick="addDept()">＋ Thêm</button>
+        <input type="text" id="newDeptName" placeholder="Tên phòng / ban mới..." style="flex:1;background:var(--surface);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:8px 12px;font-family:'Be Vietnam Pro',sans-serif;font-size:13px;color:var(--text);outline:none;">
+        <button class="btn btn-p" onclick="addDept()">＋ Thêm</button>
       </div>
-      <div id="deptManageList" style="display:flex;flex-direction:column;gap:6px;max-height:270px;overflow-y:auto;"></div>
+      <div id="deptManageList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;"></div>
     </div>
-    <div class="modal-foot"><button class="btn-primary" onclick="closeModalDept()">Xong</button></div>
+    <div class="modal-ft"><button class="btn btn-p" onclick="closeModalDept()">Xong</button></div>
   </div>
 </div>
 
 <script>
+// ═══ ADMIN CONFIG ═══
+const ADMIN_EMAILS = ['duonghv@biahalong.com'];
+function isAdmin(email){ return ADMIN_EMAILS.includes((email||'').toLowerCase()); }
+
 // ═══ CONFIG ═══
 const SK='5s_v4';
 const SP={
@@ -396,7 +536,7 @@ function createInitial(){
   const name='Tháng '+new Date().toLocaleDateString('vi-VN',{month:'long',year:'numeric'});
   return {depts:DEFAULT_DEPTS,cycles:[{id:'c1',name,desc:'',createdAt:new Date().toISOString(),submissions:[]}],activeCycle:'c1'};
 }
-function saveData(){try{localStorage.setItem(SK,JSON.stringify(appData));}catch(e){console.warn('saveData error:',e);}}
+function saveData(){try{localStorage.setItem(SK,JSON.stringify(appData));}catch(e){console.warn(e);}}
 let appData=loadData();
 let pendingPhotos=[];
 let activeCycleId=appData.activeCycle;
@@ -442,49 +582,46 @@ const msalConfig={
 };
 
 async function initMSAL(){
-  const btn=document.getElementById('loginBtn');
   try{
     let w=0;
     while(typeof msal==='undefined'&&w<8000){await new Promise(r=>setTimeout(r,200));w+=200;}
     if(typeof msal==='undefined')throw new Error('Không tải được thư viện đăng nhập');
-    if(btn){btn.textContent='⏳ Đang khởi tạo...';btn.disabled=true;}
     msalInstance=new msal.PublicClientApplication(msalConfig);
     await msalInstance.initialize();
     const result=await msalInstance.handleRedirectPromise();
     if(result&&result.account){
       currentAccount=result.account;
-      updateLoginUI();
-      showToast('✅ Đăng nhập: '+currentAccount.name);
-      await loadFromSharePoint();
+      onLoginSuccess();
     }else{
       const accounts=msalInstance.getAllAccounts();
-      if(accounts.length>0){
-        currentAccount=accounts[0];
-        setTimeout(()=>loadFromSharePoint(),500);
-      }
+      if(accounts.length>0){currentAccount=accounts[0];onLoginSuccess();}
+      else showLoginScreen();
     }
     msalReady=true;
   }catch(e){
     console.error('MSAL init error:',e);
     msalReady=false;
+    showLoginScreen();
   }
-  updateLoginUI();
 }
 
 async function login(){
-  const btn=document.getElementById('loginBtn');
+  const btn=document.getElementById('loginMainBtn');
+  const loading=document.getElementById('loginLoading');
   try{
     if(!msalReady||!msalInstance){
-      if(btn){btn.textContent='⏳ Đang khởi tạo...';btn.disabled=true;}
+      if(btn){btn.disabled=true;btn.textContent='⏳ Đang khởi tạo...';}
       await initMSAL();
-      if(!msalReady){showToast('⚠ Không thể khởi tạo đăng nhập');updateLoginUI();return;}
+      if(!msalReady){showToast('⚠ Không thể khởi tạo');if(btn){btn.disabled=false;btn.innerHTML='<span class="login-btn-icon">🔐</span>Đăng nhập bằng Microsoft 365';}return;}
     }
-    if(btn){btn.disabled=true;btn.textContent='⏳ Đang chuyển hướng...';}
+    if(btn)btn.disabled=true;
+    if(loading)loading.style.display='block';
     await msalInstance.loginRedirect({scopes:SP_SCOPES});
   }catch(e){
     console.error('Login error:',e);
-    showToast('⚠ Lỗi: '+(e.errorMessage||e.message));
-    updateLoginUI();
+    showToast('⚠ Lỗi đăng nhập: '+(e.errorMessage||e.message));
+    if(btn){btn.disabled=false;btn.innerHTML='<span class="login-btn-icon">🔐</span>Đăng nhập bằng Microsoft 365';}
+    if(loading)loading.style.display='none';
   }
 }
 
@@ -492,23 +629,44 @@ function logout(){
   sessionStorage.clear();
   if(msalInstance)msalInstance.logoutRedirect();
   currentAccount=null;
-  updateLoginUI();
+  showLoginScreen();
 }
 
-function updateLoginUI(){
-  const btn=document.getElementById('loginBtn');
-  const info=document.getElementById('loginInfo');
-  const syncBtn=document.getElementById('syncBtn');
-  if(!btn)return;
-  if(currentAccount){
-    btn.textContent='Đăng xuất';btn.onclick=logout;btn.disabled=false;
-    if(info){info.textContent='👤 '+currentAccount.name;info.style.display='block';}
-    if(syncBtn)syncBtn.style.display='block';
-  }else{
-    btn.textContent='🔐 Đăng nhập Microsoft';btn.onclick=login;btn.disabled=false;
-    if(info)info.style.display='none';
-    if(syncBtn)syncBtn.style.display='none';
-  }
+function onLoginSuccess(){
+  const email=(currentAccount.username||currentAccount.upn||'').toLowerCase();
+  const name=currentAccount.name||email;
+  const admin=isAdmin(email);
+
+  // Update UI (already visible)
+  document.getElementById('loginScreen').classList.remove('show');
+
+  // User info
+  document.getElementById('userName').textContent=name.split(' ').slice(-1)[0]||name;
+  document.getElementById('userAvatar').textContent=(name[0]||'U').toUpperCase();
+  document.getElementById('userRole').textContent=email;
+  document.getElementById('adminBadge').style.display=admin?'inline':'none';
+
+  // Admin controls
+  document.getElementById('adminSection').style.display=admin?'block':'none';
+  document.getElementById('userCycleInfo').style.display=admin?'none':'block';
+
+  // Auto fill person field
+  document.getElementById('submitPerson').value=name;
+  document.getElementById('gw-inspector').value=name;
+
+  // Load data
+  renderDashboard();
+  renderPractice();
+  renderGemba();
+  loadFromSharePoint(true);
+
+  // Auto sync
+  setInterval(()=>{if(currentAccount&&msalReady)loadFromSharePoint(true);},60000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&currentAccount&&msalReady)loadFromSharePoint(true);});
+}
+
+function showLoginScreen(){
+  // Do nothing - app is always visible
 }
 
 async function getToken(){
@@ -516,16 +674,14 @@ async function getToken(){
     const res=await msalInstance.acquireTokenSilent({scopes:SP_SCOPES,account:currentAccount});
     return res.accessToken;
   }catch{
-    const res=await msalInstance.acquireTokenRedirect({scopes:SP_SCOPES});
-    return res?.accessToken;
+    await msalInstance.acquireTokenRedirect({scopes:SP_SCOPES});
   }
 }
 
 async function callGraph(method,url,body){
   const token=await getToken();
   const res=await fetch('https://graph.microsoft.com/v1.0'+url,{
-    method,
-    headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    method,headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
     body:body?JSON.stringify(body):undefined
   });
   if(!res.ok){const e=await res.text();throw new Error(e);}
@@ -535,8 +691,7 @@ async function callGraph(method,url,body){
 async function getSiteId(){
   if(spSiteId)return spSiteId;
   const data=await callGraph('GET',`/sites/${SP.siteHost}:${SP.sitePath}`);
-  spSiteId=data.id;
-  return spSiteId;
+  spSiteId=data.id;return spSiteId;
 }
 
 async function getOrCreateList(siteId){
@@ -545,7 +700,7 @@ async function getOrCreateList(siteId){
     const lists=await callGraph('GET',`/sites/${siteId}/lists?$select=id,displayName`);
     const found=lists.value.find(l=>l.displayName===SP.listName);
     if(found){spListId=found.id;return spListId;}
-  }catch(e){console.warn('List search:',e.message);}
+  }catch(e){console.warn(e);}
   const newList=await callGraph('POST',`/sites/${siteId}/lists`,{
     displayName:SP.listName,
     columns:[
@@ -555,78 +710,51 @@ async function getOrCreateList(siteId){
     ],
     list:{template:'genericList'}
   });
-  spListId=newList.id;
-  return spListId;
+  spListId=newList.id;return spListId;
 }
 
 async function uploadPhoto(dataUrl,filename,subId){
   const siteId=await getSiteId();
-  const folderPath=`${SP.libName}/${subId}`;
   const base64=dataUrl.split(',')[1];
-  const binary=atob(base64);
-  const bytes=new Uint8Array(binary.length);
+  const binary=atob(base64);const bytes=new Uint8Array(binary.length);
   for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
-  try{
-    const token=await getToken();
-    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/drive/root:/${folderPath}/${filename}:/content`,{
-      method:'PUT',
-      headers:{'Authorization':'Bearer '+token,'Content-Type':'image/jpeg'},
-      body:bytes.buffer
-    });
-    if(!res.ok)throw new Error(await res.text());
-    const data=await res.json();
-    return data.webUrl;
-  }catch(e){
-    console.error('Upload photo error:',e);
-    return '';
-  }
+  const token=await getToken();
+  const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/drive/root:/${SP.libName}/${subId}/${filename}:/content`,{
+    method:'PUT',headers:{'Authorization':'Bearer '+token,'Content-Type':'image/jpeg'},body:bytes.buffer
+  });
+  if(!res.ok)throw new Error(await res.text());
+  return (await res.json()).webUrl;
 }
 
 async function saveToSP(sub,cycle){
-  try{
-    const siteId=await getSiteId();
-    const listId=await getOrCreateList(siteId);
-    const photoUrls=[];
-    for(let i=0;i<sub.photos.length;i++){
-      if(sub.photos[i].url&&sub.photos[i].url.startsWith('data:')){
-        const url=await uploadPhoto(sub.photos[i].url,`photo_${i+1}.jpg`,sub.id);
-        photoUrls.push(url);
-      }
+  const siteId=await getSiteId();const listId=await getOrCreateList(siteId);
+  const photoUrls=[];
+  for(let i=0;i<sub.photos.length;i++){
+    if(sub.photos[i].url&&sub.photos[i].url.startsWith('data:')){
+      try{const url=await uploadPhoto(sub.photos[i].url,`photo_${i+1}.jpg`,sub.id);photoUrls.push(url);}
+      catch(e){console.warn('Upload photo error:',e);}
     }
-    const dept=getDept(sub.deptId);
-    await callGraph('POST',`/sites/${siteId}/lists/${listId}/items`,{
-      fields:{
-        Title:sub.id,SubmissionId:sub.id,DeptId:sub.deptId,DeptName:dept?.name||'',
-        Person:sub.person,Area:sub.area||'',Note:sub.note||'',
-        PhotoUrls:photoUrls.filter(u=>u).join('\n'),
-        CycleId:cycle.id,CycleName:cycle.name,
-      }
-    });
-    return photoUrls;
-  }catch(e){
-    console.error('saveToSP error:',e);
-    throw e;
   }
+  const dept=getDept(sub.deptId);
+  await callGraph('POST',`/sites/${siteId}/lists/${listId}/items`,{
+    fields:{Title:sub.id,SubmissionId:sub.id,DeptId:sub.deptId,DeptName:dept?.name||'',
+      Person:sub.person,Area:sub.area||'',Note:sub.note||'',
+      PhotoUrls:photoUrls.filter(u=>u).join('\n'),CycleId:cycle.id,CycleName:cycle.name}
+  });
+  return photoUrls;
 }
 
 async function loadFromSharePoint(silent=false){
   if(!currentAccount||!msalReady)return;
   try{
-    if(!silent) showToast('⏳ Đang tải dữ liệu từ SharePoint...');
-    const siteId=await getSiteId();
-    const listId=await getOrCreateList(siteId);
-    // Xoá dữ liệu local cũ trước khi load từ SharePoint
-    // Giữ lại cấu hình phòng ban, chỉ xoá submissions
+    if(!silent)showToast('⏳ Đang tải dữ liệu từ SharePoint...');
+    const siteId=await getSiteId();const listId=await getOrCreateList(siteId);
     const token=await getToken();
-    const spRes=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items?$expand=fields&$top=500`,{
-      headers:{
-        'Authorization':'Bearer '+token,
-        'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'
-      }
+    const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items?$expand=fields&$top=500`,{
+      headers:{'Authorization':'Bearer '+token,'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'}
     });
-    if(!spRes.ok)throw new Error(await spRes.text());
-    const items=await spRes.json();
-    // Nếu SP không có dữ liệu → xoá sạch local submissions
+    if(!res.ok)throw new Error(await res.text());
+    const items=await res.json();
     if(!items.value||items.value.length===0){
       appData.cycles.forEach(c=>{c.submissions=[];});
       saveData();renderDashboard();renderPractice();
@@ -636,108 +764,129 @@ async function loadFromSharePoint(silent=false){
     const cycleMap={};
     items.value.forEach(item=>{
       const f=item.fields;
-      const cid=f.CycleId||'c1';
-      const cname=f.CycleName||'Đợt mặc định';
+      const cid=f.CycleId||'c1';const cname=f.CycleName||'Đợt mặc định';
       if(!cycleMap[cid])cycleMap[cid]={id:cid,name:cname,desc:'',createdAt:item.createdDateTime||new Date().toISOString(),submissions:[]};
       const photoUrls=(f.PhotoUrls||'').split('\n').filter(u=>u.trim());
       const photos=photoUrls.map((url,i)=>({url,name:`photo_${i+1}.jpg`}));
-      const exists=cycleMap[cid].submissions.find(s=>s.id===f.SubmissionId);
-      if(!exists){
-        cycleMap[cid].submissions.push({
-          id:f.SubmissionId||item.id,deptId:f.DeptId||'',person:f.Person||'',
-          area:f.Area||'',note:f.Note||'',photos,
-          createdAt:item.createdDateTime||new Date().toISOString(),fromSP:true
-        });
+      if(!cycleMap[cid].submissions.find(s=>s.id===f.SubmissionId)){
+        cycleMap[cid].submissions.push({id:f.SubmissionId||item.id,deptId:f.DeptId||'',person:f.Person||'',area:f.Area||'',note:f.Note||'',photos,createdAt:item.createdDateTime||new Date().toISOString(),fromSP:true});
       }
     });
-    // Thay toàn bộ bằng dữ liệu SP
     const newCycles=Object.values(cycleMap);
     appData.cycles=newCycles.length>0?newCycles:[{id:'c1',name:'Đợt mặc định',desc:'',createdAt:new Date().toISOString(),submissions:[]}];
-    activeCycleId=appData.cycles[0].id;
-    appData.activeCycle=activeCycleId;
-    saveData();
-    // Re-render tất cả views
-    renderDashboard();
-    renderPractice();
-    if(document.getElementById('view-history').classList.contains('active')){
-      populateHistoryFilters();
-      renderHistory();
-    }
-    if(!silent) showToast('✅ Đã tải '+items.value.length+' lần nộp từ SharePoint!');
+    activeCycleId=appData.cycles[0].id;appData.activeCycle=activeCycleId;
+    saveData();renderDashboard();renderPractice();populateHistoryFilters();renderHistory();
+    if(!silent)showToast('✅ Đã tải '+items.value.length+' lần nộp từ SharePoint!');
   }catch(e){
     console.error('loadFromSP error:',e);
-    showToast('⚠ Lỗi tải SharePoint: '+e.message);
+    if(!silent)showToast('⚠ Lỗi tải SharePoint: '+e.message);
   }
 }
 
 // ═══ TAB ═══
-function switchTab(name){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+function switchView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
-  if(name==='practice')renderPractice();
-  if(name==='history'){populateHistoryFilters();renderHistory();}
+  const t=document.getElementById('tab-'+name);if(t)t.classList.add('active');
+  if(name==='practice'){renderPractice();populateHistoryFilters();renderHistory();}
   if(name==='dashboard')renderDashboard();
+  if(name==='gemba')renderGemba();
+}
+
+// ═══ DASHBOARD ═══
+function setDashPeriod(p,btn){dashPeriod=p;document.querySelectorAll('.period-row .pp').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderDashboard();}
+function renderDashboard(){
+  const subs=filterByPeriod(allSubs(),dashPeriod);
+  const totalPhotos=subs.reduce((s,sub)=>s+sub.photos.length,0);
+  const activeDeptIds=new Set(subs.map(s=>s.deptId));
+  const doneCount=appData.depts.filter(d=>activeDeptIds.has(d.id)).length;
+  const missingCount=appData.depts.length-doneCount;
+  const totalDepts=appData.depts.length;
+  const periodNames={today:'hôm nay',yesterday:'hôm qua',week:'7 ngày qua',month:'tháng này',all:'tất cả'};
+  document.getElementById('ds-photos').textContent=totalPhotos;
+  document.getElementById('ds-done').textContent=doneCount;
+  document.getElementById('ds-missing').textContent=missingCount;
+  document.getElementById('ds-period-sub').textContent='trong '+(periodNames[dashPeriod]||'');
+  document.getElementById('ds-done-sub').textContent='/ '+totalDepts+' phòng ban';
+  document.getElementById('ds-bar').style.width=totalPhotos>0?'100%':'0%';
+  document.getElementById('ds-done-bar').style.width=(totalDepts>0?Math.round(doneCount/totalDepts*100):0)+'%';
+  document.getElementById('ds-missing-bar').style.width=(totalDepts>0?Math.round(missingCount/totalDepts*100):0)+'%';
+  document.getElementById('dash-miss-badge').textContent=missingCount+' phòng ban';
+  document.getElementById('dash-done-badge').textContent=doneCount+' phòng ban';
+  const tabCnt=document.getElementById('tab-missing-cnt');
+  if(tabCnt){if(missingCount>0){tabCnt.textContent=missingCount;tabCnt.style.display='inline';}else tabCnt.style.display='none';}
+  const missingDepts=appData.depts.filter(d=>!activeDeptIds.has(d.id));
+  document.getElementById('dashMissingGrid').innerHTML=missingDepts.length===0
+    ?'<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả phòng ban đã nộp ảnh!</div>'
+    :missingDepts.map(d=>`<div class="dept-miss"><span style="font-size:18px;">${d.icon}</span><div><div class="dm-name">${d.name}</div><div class="dm-sub">Chưa nộp ảnh</div></div></div>`).join('');
+  const doneDepts=appData.depts.filter(d=>activeDeptIds.has(d.id));
+  document.getElementById('dashDoneGrid').innerHTML=doneDepts.length===0
+    ?'<div style="color:var(--muted);font-size:13px;">Chưa có phòng ban nào nộp ảnh</div>'
+    :doneDepts.map(d=>{
+      const ds=subs.filter(s=>s.deptId===d.id);
+      const dp=ds.reduce((s,sub)=>s+sub.photos.length,0);
+      const persons=[...new Set(ds.map(s=>s.person))].join(', ');
+      return `<div class="dept-done"><span style="font-size:18px;">${d.icon}</span><div><div class="dd-name">${d.name}</div><div class="dd-sub">🖼 ${dp} ảnh · 👤 ${persons||'—'}</div></div></div>`;
+    }).join('');
 }
 
 // ═══ PRACTICE ═══
 function renderPractice(){
   renderCycleSelect();renderSubmitDeptOptions();renderStats();renderDeptAccordion();
+  const cn=document.getElementById('currentCycleName');
+  const cycle=getActiveCycle();
+  if(cn&&cycle)cn.textContent=cycle.name;
 }
 function renderCycleSelect(){
-  document.getElementById('cycleSelect').innerHTML=appData.cycles.map(c=>`<option value="${c.id}"${c.id===activeCycleId?' selected':''}>${c.name}</option>`).join('');
+  const sel=document.getElementById('cycleSelect');if(!sel)return;
+  sel.innerHTML=appData.cycles.map(c=>`<option value="${c.id}"${c.id===activeCycleId?' selected':''}>${c.name}</option>`).join('');
 }
 function renderSubmitDeptOptions(){
-  document.getElementById('submitDept').innerHTML='<option value="">— Chọn phòng ban —</option>'+appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
+  const sel=document.getElementById('submitDept');if(!sel)return;
+  sel.innerHTML='<option value="">— Chọn phòng ban —</option>'+appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
 }
 function renderStats(){
   const cycle=getActiveCycle();const stats=getDeptStats(cycle);
   const total=appData.depts.length;
   const done=appData.depts.filter(d=>stats[d.id]?.count>0).length;
   const photos=cycle?cycle.submissions.reduce((s,sub)=>s+sub.photos.length,0):0;
-  document.getElementById('s-total').textContent=total;
-  document.getElementById('s-done').textContent=done;
-  document.getElementById('s-missing').textContent=total-done;
-  document.getElementById('s-photos').textContent=photos;
+  document.getElementById('progressBadge').textContent=done+'/'+total;
   const pct=total>0?Math.round(done/total*100):0;
   document.getElementById('progressFill').style.width=pct+'%';
   document.getElementById('progressPct').textContent=pct+'%';
-  document.getElementById('progressLabel').textContent=`${done} / ${total} phòng ban đã nộp`;
-  document.getElementById('progressBadge').textContent=`${done}/${total}`;
+  document.getElementById('progressLabel').textContent=done+' / '+total+' phòng ban đã nộp';
   const missingDepts=appData.depts.filter(d=>!stats[d.id]?.count);
   document.getElementById('missingGrid').innerHTML=missingDepts.length===0
     ?'<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả phòng ban đã nộp ảnh!</div>'
-    :missingDepts.map(d=>`<div class="missing-card"><span style="font-size:18px;">${d.icon}</span><div><div class="mc-name">${d.name}</div><div class="mc-sub">Chưa nộp ảnh</div></div></div>`).join('');
+    :missingDepts.map(d=>`<div class="dept-miss"><span style="font-size:18px;">${d.icon}</span><div><div class="dm-name">${d.name}</div><div class="dm-sub">Chưa nộp</div></div></div>`).join('');
 }
 function renderDeptAccordion(){
   const cycle=getActiveCycle();const stats=getDeptStats(cycle);
+  const admin=isAdmin((currentAccount?.username||'').toLowerCase());
   const sorted=[...appData.depts].sort((a,b)=>(stats[b.id]?.count||0)-(stats[a.id]?.count||0));
   document.getElementById('deptAccordion').innerHTML=sorted.map(d=>{
     const ds=stats[d.id];const count=ds?.count||0;const subs=ds?.submissions||[];
     const allPhotos=subs.flatMap(sub=>sub.photos.map(p=>({...p,person:sub.person,area:sub.area,time:sub.createdAt})));
     const gallery=allPhotos.length>0
-      ?`<div class="photo-gallery">${allPhotos.map(ph=>{
-          const src=ph.url&&ph.url.startsWith('data:')?ph.url:(ph.url?ph.url:'');
-          return src?`<div class="gallery-item" onclick="openLightbox('${src}','${d.name}','${ph.area||''}','${ph.person}','${fmt(ph.time)}')"><img src="${src}" loading="lazy"></div>`:'';
-        }).filter(Boolean).join('')}</div>`
-      :`<div class="gallery-empty">📭 Chưa có ảnh nào.</div>`;
-    const subRows=subs.length>0?`<div style="padding:7px 16px 3px;">${subs.map(s=>`
-      <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12px;color:var(--sub);flex-wrap:wrap;">
+      ?`<div class="photo-grid">${allPhotos.map(ph=>{const src=ph.url&&ph.url.startsWith('data:')?ph.url:(ph.url||'');return src?`<div class="photo-item" onclick="openLightbox('${src}','${d.name}','${ph.area||''}','${ph.person}','${fmt(ph.time)}')"><img src="${src}" loading="lazy"></div>`:''}).filter(Boolean).join('')}</div>`
+      :`<div style="padding:24px;text-align:center;color:var(--muted);font-size:13px;">📭 Chưa có ảnh nào.</div>`;
+    const subRows=subs.length>0?`<div style="padding:6px 15px 2px;">${subs.map(s=>`
+      <div style="display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:12px;color:var(--sub);flex-wrap:wrap;">
         <span>👤 <strong style="color:var(--text)">${s.person}</strong></span>
         ${s.area?`<span>📍 ${s.area}</span>`:''}
         <span>🖼 ${s.photos.length} ảnh</span>
-        <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:11px;">${fmt(s.createdAt)}</span>
-        <button class="btn-danger" onclick="deleteSub('${s.id}')">🗑 Xoá</button>
+        <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;">${fmt(s.createdAt)}</span>
+        ${admin?`<button class="btn-del" onclick="deleteSub('${s.id}')">🗑 Xoá</button>`:''}
       </div>`).join('')}</div>`:''
-    return `<div class="accordion-item" id="acc-${d.id}">
-      <div class="accordion-header" onclick="toggleAcc('${d.id}')">
-        <div class="dept-avatar" style="background:${count>0?'var(--green-bg)':'var(--red-bg)'};">${d.icon}</div>
+    return `<div class="acc" id="acc-${d.id}">
+      <div class="acc-hd" onclick="toggleAcc('${d.id}')">
+        <div class="dept-av" style="background:${count>0?'var(--green-bg)':'var(--red-bg)'};">${d.icon}</div>
         <div style="flex:1;"><div style="font-size:13px;font-weight:600;">${d.name}</div><div style="font-size:11px;color:var(--sub);margin-top:1px;">${subs.length} lần nộp · ${count} ảnh${ds?.lastTime?' · '+fmt(ds.lastTime):''}</div></div>
-        <span class="status-chip ${count>0?'chip-done':'chip-missing'}">${count>0?count+' ảnh':'Chưa nộp'}</span>
-        <span class="acc-toggle">⌄</span>
+        <span class="chip ${count>0?'chip-ok':'chip-no'}">${count>0?count+' ảnh':'Chưa nộp'}</span>
+        <span class="acc-arrow">⌄</span>
       </div>
-      <div class="accordion-body">${subRows}${gallery}</div>
+      <div class="acc-body">${subRows}${gallery}</div>
     </div>`;
   }).join('');
 }
@@ -759,10 +908,9 @@ function openManageDeptModal(){renderDeptManageList();document.getElementById('m
 function closeModalDept(){document.getElementById('modalDept').classList.remove('open');renderPractice();}
 function renderDeptManageList(){
   document.getElementById('deptManageList').innerHTML=appData.depts.map(d=>`
-    <div style="display:flex;align-items:center;gap:9px;background:var(--off);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;">
-      <span style="font-size:17px;">${d.icon}</span>
-      <span style="flex:1;font-size:13px;font-weight:600;">${d.name}</span>
-      <button class="btn-danger" onclick="deleteDept('${d.id}')">✕</button>
+    <div style="display:flex;align-items:center;gap:9px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;">
+      <span style="font-size:17px;">${d.icon}</span><span style="flex:1;font-size:13px;font-weight:600;">${d.name}</span>
+      <button class="btn-del" onclick="deleteDept('${d.id}')">✕</button>
     </div>`).join('');
 }
 function addDept(){
@@ -770,10 +918,7 @@ function addDept(){
   appData.depts.push({id:'d'+Date.now(),name,icon:DEPT_ICONS[appData.depts.length%DEPT_ICONS.length]});
   saveData();document.getElementById('newDeptName').value='';renderDeptManageList();
 }
-function deleteDept(id){
-  if(!confirm('Xoá phòng ban này?'))return;
-  appData.depts=appData.depts.filter(d=>d.id!==id);saveData();renderDeptManageList();
-}
+function deleteDept(id){if(!confirm('Xoá phòng ban?'))return;appData.depts=appData.depts.filter(d=>d.id!==id);saveData();renderDeptManageList();}
 
 // FILE UPLOAD
 function compressImage(dataUrl,maxW=500,quality=0.4){
@@ -799,14 +944,16 @@ function addFiles(files){
   files.forEach(file=>{
     const r=new FileReader();
     r.onload=async ev=>{
-      try{const compressed=await compressImage(ev.target.result);pendingPhotos.push({file,dataUrl:compressed});renderPreview();}
-      catch(e){showToast('⚠ Lỗi xử lý ảnh: '+file.name);}
+      try{const c=await compressImage(ev.target.result);pendingPhotos.push({file,dataUrl:c});renderPreview();}
+      catch(e){showToast('⚠ Lỗi ảnh: '+file.name);}
     };
     r.readAsDataURL(file);
   });
 }
 function renderPreview(){
-  document.getElementById('previewGrid').innerHTML=pendingPhotos.map((p,i)=>`<div class="preview-thumb"><img src="${p.dataUrl}"><button class="del-btn" onclick="removePreview(${i})">✕</button></div>`).join('');
+  document.getElementById('previewGrid').innerHTML=pendingPhotos.map((p,i)=>
+    `<div class="thumb"><img src="${p.dataUrl}"><button class="thumb-del" onclick="removePreview(${i})">✕</button></div>`
+  ).join('');
 }
 function removePreview(idx){pendingPhotos.splice(idx,1);renderPreview();}
 
@@ -817,7 +964,6 @@ function submitPhotos(){
   const area=document.getElementById('submitArea').value.trim();
   const note=document.getElementById('submitNote').value.trim();
   if(!deptId){shakeEl('submitDept');showToast('⚠ Vui lòng chọn phòng ban!');return;}
-  if(!person){shakeEl('submitPerson');showToast('⚠ Vui lòng nhập tên người nộp!');return;}
   if(pendingPhotos.length===0){shakeEl('dropZone');showToast('⚠ Vui lòng chọn ít nhất 1 ảnh!');return;}
   const cycle=getActiveCycle();if(!cycle){showToast('⚠ Chưa có đợt kiểm tra!');return;}
   const photos=pendingPhotos.map(p=>({url:p.dataUrl,name:p.file.name}));
@@ -825,10 +971,9 @@ function submitPhotos(){
   cycle.submissions.push(newSub);
   try{saveData();}catch(e){cycle.submissions.pop();showToast('⚠ Bộ nhớ đầy!');return;}
   document.getElementById('submitDept').value='';
-  document.getElementById('submitPerson').value='';
   document.getElementById('submitArea').value='';
   document.getElementById('submitNote').value='';
-  pendingPhotos=[];renderPreview();renderStats();renderDeptAccordion();
+  pendingPhotos=[];renderPreview();renderStats();renderDeptAccordion();renderDashboard();
   const dept=getDept(deptId);
   showToast('✅ '+dept?.name+' đã nộp '+photos.length+' ảnh!');
   setTimeout(()=>{const acc=document.getElementById('acc-'+deptId);if(acc&&!acc.classList.contains('open')){acc.classList.add('open');acc.scrollIntoView({behavior:'smooth',block:'nearest'});}},400);
@@ -838,20 +983,17 @@ function submitPhotos(){
       .catch(e=>showToast('⚠ Lỗi SharePoint: '+e.message));
   }
 }
-async function deleteSub(subId){
-  if(!confirm('Xoá lần nộp này?'))return;
-  // Xoá local
-  appData.cycles.forEach(c=>{c.submissions=c.submissions.filter(s=>s.id!==subId);});
-  saveData();renderStats();renderDeptAccordion();renderHistory();
-  showToast('🗑 Đã xoá');
 
-  // Xoá trên SharePoint nếu đã đăng nhập
+async function deleteSub(subId){
+  const admin=isAdmin((currentAccount?.username||'').toLowerCase());
+  if(!admin){showToast('⚠ Chỉ Admin mới được xoá!');return;}
+  if(!confirm('Xoá lần nộp này?'))return;
+  appData.cycles.forEach(c=>{c.submissions=c.submissions.filter(s=>s.id!==subId);});
+  saveData();renderStats();renderDeptAccordion();renderHistory();renderDashboard();
+  showToast('🗑 Đã xoá');
   if(!currentAccount||!msalReady)return;
   try{
-    const siteId=await getSiteId();
-    const listId=await getOrCreateList(siteId);
-
-    // Lấy tất cả items rồi tìm theo SubmissionId ở client
+    const siteId=await getSiteId();const listId=await getOrCreateList(siteId);
     const token=await getToken();
     const res=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items?$expand=fields&$select=id,fields/SubmissionId&$top=500`,{
       headers:{'Authorization':'Bearer '+token,'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'}
@@ -860,98 +1002,79 @@ async function deleteSub(subId){
     const found=data.value&&data.value.find(item=>item.fields?.SubmissionId===subId);
     if(found){
       await callGraph('DELETE',`/sites/${siteId}/lists/${listId}/items/${found.id}`);
-      console.log('Deleted SP list item:',found.id);
-    }else{
-      console.warn('SP item not found for subId:',subId);
+      try{await callGraph('DELETE',`/sites/${siteId}/drive/root:/${SP.libName}/${subId}`);}catch(e){}
+      showToast('🗑 Đã xoá khỏi SharePoint!');
     }
-
-    // Xoá folder ảnh trong Drive
-    try{
-      await callGraph('DELETE',`/sites/${siteId}/drive/root:/${SP.libName}/${subId}`);
-    }catch(e){console.warn('Folder delete:',e.message);}
-
-    showToast('🗑 Đã xoá khỏi SharePoint!');
-  }catch(e){
-    console.error('Delete SP error:',e);
-    showToast('⚠ Xoá local xong nhưng lỗi SharePoint: '+e.message);
-  }
+  }catch(e){showToast('⚠ Xoá local xong, lỗi SharePoint: '+e.message);}
 }
-function shakeEl(id){
-  const el=document.getElementById(id);const s=[0,6,-6,4,-4,2,-2,0];let i=0;
-  const t=setInterval(()=>{el.style.transform=`translateX(${s[i++]}px)`;if(i>=s.length){clearInterval(t);el.style.transform='';}},60);
-}
+
+function shakeEl(id){const el=document.getElementById(id);const s=[0,6,-6,4,-4,2,-2,0];let i=0;const t=setInterval(()=>{el.style.transform=`translateX(${s[i++]}px)`;if(i>=s.length){clearInterval(t);el.style.transform='';}},60);}
+
 function exportSummary(){
+  if(!isAdmin((currentAccount?.username||'').toLowerCase())){showToast('⚠ Chỉ Admin mới xuất báo cáo!');return;}
   const cycle=getActiveCycle();if(!cycle)return;
   const stats=getDeptStats(cycle);const total=appData.depts.length;
   const done=appData.depts.filter(d=>stats[d.id]?.count>0).length;
   const photos=cycle.submissions.reduce((s,sub)=>s+sub.photos.length,0);
   let txt=`BÁO CÁO THỰC HÀNH 5S\nĐợt: ${cycle.name}\nXuất: ${new Date().toLocaleString('vi-VN')}\n${'─'.repeat(50)}\nTổng: ${total} PB · Đã nộp: ${done} · Ảnh: ${photos}\n${'─'.repeat(50)}\n\n`;
-  appData.depts.forEach(d=>{
-    const ds=stats[d.id];const cnt=ds?.count||0;const subs=ds?.submissions||[];
-    txt+=`${d.icon} ${d.name} — ${cnt>0?'✅ '+cnt+' ảnh':'❌ Chưa nộp'}\n`;
-    subs.forEach(s=>{txt+=`   · ${s.person}${s.area?' ('+s.area+')':''}: ${s.photos.length} ảnh · ${fmt(s.createdAt)}\n`;});
-    txt+='\n';
-  });
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));
-  a.download=`BaoCao_5S_${cycle.name.replace(/\s+/g,'_')}.txt`;a.click();
+  appData.depts.forEach(d=>{const ds=stats[d.id];const cnt=ds?.count||0;const subs=ds?.submissions||[];txt+=`${d.icon} ${d.name} — ${cnt>0?'✅ '+cnt+' ảnh':'❌ Chưa nộp'}\n`;subs.forEach(s=>{txt+=`   · ${s.person}${s.area?' ('+s.area+')':''}: ${s.photos.length} ảnh · ${fmt(s.createdAt)}\n`;});txt+='\n';});
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));a.download=`BaoCao_5S_${cycle.name.replace(/\s+/g,'_')}.txt`;a.click();
   showToast('📄 Đã xuất báo cáo!');
 }
 
 // ═══ HISTORY ═══
 function setHistoryFilter(f,btn){
   historyFilter=f;
-  document.querySelectorAll('.date-filter-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#hist-pills .pp').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('hFilterDate').value='';
   renderHistory();
 }
 function populateHistoryFilters(){
-  document.getElementById('hFilterDept').innerHTML='<option value="">Tất cả phòng ban</option>'+appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
+  const sel=document.getElementById('hFilterDept');if(!sel)return;
+  sel.innerHTML='<option value="">Tất cả phòng ban</option>'+appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
 }
 function renderHistory(){
   let subs=allSubs();
-  const dateVal=document.getElementById('hFilterDate').value;
-  const deptVal=document.getElementById('hFilterDept').value;
-  const searchVal=document.getElementById('hFilterSearch').value.toLowerCase().trim();
+  const dateVal=document.getElementById('hFilterDate')?.value;
+  const deptVal=document.getElementById('hFilterDept')?.value;
+  const searchVal=document.getElementById('hFilterSearch')?.value.toLowerCase().trim();
   if(dateVal)subs=subs.filter(s=>toYMD(new Date(s.createdAt))===dateVal);
   else subs=filterByPeriod(subs,historyFilter);
   if(deptVal)subs=subs.filter(s=>s.deptId===deptVal);
-  if(searchVal)subs=subs.filter(s=>{const d=getDept(s.deptId);return(d?.name||'').toLowerCase().includes(searchVal)||(s.person||'').toLowerCase().includes(searchVal)||(s.area||'').toLowerCase().includes(searchVal)||(s.note||'').toLowerCase().includes(searchVal);});
+  if(searchVal)subs=subs.filter(s=>{const d=getDept(s.deptId);return(d?.name||'').toLowerCase().includes(searchVal)||(s.person||'').toLowerCase().includes(searchVal)||(s.area||'').toLowerCase().includes(searchVal);});
   subs.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
   const totalPhotos=subs.reduce((s,sub)=>s+sub.photos.length,0);
   const uniqueDepts=new Set(subs.map(s=>s.deptId)).size;
-  document.getElementById('historyStats').innerHTML=`<span class="badge">📤 ${subs.length} lần nộp</span><span class="badge">🖼 ${totalPhotos} ảnh</span><span class="badge">🏢 ${uniqueDepts} phòng ban</span>`;
-  const groups={};
-  subs.forEach(s=>{const d=toYMD(new Date(s.createdAt));if(!groups[d])groups[d]=[];groups[d].push(s);});
-  const container=document.getElementById('historyTimeline');
-  if(subs.length===0){container.innerHTML=`<div class="empty-state"><div style="font-size:38px;margin-bottom:9px;">📭</div><div>Không có dữ liệu trong khoảng thời gian này</div></div>`;return;}
+  const hs=document.getElementById('historyStats');
+  if(hs)hs.innerHTML=`<span class="badge">📤 ${subs.length} lần nộp</span><span class="badge">🖼 ${totalPhotos} ảnh</span><span class="badge">🏢 ${uniqueDepts} phòng ban</span>`;
+  const groups={};subs.forEach(s=>{const d=toYMD(new Date(s.createdAt));if(!groups[d])groups[d]=[];groups[d].push(s);});
+  const container=document.getElementById('historyTimeline');if(!container)return;
+  const admin=isAdmin((currentAccount?.username||'').toLowerCase());
+  if(subs.length===0){container.innerHTML=`<div class="empty"><div style="font-size:36px;margin-bottom:8px;">📭</div><div>Không có dữ liệu</div></div>`;return;}
   container.innerHTML=Object.entries(groups).sort((a,b)=>b[0].localeCompare(a[0])).map(([date,dayS])=>{
     const dayPhotos=dayS.reduce((s,sub)=>s+sub.photos.length,0);
-    return `<div class="timeline-day">
-      <div class="timeline-day-label">
+    return `<div class="hist-day">
+      <div class="hist-day-lbl">
         <span>${fmtDate(date+'T00:00:00')}${date===today()?' <span style="color:var(--green)">● Hôm nay</span>':''}</span>
-        <span class="timeline-day-count">${dayS.length} lần · ${dayPhotos} ảnh</span>
+        <span class="hist-cnt">${dayS.length} lần · ${dayPhotos} ảnh</span>
       </div>
       ${dayS.map(sub=>{
         const dept=getDept(sub.deptId);
-        const thumbs=sub.photos.slice(0,4).map(p=>{
-          const src=p.url&&p.url.startsWith('data:')?p.url:(p.url||'');
-          return src?`<div class="sub-card-thumb" onclick="openLightbox('${src}','${dept?.name||''}','${sub.area||''}','${sub.person}','${fmt(sub.createdAt)}')"><img src="${src}" loading="lazy"></div>`:'';
-        }).filter(Boolean).join('');
-        const more=sub.photos.length>4?`<div style="width:50px;height:50px;background:var(--off);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--sub);">+${sub.photos.length-4}</div>`:'';
-        return `<div class="sub-card">
-          <div class="sub-card-thumbs">${thumbs}${more}</div>
-          <div class="sub-card-info">
-            <div class="sub-card-header">
+        const thumbs=sub.photos.slice(0,4).map(p=>{const src=p.url&&p.url.startsWith('data:')?p.url:(p.url||'');return src?`<div class="hcard-thumb" onclick="openLightbox('${src}','${dept?.name||''}','${sub.area||''}','${sub.person}','${fmt(sub.createdAt)}')"><img src="${src}" loading="lazy"></div>`:''}).filter(Boolean).join('');
+        const more=sub.photos.length>4?`<div style="width:48px;height:48px;background:var(--surface);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--sub);">+${sub.photos.length-4}</div>`:'';
+        return `<div class="hcard">
+          <div class="hcard-thumbs">${thumbs}${more}</div>
+          <div class="hcard-info">
+            <div class="hcard-top">
               <span style="font-size:17px;">${dept?.icon||'🏢'}</span>
-              <span class="sub-card-dept">${dept?.name||'—'}</span>
-              <span class="sub-card-count">${sub.photos.length} ảnh</span>
-              <span class="sub-card-time">${fmt(sub.createdAt)}</span>
-              <button class="sub-card-del" onclick="deleteSub('${sub.id}')" title="Xoá">🗑</button>
+              <span class="hcard-dept">${dept?.name||'—'}</span>
+              <span class="hcard-cnt">${sub.photos.length} ảnh</span>
+              <span class="hcard-time">${fmt(sub.createdAt)}</span>
+              ${admin?`<button class="btn-del" onclick="deleteSub('${sub.id}')">🗑</button>`:''}
             </div>
             <div style="font-size:12px;color:var(--sub);">👤 ${sub.person}${sub.area?' · 📍 '+sub.area:''}</div>
-            ${sub.note?`<div class="sub-card-note">💬 ${sub.note}</div>`:''}
+            ${sub.note?`<div class="hcard-note">💬 ${sub.note}</div>`:''}
           </div>
         </div>`;
       }).join('')}
@@ -959,82 +1082,109 @@ function renderHistory(){
   }).join('');
 }
 
-// ═══ DASHBOARD ═══
-function setDashPeriod(p,btn){dashPeriod=p;document.querySelectorAll('.period-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderDashboard();}
-const PERIOD_LABELS={today:'Hôm nay',week:'7 ngày',month:'Tháng này',quarter:'Quý này',all:'Tất cả'};
-function renderDashboard(){
-  const allS=allSubs();const subs=filterByPeriod(allS,dashPeriod);
-  document.getElementById('ds-photos').textContent=subs.reduce((s,sub)=>s+sub.photos.length,0);
-  document.getElementById('ds-subs').textContent=subs.length;
-  document.getElementById('ds-depts').textContent=new Set(subs.map(s=>s.deptId)).size;
-  document.getElementById('ds-days').textContent=new Set(subs.map(s=>toYMD(new Date(s.createdAt)))).size;
-  document.getElementById('dashPeriodLabel').textContent=PERIOD_LABELS[dashPeriod]||'';
+// ═══ GEMBA WALK ═══
+let gwPendingPhotos=[],gwScore=0;
+const GW_SK='5s_gemba_v1';
+function loadGWData(){try{return JSON.parse(localStorage.getItem(GW_SK))||[];}catch{return[];}}
+function saveGWData(r){localStorage.setItem(GW_SK,JSON.stringify(r));}
+let gwRecords=loadGWData();
 
-  // Bar chart
-  const dpm={};appData.depts.forEach(d=>{dpm[d.id]=0;});
-  subs.forEach(s=>{dpm[s.deptId]=(dpm[s.deptId]||0)+s.photos.length;});
-  const maxBar=Math.max(...Object.values(dpm),1);
-  const sortedD=[...appData.depts].sort((a,b)=>(dpm[b.id]||0)-(dpm[a.id]||0));
-  document.getElementById('deptBarChart').innerHTML=sortedD.map((d,i)=>{
-    const cnt=dpm[d.id]||0;const pct=(cnt/maxBar*100).toFixed(1);const color=BAR_COLORS[i%BAR_COLORS.length];
-    return `<div class="bar-row"><div class="bar-label">${d.icon} ${d.name.length>12?d.name.slice(0,12)+'…':d.name}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color};"></div></div><div class="bar-val" style="color:${color}">${cnt}</div></div>`;
-  }).join('');
+function toggleCheck(el){
+  el.classList.toggle('checked');
+  const box=el.querySelector('.chk-box');
+  box.textContent=el.classList.contains('checked')?'✓':'';
+}
+function selectGWScore(n){
+  gwScore=n;
+  document.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.score-btn.s${n}`).classList.add('active');
+}
+function handleGWFiles(e){addGWFiles(Array.from(e.target.files));e.target.value='';}
+function handleGWDragOver(e){e.preventDefault();document.getElementById('gwDropZone').classList.add('drag-over');}
+function handleGWDragLeave(){document.getElementById('gwDropZone').classList.remove('drag-over');}
+function handleGWDrop(e){e.preventDefault();document.getElementById('gwDropZone').classList.remove('drag-over');addGWFiles(Array.from(e.dataTransfer.files).filter(f=>f.type.startsWith('image/')));}
+function addGWFiles(files){
+  files.forEach(file=>{
+    const r=new FileReader();
+    r.onload=async ev=>{
+      try{const c=await compressImage(ev.target.result);gwPendingPhotos.push({dataUrl:c,name:file.name});renderGWPreview();}
+      catch(e){showToast('⚠ Lỗi ảnh');}
+    };r.readAsDataURL(file);
+  });
+}
+function renderGWPreview(){
+  document.getElementById('gwPreviewGrid').innerHTML=gwPendingPhotos.map((p,i)=>
+    `<div class="thumb"><img src="${p.dataUrl}"><button class="thumb-del" onclick="removeGWPreview(${i})">✕</button></div>`
+  ).join('');
+}
+function removeGWPreview(idx){gwPendingPhotos.splice(idx,1);renderGWPreview();}
 
-  // Rank
-  const dsm={};appData.depts.forEach(d=>{dsm[d.id]=0;});
-  subs.forEach(s=>{dsm[s.deptId]=(dsm[s.deptId]||0)+1;});
-  const medals=['🥇','🥈','🥉'];
-  document.getElementById('rankBody').innerHTML=sortedD.slice(0,10).map((d,i)=>`<tr><td style="text-align:center;">${medals[i]||i+1}</td><td><span style="font-size:15px;margin-right:6px;">${d.icon}</span>${d.name}</td><td><strong>${dpm[d.id]||0}</strong></td><td>${dsm[d.id]||0}</td></tr>`).join('');
+function submitGWRecord(){
+  const inspector=document.getElementById('gw-inspector').value.trim();
+  const area=document.getElementById('gw-area').value.trim();
+  if(!area){showToast('⚠ Vui lòng nhập khu vực kiểm tra!');return;}
+  if(!gwScore){showToast('⚠ Vui lòng chọn điểm số!');return;}
+  const checkedItems=Array.from(document.querySelectorAll('#gwChecklist .checklist-item.checked')).map(el=>el.querySelector('.chk-lbl').textContent);
+  const record={
+    id:'gw'+Date.now(),inspector,
+    dept:document.getElementById('gw-dept').value,
+    area,category:document.getElementById('gw-category').value,
+    note:document.getElementById('gw-note').value.trim(),
+    score:gwScore,checkedItems,
+    photos:gwPendingPhotos.map(p=>({url:p.dataUrl,name:p.name})),
+    createdAt:new Date().toISOString()
+  };
+  gwRecords.unshift(record);
+  try{saveGWData(gwRecords);}catch(e){gwRecords.shift();showToast('⚠ Bộ nhớ đầy!');return;}
+  document.getElementById('gw-area').value='';
+  document.getElementById('gw-dept').value='';
+  document.getElementById('gw-category').value='';
+  document.getElementById('gw-note').value='';
+  gwScore=0;gwPendingPhotos=[];renderGWPreview();
+  document.querySelectorAll('.score-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.checklist-item').forEach(el=>{el.classList.remove('checked');el.querySelector('.chk-box').textContent='';});
+  renderGemba();showToast('✅ Đã lưu kết quả Gemba Walk!');
+}
 
-  // Trend
-  const trend=[];
-  for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ymd=toYMD(d);const cnt=allS.filter(s=>toYMD(new Date(s.createdAt))===ymd).reduce((s,sub)=>s+sub.photos.length,0);trend.push({label:d.toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'}),cnt});}
-  const maxT=Math.max(...trend.map(t=>t.cnt),1);
-  document.getElementById('trendChart').innerHTML=trend.map(t=>{const h=Math.max(Math.round(t.cnt/maxT*70),t.cnt>0?4:2);return `<div class="trend-bar-wrap"><div class="trend-val">${t.cnt>0?t.cnt:''}</div><div class="trend-bar" style="height:${h}px;${t.cnt===0?'background:#e4e8f0;':''}"></div><div class="trend-label">${t.label}</div></div>`;}).join('');
-
-  // Heatmap
-  const hd={};
-  for(let i=27;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ymd=toYMD(d);hd[ymd]=allS.filter(s=>toYMD(new Date(s.createdAt))===ymd).reduce((s,sub)=>s+sub.photos.length,0);}
-  const hStart=new Date();hStart.setDate(hStart.getDate()-27);
-  const cells=[];for(let i=0;i<hStart.getDay();i++)cells.push(null);for(let i=0;i<28;i++){const d=new Date(hStart);d.setDate(d.getDate()+i);cells.push(toYMD(d));}
-  const hColors=['#f0fdf4','#bbf7d0','#4ade80','#16a34a','#14532d'];
-  document.getElementById('heatmapGrid').innerHTML=cells.map(ymd=>{
-    if(!ymd)return`<div style="aspect-ratio:1;"></div>`;
-    const cnt=hd[ymd]||0;const ci=cnt===0?0:cnt<3?1:cnt<6?2:cnt<10?3:4;
-    return `<div class="heatmap-cell" style="background:${hColors[ci]};${ymd===today()?'outline:2px solid var(--primary);':''}" title="${ymd}: ${cnt} ảnh" onclick="jumpToDate('${ymd}')"></div>`;
-  }).join('');
-
-  // Yesterday
-  const yest=new Date();yest.setDate(yest.getDate()-1);const yYMD=toYMD(yest);
-  const ySubs=allS.filter(s=>toYMD(new Date(s.createdAt))===yYMD);
-  const yDeptIds=new Set(ySubs.map(s=>s.deptId));
-  const yDone=appData.depts.filter(d=>yDeptIds.has(d.id));
-  const yMissing=appData.depts.filter(d=>!yDeptIds.has(d.id));
-  const yPhotos=ySubs.reduce((s,sub)=>s+sub.photos.length,0);
-  document.getElementById('yesterdayBadge').textContent=`${yDone.length}/${appData.depts.length} phòng ban · ${yPhotos} ảnh`;
-  document.getElementById('yesterdayDoneGrid').innerHTML=yDone.length===0
-    ?'<div style="color:var(--muted);font-size:13px;">Không có phòng ban nào nộp ảnh hôm qua</div>'
-    :yDone.map(d=>{const ds=ySubs.filter(s=>s.deptId===d.id);const dp=ds.reduce((s,sub)=>s+sub.photos.length,0);const persons=[...new Set(ds.map(s=>s.person))].join(', ');return `<div class="done-card"><span style="font-size:20px;">${d.icon}</span><div><div class="dc-name">${d.name}</div><div class="dc-sub">🖼 ${dp} ảnh · ${ds.length} lần · 👤 ${persons}</div></div></div>`;}).join('');
-  document.getElementById('yesterdayMissingGrid').innerHTML=yMissing.length===0
-    ?'<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả đã nộp hôm qua!</div>'
-    :yMissing.map(d=>`<div class="missing-card"><span style="font-size:18px;">${d.icon}</span><div><div class="mc-name">${d.name}</div><div class="mc-sub">Chưa nộp hôm qua</div></div></div>`).join('');
-
-  // Missing in period
-  const activeDeptIds=new Set(subs.map(s=>s.deptId));
-  document.getElementById('dashMissingGrid').innerHTML=appData.depts.filter(d=>!activeDeptIds.has(d.id)).length===0
-    ?'<div style="color:var(--green);font-weight:700;font-size:13px;">🎉 Tất cả đều có hoạt động!</div>'
-    :appData.depts.filter(d=>!activeDeptIds.has(d.id)).map(d=>`<div class="missing-card"><span style="font-size:18px;">${d.icon}</span><div><div class="mc-name">${d.name}</div><div class="mc-sub">Không có ảnh trong kỳ</div></div></div>`).join('');
-
-  // Cycle summary
-  document.getElementById('cycleBody').innerHTML=appData.cycles.map(c=>{
-    const total=appData.depts.length;const doneCount=new Set(c.submissions.map(s=>s.deptId)).size;
-    const photos=c.submissions.reduce((s,sub)=>s+sub.photos.length,0);
-    const pct=total>0?Math.round(doneCount/total*100):0;
-    const color=pct>=80?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
-    return `<tr><td><strong>${c.name}</strong></td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;">${fmt(c.createdAt)}</td><td>${doneCount}/${total}</td><td>${c.submissions.length}</td><td><strong>${photos}</strong></td><td style="min-width:90px;"><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;background:var(--off);border-radius:99px;height:6px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:${color};width:${pct}%;"></div></div><span style="font-size:11px;font-weight:700;">${pct}%</span></div></td></tr>`;
+function renderGemba(){
+  const total=gwRecords.length;
+  document.getElementById('gw-total').textContent=total;
+  document.getElementById('gw-avg').textContent=total>0?(gwRecords.reduce((s,r)=>s+r.score,0)/total).toFixed(1):'—';
+  document.getElementById('gw-photos').textContent=gwRecords.reduce((s,r)=>s+r.photos.length,0);
+  document.getElementById('gw-areas').textContent=new Set(gwRecords.map(r=>r.area)).size;
+  const gwSel=document.getElementById('gw-dept');
+  if(gwSel)gwSel.innerHTML='<option value="">— Chọn bộ phận —</option>'+appData.depts.map(d=>`<option value="${d.id}">${d.icon} ${d.name}</option>`).join('');
+  const admin=isAdmin((currentAccount?.username||'').toLowerCase());
+  const scoreLabels=['','Kém','Yếu','Trung bình','Tốt','Xuất sắc'];
+  const container=document.getElementById('gwHistoryList');
+  if(gwRecords.length===0){container.innerHTML='<div class="empty"><div style="font-size:36px;margin-bottom:8px;">🚶</div><div>Chưa có lần Gemba Walk nào</div></div>';return;}
+  container.innerHTML=gwRecords.map(r=>{
+    const dept=getDept(r.dept);
+    const thumbs=r.photos.slice(0,3).map(p=>`<div class="hcard-thumb" onclick="openLightbox('${p.url}','${r.area}','','${r.inspector}','${fmt(r.createdAt)}')"><img src="${p.url}" loading="lazy"></div>`).join('');
+    return `<div class="gw-hcard">
+      <div class="gw-score-badge sb${r.score}">${r.score}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap;">
+          <span style="font-size:13px;font-weight:700;">📍 ${r.area}</span>
+          <span style="font-size:11px;background:var(--purple-bg);color:var(--purple);padding:2px 8px;border-radius:10px;border:1px solid var(--purple-border);">${scoreLabels[r.score]}</span>
+          <span style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-left:auto;">${fmt(r.createdAt)}</span>
+          ${admin?`<button class="btn-del" onclick="deleteGWRecord('${r.id}')">🗑</button>`:''}
+        </div>
+        <div style="font-size:12px;color:var(--sub);margin-bottom:4px;">👤 ${r.inspector}${dept?' · '+dept.icon+' '+dept.name:''} ${r.category?' · '+r.category:''}</div>
+        ${r.note?`<div class="hcard-note">💬 ${r.note}</div>`:''}
+        ${r.checkedItems.length>0?`<div style="font-size:11px;color:var(--green);margin-top:4px;">✓ ${r.checkedItems.length} mục đạt chuẩn</div>`:''}
+        ${thumbs?`<div style="display:flex;gap:4px;margin-top:8px;">${thumbs}${r.photos.length>3?`<div style="width:48px;height:48px;background:var(--surface);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--sub);">+${r.photos.length-3}</div>`:''}</div>`:''}
+      </div>
+    </div>`;
   }).join('');
 }
-function jumpToDate(ymd){switchTab('history');document.getElementById('hFilterDate').value=ymd;document.querySelectorAll('.date-filter-btn').forEach(b=>b.classList.remove('active'));historyFilter='all';renderHistory();}
+
+function deleteGWRecord(id){
+  if(!isAdmin((currentAccount?.username||'').toLowerCase())){showToast('⚠ Chỉ Admin mới được xoá!');return;}
+  if(!confirm('Xoá lần Gemba Walk này?'))return;
+  gwRecords=gwRecords.filter(r=>r.id!==id);
+  saveGWData(gwRecords);renderGemba();showToast('🗑 Đã xoá');
+}
 
 // ═══ LIGHTBOX / TOAST ═══
 function openLightbox(url,dept,area,person,time){document.getElementById('lbImg').src=url;document.getElementById('lbInfo').innerHTML=`<strong>${dept}</strong>${area?' · '+area:''} · ${person} · ${time}`;document.getElementById('lightbox').classList.add('open');}
@@ -1043,19 +1193,13 @@ let toastTimer;
 function showToast(msg){clearTimeout(toastTimer);const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');toastTimer=setTimeout(()=>t.classList.remove('show'),3500);}
 
 // ═══ INIT ═══
-document.getElementById('headerDate').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+document.getElementById('headerDate').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
+// App visible immediately - no login required
 renderDashboard();
-(async()=>{
-  await initMSAL();
-  // Tự động đồng bộ mỗi 60 giây nếu đã đăng nhập
-  setInterval(()=>{
-    if(currentAccount && msalReady) loadFromSharePoint(true);
-  }, 60000);
-  // Đồng bộ khi tab được focus lại (người dùng chuyển về tab này)
-  document.addEventListener('visibilitychange',()=>{
-    if(!document.hidden && currentAccount && msalReady) loadFromSharePoint(true);
-  });
-})();
+renderPractice();
+renderGemba();
+// Init MSAL in background only for SharePoint sync
+(async()=>{ await initMSAL(); })();
 </script>
 </body>
 </html>

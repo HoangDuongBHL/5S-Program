@@ -663,14 +663,58 @@ async function getSiteId(){
   return spSiteId;
 }
 
+async function debugToken(){
+  try{
+    const token = await getToken();
+    // Decode JWT claims
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+    console.log('=== TOKEN CLAIMS ===');
+    console.log('upn:', payload.upn);
+    console.log('preferred_username:', payload.preferred_username);
+    console.log('scp (scopes):', payload.scp);
+    console.log('tid (tenant):', payload.tid);
+    console.log('aud (audience):', payload.aud);
+    console.log('===================');
+
+    // Test /me
+    const me = await callGraph('GET','/me');
+    console.log('=== /me ===');
+    console.log('id:', me.id);
+    console.log('userPrincipalName:', me.userPrincipalName);
+    console.log('displayName:', me.displayName);
+    console.log('===========');
+
+    return true;
+  }catch(e){
+    console.error('Debug token error:', e);
+    return false;
+  }
+}
+
 async function ensureSharePointSetup(){
   try{
     showToast('⏳ Đang kết nối SharePoint...');
     console.log('=== SharePoint Setup Start ===');
     console.log('Account:', currentAccount?.username);
 
+    // Debug token first
+    await debugToken();
+
     const siteId = await getSiteId();
     console.log('Site ID:', siteId);
+
+    // Test lists and drives
+    try{
+      const lists = await callGraph('GET',`/sites/${siteId}/lists?$select=id,displayName&$top=5`);
+      console.log('=== LISTS ===');
+      lists.value.forEach(l=>console.log(' -',l.displayName, l.id));
+    }catch(e){ console.error('Lists error:', e.message); }
+
+    try{
+      const drives = await callGraph('GET',`/sites/${siteId}/drives`);
+      console.log('=== DRIVES ===');
+      drives.value.forEach(d=>console.log(' -',d.name, d.id));
+    }catch(e){ console.error('Drives error:', e.message); }
 
     // Check if list exists
     try{

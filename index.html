@@ -641,18 +641,31 @@ async function callGraphRaw(method,url,body,contentType){
 
 async function getSiteId(){
   if(spSiteId)return spSiteId;
-  const data = await callGraph('GET',`/sites/${SP_CONFIG.siteHost}:${SP_CONFIG.sitePath}`);
-  spSiteId=data.id;
+  console.log('Getting site ID for:', SP_CONFIG.siteHost, SP_CONFIG.sitePath);
+  const url = `/sites/${SP_CONFIG.siteHost}:${SP_CONFIG.sitePath}`;
+  console.log('Graph URL:', url);
+  const data = await callGraph('GET', url);
+  console.log('Site data:', data);
+  spSiteId = data.id;
   return spSiteId;
 }
 
 async function ensureSharePointSetup(){
   try{
     showToast('⏳ Đang kết nối SharePoint...');
+    console.log('=== SharePoint Setup Start ===');
+    console.log('Account:', currentAccount?.username);
+
     const siteId = await getSiteId();
-    try{ await callGraph('GET',`/sites/${siteId}/lists/${SP_CONFIG.listName}`); }
-    catch{
-      await callGraph('POST',`/sites/${siteId}/lists`,{
+    console.log('Site ID:', siteId);
+
+    // Check if list exists
+    try{
+      const list = await callGraph('GET',`/sites/${siteId}/lists/${SP_CONFIG.listName}`);
+      console.log('List found:', list.id);
+    }catch(e){
+      console.log('List not found, creating...');
+      const newList = await callGraph('POST',`/sites/${siteId}/lists`,{
         displayName:SP_CONFIG.listName,
         columns:[
           {name:'DeptId',text:{}},{name:'DeptName',text:{}},{name:'Person',text:{}},
@@ -661,11 +674,24 @@ async function ensureSharePointSetup(){
         ],
         list:{template:'genericList'}
       });
+      console.log('List created:', newList.id);
     }
+
+    // Check drive access
+    try{
+      const drive = await callGraph('GET',`/sites/${siteId}/drive`);
+      console.log('Drive accessible:', drive.id);
+    }catch(e){
+      console.warn('Drive access warning:', e.message);
+    }
+
     showToast('✅ SharePoint đã sẵn sàng!');
+    console.log('=== SharePoint Setup Done ===');
   }catch(e){
-    console.error('SP setup error:',e);
-    showToast('⚠ Lỗi SharePoint: '+e.message);
+    console.error('SP setup error full:', e);
+    let msg = e.message;
+    try{ const parsed = JSON.parse(msg); msg = parsed.error?.message || msg; }catch{}
+    showToast('⚠ Lỗi SharePoint: '+msg);
   }
 }
 

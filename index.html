@@ -634,6 +634,7 @@ async function initMSAL(){
     msalInstance=new msal.PublicClientApplication(msalConfig);
     await msalInstance.initialize();
     const result=await msalInstance.handleRedirectPromise();
+    msalReady=true;
     if(result&&result.account){
       currentAccount=result.account;
       await onLoginSuccess();
@@ -642,7 +643,6 @@ async function initMSAL(){
       if(accounts.length>0){currentAccount=accounts[0];await onLoginSuccess();}
       else showLoginScreen();
     }
-    msalReady=true;
   }catch(e){
     console.error('MSAL init error:',e);
     msalReady=false;
@@ -737,7 +737,7 @@ async function onLoginSuccess(){
   // Auto sync every 60s
   if(!window._syncInterval){
     window._syncInterval=setInterval(()=>{
-      if(currentAccount&&msalReady)loadFromSharePoint(true);
+      if(currentAccount&&msalInstance)loadFromSharePoint(true);
     },60000);
   }
   // Sync when tab becomes visible again
@@ -829,7 +829,7 @@ async function saveToSP(sub,cycle){
 }
 
 async function loadFromSharePoint(silent=false){
-  if(!currentAccount||!msalReady)return;
+  if(!currentAccount||!msalInstance)return;
   try{
     if(!silent)showToast('⏳ Đang tải dữ liệu từ SharePoint...');
     const siteId=await getSiteId();const listId=await getOrCreateList(siteId);

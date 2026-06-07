@@ -615,7 +615,15 @@ async function loadFromSharePoint(){
     showToast('⏳ Đang tải dữ liệu từ SharePoint...');
     const siteId=await getSiteId();
     const listId=await getOrCreateList(siteId);
-    const items=await callGraph('GET',`/sites/${siteId}/lists/${listId}/items?$expand=fields&$top=500&$orderby=fields/Created desc`);
+    const token=await getToken();
+    const spRes=await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/lists/${listId}/items?$expand=fields&$top=500`,{
+      headers:{
+        'Authorization':'Bearer '+token,
+        'Prefer':'HonorNonIndexedQueriesWarningMayFailRandomly'
+      }
+    });
+    if(!spRes.ok)throw new Error(await spRes.text());
+    const items=await spRes.json();
     if(!items.value||items.value.length===0){showToast('📭 Chưa có dữ liệu trên SharePoint');return;}
     const cycleMap={};
     items.value.forEach(item=>{

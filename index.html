@@ -539,6 +539,7 @@ const msalConfig = {
 };
 
 const SP_SCOPES = [
+  'https://graph.microsoft.com/Sites.FullControl.All',
   'https://graph.microsoft.com/Sites.ReadWrite.All',
   'https://graph.microsoft.com/Files.ReadWrite.All',
   'https://graph.microsoft.com/User.Read'
@@ -601,6 +602,7 @@ async function login(){
 }
 
 function logout(){
+  sessionStorage.clear();
   if(msalInstance) msalInstance.logoutRedirect();
   currentAccount=null;
   updateLoginUI();
@@ -697,8 +699,17 @@ async function ensureSharePointSetup(){
     console.log('=== SharePoint Setup Start ===');
     console.log('Account:', currentAccount?.username);
 
-    // Debug token first
-    await debugToken();
+    // Debug token FIRST
+    const token = await getToken();
+    try{
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+      console.log('=== TOKEN DEBUG ===');
+      console.log('upn:', payload.upn || payload.preferred_username);
+      console.log('scp:', payload.scp);
+      console.log('aud:', payload.aud);
+      console.log('tid:', payload.tid);
+      console.log('===================');
+    }catch(e){ console.warn('Token decode error:', e); }
 
     const siteId = await getSiteId();
     console.log('Site ID:', siteId);

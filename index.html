@@ -771,8 +771,20 @@ async function onLoginSuccess(){
   renderGemba();
   loadFromSharePoint(true);
 
-  // Sync ngay sau khi login - luôn hiện toast
-  await loadFromSharePoint(false);
+  // Sync ngay sau khi login
+  await loadDataPublic();
+  // Nếu là admin, đảm bảo depts được lưu lên SP
+  if(isAdmin(email)){
+    try{
+      const siteId=await getSiteId();
+      const existing=await loadDeptsFromSP(siteId);
+      if(!existing||existing.length===0){
+        // Chưa có trên SP → lưu lên
+        await saveDeptsToSP(siteId, appData.depts.length>0 ? appData.depts : DEFAULT_DEPTS);
+        showToast('✅ Đã đồng bộ phòng ban lên SharePoint!');
+      }
+    }catch(e){ console.warn('sync depts:',e); }
+  }
   
 
   // Auto sync every 60s
@@ -948,6 +960,10 @@ async function loadDataPublic(){
         }
       }
     }catch(e){console.warn('Load depts public:',e);}
+    // Fallback nếu SP chưa có depts
+    if(!appData.depts||appData.depts.length===0){
+      appData.depts=DEFAULT_DEPTS;
+    }
 
     // Load submissions
     const subLists=await callGraphPublic(`/sites/${siteId}/lists?$select=id,displayName`);
@@ -1257,12 +1273,17 @@ function openManageDeptModal(){renderDeptManageList();document.getElementById('m
 async function closeModalDept(){
   document.getElementById('modalDept').classList.remove('open');
   renderPractice();
-  // Sync depts to SharePoint
+  // Sync depts to SharePoint ngay lập tức
   if(currentAccount&&msalInstance){
     try{
+      showToast('⏳ Đang lưu phòng ban lên SharePoint...');
       const siteId=await getSiteId();
       await saveDeptsToSP(siteId,appData.depts);
-    }catch(e){console.warn('saveDeptsToSP on close:',e);}
+      showToast('✅ Đã lưu phòng ban lên SharePoint!');
+    }catch(e){
+      console.warn('saveDeptsToSP on close:',e);
+      showToast('⚠ Lỗi lưu phòng ban: '+e.message);
+    }
   }
 }
 function renderDeptManageList(){

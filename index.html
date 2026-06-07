@@ -280,16 +280,17 @@ main{max-width:1120px;margin:0 auto;padding:28px 20px 80px;}
     </div>
   </div>
   <div class="header-right">
-    <button id="syncBtn" onclick="loadFromSharePoint()">🔄 Đồng bộ</button>
-    <div class="user-chip" id="userChip">
+    <button id="syncBtn" onclick="loadFromSharePoint()" style="display:none;">🔄 Đồng bộ</button>
+    <div class="user-chip" id="userChip" style="display:none;">
       <div class="user-avatar" id="userAvatar">?</div>
       <div>
         <div class="user-name" id="userName">...</div>
-        <div class="user-role" id="userRole">User</div>
+        <div class="user-role" id="userRole"></div>
       </div>
       <span class="admin-badge" id="adminBadge" style="display:none;">ADMIN</span>
     </div>
-    <button class="btn-logout" onclick="logout()">Đăng xuất</button>
+    <button class="btn-logout" id="logoutBtn" onclick="logout()" style="display:none;">Đăng xuất</button>
+    <button class="btn btn-p" id="loginHeaderBtn" onclick="login()" style="font-size:12px;padding:6px 12px;">🔐 Đăng nhập</button>
     <div class="header-date" id="headerDate"></div>
   </div>
 </header>
@@ -627,9 +628,13 @@ async function login(){
 
 function logout(){
   sessionStorage.clear();
-  if(msalInstance)msalInstance.logoutRedirect();
   currentAccount=null;
-  showLoginScreen();
+  document.getElementById('loginHeaderBtn').style.display='block';
+  document.getElementById('logoutBtn').style.display='none';
+  document.getElementById('syncBtn').style.display='none';
+  document.getElementById('userChip').style.display='none';
+  document.getElementById('adminSection').style.display='none';
+  if(msalInstance)msalInstance.logoutRedirect();
 }
 
 function onLoginSuccess(){
@@ -637,8 +642,12 @@ function onLoginSuccess(){
   const name=currentAccount.name||email;
   const admin=isAdmin(email);
 
-  // Update UI (already visible)
+  // Update header UI
   document.getElementById('loginScreen').classList.remove('show');
+  document.getElementById('loginHeaderBtn').style.display='none';
+  document.getElementById('logoutBtn').style.display='block';
+  document.getElementById('syncBtn').style.display='block';
+  document.getElementById('userChip').style.display='flex';
 
   // User info
   document.getElementById('userName').textContent=name.split(' ').slice(-1)[0]||name;
@@ -660,9 +669,11 @@ function onLoginSuccess(){
   renderGemba();
   loadFromSharePoint(true);
 
-  // Auto sync
+  // Auto sync every 60s + on tab focus
   setInterval(()=>{if(currentAccount&&msalReady)loadFromSharePoint(true);},60000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&currentAccount&&msalReady)loadFromSharePoint(true);});
+  // Initial sync
+  setTimeout(()=>loadFromSharePoint(true),500);
 }
 
 function showLoginScreen(){
